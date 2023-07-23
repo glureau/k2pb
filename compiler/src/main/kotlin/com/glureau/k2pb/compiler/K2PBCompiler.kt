@@ -1,9 +1,9 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.mapping.protobufName
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.processing.impl.KSNameImpl
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import kotlinx.serialization.Serializable
@@ -28,6 +28,10 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             if (it is KSClassDeclaration) {
                 protobufAggregator.recordKSClassDeclaration(it)
             }
+        }
+        protobufAggregator.unknownReferences().forEach {
+            val referencedEnum = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
+            protobufAggregator.recordKSClassDeclaration(requireNotNull(referencedEnum))
         }
 
         protobufAggregator.buildFiles().forEach { protobufFile ->

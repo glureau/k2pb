@@ -16,5 +16,3 @@ data class NativeTypeEvent(
     val boolean: Boolean = true, // bool
     val byte: Byte = 42.toByte(), // int32
 ) : EventInterface
-
-// TODO: Support Proto annotations: ProtoType, ProtoNumber, ProtoPacked, ...

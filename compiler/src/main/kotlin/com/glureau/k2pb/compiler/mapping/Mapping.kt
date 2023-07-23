@@ -4,7 +4,7 @@ import com.glureau.k2pb.compiler.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSTypeReference
+import com.google.devtools.ksp.symbol.KSDeclaration
 
 fun ProtobufAggregator.recordKSClassDeclaration(it: KSClassDeclaration) {
     when (it.classKind) {
@@ -20,6 +20,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(it: KSClassDeclaration) {
 private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
     println("getDeclaredProperties = " + this.getDeclaredProperties())
     return EnumNode(
+        qualifiedName = this.qualifiedName!!.asString(),
         name = "TODO", comment = listOf(), entries = listOf()
     )
 }
@@ -28,16 +29,15 @@ private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode {
     // TODO: This is handling "data class", not sure about "class" and other kinds (sealed class, etc)
     val fields = primaryConstructor!!.parameters.mapIndexed { index, param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
-        val repeated = false // TODO: resolvedType.isCollection()
         Field(
             name = param.name!!.asString(),
-            type = param.type.toProtobufFieldType(),// FieldType.from(param.type.toString()),
+            type = param.type.resolve().declaration.toProtobufFieldType(),
             comment = prop.docString?.let { listOf(it) } ?: emptyList(),
-            repeated = repeated,
             number = index, // TODO annotation + local increment
         )
     }
     return MessageNode(
+        qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
         comment = this.docString?.let { listOf(it) } ?: emptyList(),
         fields = fields,
@@ -45,9 +45,8 @@ private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode {
     )
 }
 
-private fun KSTypeReference.toProtobufFieldType(): FieldType {
-    val name = resolve().declaration.qualifiedName!!.asString()
-    return when (name) {
+private fun KSDeclaration.toProtobufFieldType(): FieldType {
+    return when (val name = qualifiedName!!.asString()) {
         "kotlin.String" -> ScalarType.string
         "kotlin.Int" -> ScalarType.int32
         "kotlin.Char" -> ScalarType.int32
@@ -57,7 +56,15 @@ private fun KSTypeReference.toProtobufFieldType(): FieldType {
         "kotlin.Float" -> ScalarType.float
         "kotlin.Double" -> ScalarType.double
         "kotlin.Boolean" -> ScalarType.bool
-        "kotlin.collections.List" -> ReferenceType("repeated")
+        "kotlin.collections.List" -> ListType(
+            repeatedType = typeParameters[0].toProtobufFieldType()
+        )
+
+        "kotlin.collections.Map" -> MapType(
+            keyType = typeParameters[0].toProtobufFieldType(),
+            valueType = typeParameters[1].toProtobufFieldType(),
+        )
+
         else -> ReferenceType(name)
     }
 }

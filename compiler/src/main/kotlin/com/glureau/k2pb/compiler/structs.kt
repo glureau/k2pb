@@ -4,14 +4,17 @@ package com.glureau.k2pb.compiler
 enum class ProtoSyntax { v3 } // We don't deal with v2 at all for now...
 
 
-interface FieldType {
-    companion object {
-        fun from(str: String): FieldType = ScalarType.values().firstOrNull { it.name == str }
-            ?: ReferenceType(str)
-    }
-}
+interface FieldType
 
 data class ReferenceType(val name: String) : FieldType
+data class ListType(val repeatedType: FieldType) : FieldType {
+    override fun toString(): String = "repeated $repeatedType"
+}
+
+data class MapType(val keyType: FieldType, val valueType: FieldType) : FieldType {
+    override fun toString(): String = "map<$keyType, $valueType>"
+}
+
 enum class ScalarType : FieldType { // https://protobuf.dev/programming-guides/proto3/#scalar
     double,
     float,
@@ -32,7 +35,6 @@ enum class ScalarType : FieldType { // https://protobuf.dev/programming-guides/p
 
 data class Field(
     val comment: List<String>,
-    val repeated: Boolean,
     val type: FieldType,
     val name: String,
     val number: Int,
@@ -40,10 +42,11 @@ data class Field(
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
-        if (repeated) result += "repeated "
         result += when (type) {
             is ScalarType -> type.name
             is ReferenceType -> type.name
+            is ListType -> type.toString()
+            is MapType -> type.toString()
             else -> error("unknown type $type")
         }
         result += " $name = $number;"
@@ -54,6 +57,7 @@ data class Field(
 sealed class Node
 
 data class MessageNode(
+    val qualifiedName: String,
     val name: String,
     val comment: List<String>,
     val nestedNodes: List<Node>,
@@ -69,7 +73,12 @@ data class MessageNode(
     }
 }
 
-data class EnumNode(val name: String, val comment: List<String>, val entries: List<EnumEntry>) : Node() {
+data class EnumNode(
+    val qualifiedName: String,
+    val name: String,
+    val comment: List<String>,
+    val entries: List<EnumEntry>,
+) : Node() {
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
