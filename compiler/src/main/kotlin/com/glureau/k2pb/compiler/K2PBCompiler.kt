@@ -35,7 +35,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         }
 
         protobufAggregator.buildFiles().forEach { protobufFile ->
-            Logger.warn("FILE: $protobufFile")
+            Logger.warn("---------------------------- ${protobufFile.path}")
+            Logger.warn(protobufFile.toString())
         }
 
         return emptyList()

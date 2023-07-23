@@ -19,7 +19,11 @@ data class WithNestClassB(
     @Serializable
     data class NestedClass(
         val nested: String = "nested",
-    )
+    ) {
+        enum class NestedEnum {
+            A, B, C
+        }
+    }
 }
 
 

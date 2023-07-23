@@ -54,11 +54,13 @@ data class Field(
     }
 }
 
-sealed class Node
+sealed class Node {
+    abstract val name: String
+}
 
 data class MessageNode(
     val qualifiedName: String,
-    val name: String,
+    override val name: String,
     val comment: List<String>,
     val nestedNodes: List<Node>,
     val fields: List<Field>,
@@ -75,7 +77,7 @@ data class MessageNode(
 
 data class EnumNode(
     val qualifiedName: String,
-    val name: String,
+    override val name: String,
     val comment: List<String>,
     val entries: List<EnumEntry>,
 ) : Node() {
