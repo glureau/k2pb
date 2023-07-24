@@ -62,12 +62,13 @@ data class Field(
 }
 
 sealed class Node {
+    abstract val qualifiedName: String
     abstract val name: String
     abstract val originalFile: KSFile?
 }
 
 data class MessageNode(
-    val qualifiedName: String,
+    override val qualifiedName: String,
     override val name: String,
     val comment: String?,
     val fields: List<Field>,
@@ -93,7 +94,7 @@ data class MessageNode(
 }
 
 data class EnumNode(
-    val qualifiedName: String,
+    override val qualifiedName: String,
     override val name: String,
     val comment: String?,
     val entries: List<EnumEntry>,
@@ -126,8 +127,6 @@ data class ProtobufFile(
     val enums: List<EnumNode>,
     val imports: List<String>,
 ) {
-    val dependencies: List<KSFile> =
-        (messages.flatMap { it.dependencies } + enums.mapNotNull { it.originalFile }).distinct()
 
     override fun toString(): String {
         var result = "syntax = \"" + when (syntax) {
@@ -140,4 +139,3 @@ data class ProtobufFile(
         return result
     }
 }
-

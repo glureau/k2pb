@@ -31,27 +31,40 @@ class ProtobufAggregator {
     fun buildFiles(): List<ProtobufFile> {
         require(unknownReferences().isEmpty()) { "Unknown references: ${unknownReferences().joinToString()}" }
 
+        // TODO: warning, import computation is slightly correlated to this split logic (1 class by file)
         val updatedMessages = updateMessageForNesting(messages, enums)
-
-        // TODO: Detect imports
         return updatedMessages.map { messageNode ->
             ProtobufFile(
-                path = "k2pb/${messageNode.name}.proto",
+                path = "k2pb/${messageNode.name}",
                 packageName = null,
                 syntax = ProtoSyntax.v3,
                 messages = listOf(messageNode),
                 enums = emptyList(),
-                imports = listOf()
+                imports = computeImports(
+                    messageNodes = listOf(messageNode),
+                    enumNodes = listOf(),
+                    locallyDeclaredReferences = messageNode.declaredReferences,
+                    importResolver = { protobufName ->
+                        "$protobufName.proto"
+                    }
+                )
             )
         } + enums.mapNotNull { enumNode ->
             if (enumNode.name.contains(".")) return@mapNotNull null // Skip nested enums
             ProtobufFile(
-                path = "k2pb/$enumNode.proto",
+                path = "k2pb/$enumNode",
                 packageName = null,
                 syntax = ProtoSyntax.v3,
                 messages = emptyList(),
                 enums = listOf(enumNode),
-                imports = listOf()
+                imports = computeImports(
+                    messageNodes = listOf(),
+                    enumNodes = listOf(enumNode),
+                    locallyDeclaredReferences = enumNode.declaredReferences,
+                    importResolver = { protobufName ->
+                        "$protobufName.proto"
+                    },
+                )
             )
         }
     }
