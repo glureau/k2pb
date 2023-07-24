@@ -4,7 +4,7 @@ import com.glureau.k2pb.compiler.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSType
 
 fun ProtobufAggregator.recordKSClassDeclaration(it: KSClassDeclaration) {
     when (it.classKind) {
@@ -25,7 +25,8 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
             EnumEntry(
                 name = entry.simpleName.asString(),
                 comment = entry.docString,
-                number = index,
+                // TODO: handle annotations for name and number
+                number = index, // proto3: enum starts at 0
             )
         }
     return EnumNode(
@@ -33,6 +34,7 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
         name = protobufName(),
         comment = docString,
         entries = entries,
+        originalFile = containingFile,
     )
 }
 
@@ -41,10 +43,10 @@ private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode {
     val fields = primaryConstructor!!.parameters.mapIndexed { index, param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
         Field(
-            name = param.name!!.asString(),
-            type = param.type.resolve().declaration.toProtobufFieldType(),
+            name = param.name!!.asString(), // TODO annotation SerialName
+            type = param.type.resolve().toProtobufFieldType(),
             comment = prop.docString,
-            number = index, // TODO annotation + local increment
+            number = index + 1, // TODO annotation + local increment
         )
     }
     return MessageNode(
@@ -52,11 +54,12 @@ private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode {
         name = protobufName(),
         comment = docString,
         fields = fields,
+        originalFile = containingFile
     )
 }
 
-private fun KSDeclaration.toProtobufFieldType(): FieldType {
-    return when (val name = qualifiedName!!.asString()) {
+private fun KSType.toProtobufFieldType(): FieldType {
+    return when (val name = this.declaration.qualifiedName!!.asString()) {
         "kotlin.String" -> ScalarType.string
         "kotlin.Int" -> ScalarType.int32
         "kotlin.Char" -> ScalarType.int32
@@ -67,12 +70,12 @@ private fun KSDeclaration.toProtobufFieldType(): FieldType {
         "kotlin.Double" -> ScalarType.double
         "kotlin.Boolean" -> ScalarType.bool
         "kotlin.collections.List" -> ListType(
-            repeatedType = typeParameters[0].toProtobufFieldType()
+            repeatedType = arguments[0].type!!.resolve().toProtobufFieldType() // TODO: List<List<Int>> is not supported
         )
 
         "kotlin.collections.Map" -> MapType(
-            keyType = typeParameters[0].toProtobufFieldType(),
-            valueType = typeParameters[1].toProtobufFieldType(),
+            keyType = arguments[0].type!!.resolve().toProtobufFieldType(), // TODO: Map<Map<X, X>, X> is not supported
+            valueType = arguments[1].type!!.resolve().toProtobufFieldType(),
         )
 
         else -> ReferenceType(name)

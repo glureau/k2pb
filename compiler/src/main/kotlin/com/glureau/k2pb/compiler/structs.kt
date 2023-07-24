@@ -1,5 +1,7 @@
 package com.glureau.k2pb.compiler
 
+import com.google.devtools.ksp.symbol.KSFile
+
 
 enum class ProtoSyntax { v3 } // We don't deal with v2 at all for now...
 
@@ -47,7 +49,9 @@ data class Field(
         result += comment.toProtobufComment()
         result += when (type) {
             is ScalarType -> type.name
-            is ReferenceType -> type.name
+            // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
+            // both solutions are valid for protobuf.
+            is ReferenceType -> TypeResolver.qualifiedNameToProtobufName[type.name] ?: type.name
             is ListType -> type.toString()
             is MapType -> type.toString()
             else -> error("unknown type $type")
@@ -59,6 +63,7 @@ data class Field(
 
 sealed class Node {
     abstract val name: String
+    abstract val originalFile: KSFile?
 }
 
 data class MessageNode(
@@ -66,15 +71,24 @@ data class MessageNode(
     override val name: String,
     val comment: String?,
     val fields: List<Field>,
+    override val originalFile: KSFile?,
 ) : Node() {
+    val dependencies: List<KSFile>
+        get() {
+            val result = mutableListOf<KSFile>()
+            originalFile?.let { result.add(it) }
+            nestedNodes.forEach { node ->
+                node.originalFile?.let { result.add(it) }
+            }
+            return result
+        }
     val nestedNodes: MutableList<Node> = mutableListOf()
     override fun toString(): String {
-        var result = ""
-        result += comment.toProtobufComment()
+        var result = comment.toProtobufComment()
         result += "message ${name.substringAfterLast(".")} {\n"
         if (fields.isNotEmpty()) result += fields.joinToString("\n").prependIndent("  ") + "\n"
         if (nestedNodes.isNotEmpty()) result += nestedNodes.joinToString("\n").prependIndent("  ") + "\n"
-        return "$result}\n"
+        return "$result}"
     }
 }
 
@@ -83,13 +97,14 @@ data class EnumNode(
     override val name: String,
     val comment: String?,
     val entries: List<EnumEntry>,
+    override val originalFile: KSFile?,
 ) : Node() {
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
         result += "enum ${name.substringAfterLast(".")} {\n"
         if (entries.isNotEmpty()) result += entries.joinToString("\n").prependIndent("  ") + "\n"
-        return "$result}\n"
+        return "$result}"
     }
 }
 
@@ -111,14 +126,17 @@ data class ProtobufFile(
     val enums: List<EnumNode>,
     val imports: List<String>,
 ) {
+    val dependencies: List<KSFile> =
+        (messages.flatMap { it.dependencies } + enums.mapNotNull { it.originalFile }).distinct()
+
     override fun toString(): String {
         var result = "syntax = \"" + when (syntax) {
             ProtoSyntax.v3 -> "proto3"
-        } + "\";\n"
+        } + "\";\n\n"
         if (imports.isNotEmpty()) result += imports.joinToString("\n") { "import \"$it\";" } + "\n\n"
         if (packageName != null) result += "package $packageName;\n\n"
-        if (messages.isNotEmpty()) result += messages.joinToString("\n\n") + "\n\n"
-        if (enums.isNotEmpty()) result += enums.joinToString("\n\n") + "\n\n"
+        if (messages.isNotEmpty()) result += messages.joinToString("\n\n") + "\n"
+        if (enums.isNotEmpty()) result += enums.joinToString("\n\n") + "\n"
         return result
     }
 }

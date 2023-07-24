@@ -9,12 +9,14 @@ class ProtobufAggregator {
         messages += it
         require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
         qualifiedNameSet += it.qualifiedName
+        TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
     }
 
     fun recordEnumNode(it: EnumNode) {
         enums += it
         require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
         qualifiedNameSet += it.qualifiedName
+        TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
     }
 
     fun unknownReferences(): Set<String> {
@@ -34,7 +36,7 @@ class ProtobufAggregator {
         // TODO: Detect imports
         return updatedMessages.map { messageNode ->
             ProtobufFile(
-                path = "TODO/${messageNode.name}.proto",
+                path = "k2pb/${messageNode.name}.proto",
                 packageName = null,
                 syntax = ProtoSyntax.v3,
                 messages = listOf(messageNode),
@@ -44,7 +46,7 @@ class ProtobufAggregator {
         } + enums.mapNotNull { enumNode ->
             if (enumNode.name.contains(".")) return@mapNotNull null // Skip nested enums
             ProtobufFile(
-                path = "TODO/$enumNode.proto",
+                path = "k2pb/$enumNode.proto",
                 packageName = null,
                 syntax = ProtoSyntax.v3,
                 messages = emptyList(),

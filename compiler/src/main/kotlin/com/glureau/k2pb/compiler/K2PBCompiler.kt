@@ -1,7 +1,6 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
-import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.processing.impl.KSNameImpl
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -13,7 +12,6 @@ internal lateinit var sharedLogger: KSPLogger
 
 internal object Logger : KSPLogger by sharedLogger
 
-@OptIn(KspExperimental::class)
 class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
     init {
@@ -35,7 +33,13 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         }
 
         protobufAggregator.buildFiles().forEach { protobufFile ->
+            environment.writeProtobufFile(
+                protobufFile.toString().toByteArray(),
+                fileName = protobufFile.path,
+                dependencies = protobufFile.dependencies
+            )
             Logger.warn("---------------------------- ${protobufFile.path}")
+            Logger.warn("---------------------------- ${protobufFile.dependencies}")
             Logger.warn(protobufFile.toString())
         }
 
