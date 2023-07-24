@@ -18,10 +18,21 @@ fun ProtobufAggregator.recordKSClassDeclaration(it: KSClassDeclaration) {
 }
 
 private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
-    println("getDeclaredProperties = " + this.getDeclaredProperties())
+    val entries = declarations.toList()
+        .filterIsInstance<KSClassDeclaration>()
+        .filter { it.classKind == ClassKind.ENUM_ENTRY }
+        .mapIndexed { index, entry ->
+            EnumEntry(
+                name = entry.simpleName.asString(),
+                comment = entry.docString,
+                number = index,
+            )
+        }
     return EnumNode(
-        qualifiedName = this.qualifiedName!!.asString(),
-        name = "TODO", comment = listOf(), entries = listOf()
+        qualifiedName = qualifiedName!!.asString(),
+        name = protobufName(),
+        comment = docString,
+        entries = entries,
     )
 }
 
@@ -32,16 +43,15 @@ private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode {
         Field(
             name = param.name!!.asString(),
             type = param.type.resolve().declaration.toProtobufFieldType(),
-            comment = prop.docString?.let { listOf(it) } ?: emptyList(),
+            comment = prop.docString,
             number = index, // TODO annotation + local increment
         )
     }
     return MessageNode(
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        comment = this.docString?.let { listOf(it) } ?: emptyList(),
+        comment = docString,
         fields = fields,
-        nestedNodes = emptyList()
     )
 }
 

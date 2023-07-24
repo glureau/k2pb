@@ -14,11 +14,11 @@ data class WithNestClassA(
 
 @Serializable
 data class WithNestClassB(
-    val b: NestedClass = NestedClass("nested B"),
+    val b: NestedClass = NestedClass(),
 ) {
     @Serializable
     data class NestedClass(
-        val nested: String = "nested",
+        val nestedEnum: NestedEnum = NestedEnum.C,
     ) {
         enum class NestedEnum {
             A, B, C

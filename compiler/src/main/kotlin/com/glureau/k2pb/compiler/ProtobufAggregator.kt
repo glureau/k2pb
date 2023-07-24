@@ -41,7 +41,8 @@ class ProtobufAggregator {
                 enums = emptyList(),
                 imports = listOf()
             )
-        } + enums.map { enumNode ->
+        } + enums.mapNotNull { enumNode ->
+            if (enumNode.name.contains(".")) return@mapNotNull null // Skip nested enums
             ProtobufFile(
                 path = "TODO/$enumNode.proto",
                 packageName = null,
@@ -55,57 +56,26 @@ class ProtobufAggregator {
 }
 
 private fun updateMessageForNesting(messages: List<MessageNode>, enums: MutableList<EnumNode>): List<MessageNode> {
-    val parentNameChildMessages = mutableMapOf<String, MutableList<MessageNode>>()
-    val parentNameChildEnums = mutableMapOf<String, MutableList<EnumNode>>()
-    messages.forEach {
-        val parentName = it.name.substringBeforeLast(".")
-        Logger.warn("parentName: $parentName != ${it.name} => ${parentName != it.name}")
-        if (parentName != it.name) {
-            Logger.warn("FOUND 1 relationship!")
-            val list = parentNameChildMessages.getOrDefault(parentName, mutableListOf())
-            list.add(it)
-            parentNameChildMessages[parentName] = list
-            Logger.warn("FOUND parentNameChildMessages=$parentNameChildMessages")
-
+    val parentNameChildMessages = messages.associateBy { it.name }
+    val updatedMessages = mutableListOf<MessageNode>()
+    messages.sortedBy { it.name }
+        .forEach {
+            val parentName = it.name.substringBeforeLast(".")
+            if (parentName == it.name) {
+                // No parent, this is a root message
+                updatedMessages += it
+            } else {
+                parentNameChildMessages[parentName]?.nestedNodes?.add(it)
+                    ?: error("Parent message not found for ${it.name}")
+            }
         }
-    }
     enums.forEach {
         val parentName = it.name.substringBeforeLast(".")
         if (parentName != it.name) {
-            val list = parentNameChildEnums.getOrDefault(parentName, mutableListOf())
-            list.add(it)
-            parentNameChildEnums[parentName] = list
+            parentNameChildMessages[parentName]?.nestedNodes?.add(it)
+                ?: error("Parent message not found for enum ${it.name}")
         }
     }
 
-    return messages.mapNotNull { original ->
-        if (original.name.contains(".").not()) {
-            return@mapNotNull original.copy(
-                nestedNodes = nestedNodes(
-                    parentNameChildMessages,
-                    parentNameChildEnums,
-                    original
-                )
-            )
-        } else null
-    }
-}
-
-fun nestedNodes(
-    parentNameChildMessages: MutableMap<String, MutableList<MessageNode>>,
-    parentNameChildEnums: MutableMap<String, MutableList<EnumNode>>,
-    original: MessageNode,
-): List<Node> {
-    Logger.warn("-----------------")
-    val directNestedRegex = Regex(original.name + ".[a-zA-Z]+")
-    Logger.warn("nestedNodes(${original.name}) '$directNestedRegex'")
-    val directMessages: List<MessageNode> = parentNameChildMessages[original.name]
-        ?.map { it.copy(nestedNodes = nestedNodes(parentNameChildMessages, parentNameChildEnums, it)) }
-        ?: emptyList()
-    Logger.warn("filterKeys = ${parentNameChildMessages.filterKeys { it.matches(directNestedRegex) }}")
-
-    // TODO: Use Regex and avoid tmp maps?
-    val directEnums = parentNameChildEnums.filterKeys { it.matches(directNestedRegex) }.values.flatten()
-    Logger.warn("nestedNodes(${original.name}) '$directNestedRegex' => $directMessages + $directEnums")
-    return directMessages + directEnums
+    return updatedMessages
 }

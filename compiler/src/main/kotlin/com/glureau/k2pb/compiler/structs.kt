@@ -6,7 +6,10 @@ enum class ProtoSyntax { v3 } // We don't deal with v2 at all for now...
 
 interface FieldType
 
-data class ReferenceType(val name: String) : FieldType
+data class ReferenceType(val name: String) : FieldType {
+    override fun toString() = name
+}
+
 data class ListType(val repeatedType: FieldType) : FieldType {
     override fun toString(): String = "repeated $repeatedType"
 }
@@ -34,7 +37,7 @@ enum class ScalarType : FieldType { // https://protobuf.dev/programming-guides/p
 }
 
 data class Field(
-    val comment: List<String>,
+    val comment: String?,
     val type: FieldType,
     val name: String,
     val number: Int,
@@ -61,14 +64,14 @@ sealed class Node {
 data class MessageNode(
     val qualifiedName: String,
     override val name: String,
-    val comment: List<String>,
-    val nestedNodes: List<Node>,
+    val comment: String?,
     val fields: List<Field>,
 ) : Node() {
+    val nestedNodes: MutableList<Node> = mutableListOf()
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
-        result += "message $name {\n"
+        result += "message ${name.substringAfterLast(".")} {\n"
         if (fields.isNotEmpty()) result += fields.joinToString("\n").prependIndent("  ") + "\n"
         if (nestedNodes.isNotEmpty()) result += nestedNodes.joinToString("\n").prependIndent("  ") + "\n"
         return "$result}\n"
@@ -78,19 +81,19 @@ data class MessageNode(
 data class EnumNode(
     val qualifiedName: String,
     override val name: String,
-    val comment: List<String>,
+    val comment: String?,
     val entries: List<EnumEntry>,
 ) : Node() {
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
-        result += "enum $name {\n"
+        result += "enum ${name.substringAfterLast(".")} {\n"
         if (entries.isNotEmpty()) result += entries.joinToString("\n").prependIndent("  ") + "\n"
         return "$result}\n"
     }
 }
 
-data class EnumEntry(val name: String, val comment: List<String>, val number: Int) {
+data class EnumEntry(val name: String, val comment: String?, val number: Int) {
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
@@ -98,9 +101,7 @@ data class EnumEntry(val name: String, val comment: List<String>, val number: In
     }
 }
 
-fun List<String>.toProtobufComment(): String =
-    if (isNotEmpty()) "/*" + joinToString("\n") + "*/\n"
-    else ""
+fun String?.toProtobufComment(): String = if (!isNullOrBlank()) "/*$this*/\n" else ""
 
 data class ProtobufFile(
     val path: String,
