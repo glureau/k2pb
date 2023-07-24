@@ -8,7 +8,6 @@ plugins {
 }
 
 repositories {
-    maven(url = "https://raw.githubusercontent.com/glureau/K2D/mvn-repo")
     mavenCentral()
 }
 
@@ -21,7 +20,7 @@ kotlin {
         }
         commonMain {
             dependencies {
-                implementation(project(":lib"))
+                //implementation(project(":lib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
             }
         }

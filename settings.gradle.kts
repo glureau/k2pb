@@ -14,7 +14,7 @@ pluginManagement {
     }
 }
 
-include(":lib")
+//include(":lib")
 include(":compiler")
 include(":gradle-plugin")
 include(":samples")

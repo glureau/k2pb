@@ -2,7 +2,7 @@ buildscript {
     val kotlinVersion: String by project
     repositories {
         mavenCentral()
-        maven(url = "https://raw.githubusercontent.com/glureau/K2proto/mvn-repo")
+        maven(url = "https://raw.githubusercontent.com/glureau/K2PB/mvn-repo")
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
@@ -25,7 +25,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.glureau.k2proto"
+    group = "com.glureau.k2pb"
     version = "0.1.0"
 
     repositories {
@@ -65,7 +65,7 @@ tasks.create<Delete>("cleanMavenLocalArtifacts") {
 
 tasks.create<Sync>("copyMavenLocalArtifacts") {
     group = "publishing"
-    dependsOn(":compiler:publishToMavenLocal", ":lib:publishToMavenLocal", ":gradle-plugin:publishToMavenLocal")
+    dependsOn(":compiler:publishToMavenLocal", /*":lib:publishToMavenLocal", */":gradle-plugin:publishToMavenLocal")
 
     val userHome = System.getProperty("user.home")
     val groupDir = project.group.toString().replace('.', '/')
@@ -79,7 +79,7 @@ tasks.create<Sync>("copyMavenLocalArtifacts") {
 }
 
 gitPublish {
-    repoUri.set("git@github.com:glureau/K2D.git")
+    repoUri.set("git@github.com:glureau/K2PB.git")
     branch.set("mvn-repo")
     contents.from("$buildDir/mvn-repo")
     preserve { include("**") }
