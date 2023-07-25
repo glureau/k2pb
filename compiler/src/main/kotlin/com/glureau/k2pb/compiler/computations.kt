@@ -14,7 +14,7 @@ internal val Node.declaredReferences: List<String>
 
 internal val Node.allTypeReferences: List<String>
     get() = when (this) {
-        is MessageNode -> fields.map { it.type }
+        is MessageNode -> fields.flatMap { it.allFieldTypes() }
             .flatMap {
                 when (it) {
                     is ReferenceType -> listOf(it.name)
@@ -56,10 +56,12 @@ fun computeImports(
                     enumNodes.flatMap { it.allTypeReferences }
             ).distinct()
 
-    Logger.warn("allTypeReferences: $allTypeReferences")
-    Logger.warn("locallyDeclaredReferences: $locallyDeclaredReferences")
-
     return (allTypeReferences - locallyDeclaredReferences.toSet())
         .map { TypeResolver.qualifiedNameToProtobufName[it]!! }
         .map { importResolver.resolve(it) }
+}
+
+fun FieldInterface.allFieldTypes(): List<FieldType> = when (this) {
+    is TypedField -> listOf(this.type)
+    is OneOfField -> this.fields.flatMap { it.allFieldTypes() }
 }

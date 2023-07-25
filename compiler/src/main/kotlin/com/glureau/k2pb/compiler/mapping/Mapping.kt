@@ -5,12 +5,13 @@ import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.Modifier
 
-fun ProtobufAggregator.recordKSClassDeclaration(it: KSClassDeclaration) {
-    when (it.classKind) {
+fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
+    when (declaration.classKind) {
         ClassKind.INTERFACE -> TODO()
-        ClassKind.CLASS -> recordMessageNode(it.toProtobufMessageNode())
-        ClassKind.ENUM_CLASS -> recordEnumNode(it.toProtobufEnumNode())
+        ClassKind.CLASS -> declaration.toProtobufMessageNode()?.let { recordMessageNode(it) }
+        ClassKind.ENUM_CLASS -> recordEnumNode(declaration.toProtobufEnumNode())
         ClassKind.ENUM_ENTRY -> TODO()
         ClassKind.OBJECT -> TODO()
         ClassKind.ANNOTATION_CLASS -> error("Cannot serialize annotation class")
@@ -38,16 +39,55 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
     )
 }
 
-private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode {
+private fun KSClassDeclaration.toProtobufMessageNode(): MessageNode? {
+    // Abstract and sealed classes does NOT require a 'message' in protobuf
+    // also having a nesting in a sealed/abstract could be problematic...
+    if (this.modifiers.contains(Modifier.ABSTRACT)) {
+        return null
+    }
+    if (this.modifiers.contains(Modifier.SEALED)) {
+        OneOfRecorder.recordSealedClass(
+            qualifiedName!!.asString(),
+            getSealedSubclasses().map { it.qualifiedName!!.asString() }.toList()
+        )
+        // This is required to handle nested sealed classes
+        // TODO: could be improved if we create it ONLY when there's nesting
+        return MessageNode(
+            qualifiedName = this.qualifiedName!!.asString(),
+            name = protobufName(),
+            comment = docString,
+            fields = emptyList(),
+            originalFile = containingFile
+        )
+    }
     // TODO: This is handling "data class", not sure about "class" and other kinds (sealed class, etc)
     val fields = primaryConstructor!!.parameters.mapIndexed { index, param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
-        Field(
-            name = param.name!!.asString(), // TODO annotation SerialName
-            type = param.type.resolve().toProtobufFieldType(),
-            comment = prop.docString,
-            number = index + 1, // TODO annotation + local increment
-        )
+
+        val resolvedType = param.type.resolve()
+        if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) {
+            OneOfField(
+                name = param.name!!.asString(), // TODO annotation SerialName
+                comment = prop.docString,
+                fields = (resolvedType.declaration as KSClassDeclaration).getSealedSubclasses()
+                    .mapIndexed { index, subclass ->
+                        // TODO: Handle oneOf recursively
+                        TypedField(
+                            name = subclass.simpleName.asString(), // TODO annotation SerialName
+                            type = subclass.asType(emptyList()).toProtobufFieldType(),
+                            comment = subclass.docString,
+                            number = index + 1, // TODO annotation + local increment
+                        )
+                    }.toList(),
+            )
+        } else {
+            TypedField(
+                name = param.name!!.asString(), // TODO annotation SerialName
+                type = resolvedType.toProtobufFieldType(),
+                comment = prop.docString,
+                number = index + 1, // TODO annotation + local increment
+            )
+        }
     }
     return MessageNode(
         qualifiedName = this.qualifiedName!!.asString(),

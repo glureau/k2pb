@@ -21,7 +21,7 @@ class ProtobufAggregator {
 
     fun unknownReferences(): Set<String> {
         val references = messages.flatMap { it.fields }
-            .map { it.type }
+            .flatMap { it.allFieldTypes() }
             .filterIsInstance<ReferenceType>()
             .map { it.name }
             .toSet()

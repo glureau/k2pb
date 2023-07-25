@@ -38,12 +38,31 @@ enum class ScalarType : FieldType { // https://protobuf.dev/programming-guides/p
     bytes,
 }
 
-data class Field(
-    val comment: String?,
+sealed interface FieldInterface {
+    val comment: String?
+    val name: String
+}
+
+data class OneOfField(
+    override val comment: String?,
+    override val name: String,
+    val fields: List<FieldInterface>,
+) : FieldInterface {
+    override fun toString(): String {
+        var result = ""
+        result += "oneof $name {\n"
+        result += fields.joinToString("\n") { it.toString().prependIndent("  ") }
+        result += "\n}"
+        return result
+    }
+}
+
+data class TypedField(
+    override val comment: String?,
     val type: FieldType,
-    val name: String,
+    override val name: String,
     val number: Int,
-) {
+) : FieldInterface {
     override fun toString(): String {
         var result = ""
         result += comment.toProtobufComment()
@@ -71,7 +90,7 @@ data class MessageNode(
     override val qualifiedName: String,
     override val name: String,
     val comment: String?,
-    val fields: List<Field>,
+    val fields: List<FieldInterface>,
     override val originalFile: KSFile?,
 ) : Node() {
     val dependencies: List<KSFile>
@@ -87,7 +106,24 @@ data class MessageNode(
     override fun toString(): String {
         var result = comment.toProtobufComment()
         result += "message ${name.substringAfterLast(".")} {\n"
-        if (fields.isNotEmpty()) result += fields.joinToString("\n").prependIndent("  ") + "\n"
+        //var lastUsedFieldNumber = 0
+        if (fields.isNotEmpty()) {
+            result += fields.joinToString("\n").prependIndent("  ") + "\n"
+            /*
+            TODO: Keeping this block, as we'll need it to handle properly numbers in oneOfs.
+            fields.forEach { field ->
+                when (field) {
+                    is OneOfField -> {
+                        result += "  oneof ${field.name} {\n"
+                        fields.forEach { subclass ->
+                            result += "    ${TypeResolver.qualifiedNameToProtobufName[subclass.name] ?: subclass} $subclass = ${lastUsedFieldNumber++};\n"
+                        }
+                    }
+
+                    is TypedField -> result += "  $field\n"
+                }
+            }*/
+        }
         if (nestedNodes.isNotEmpty()) result += nestedNodes.joinToString("\n").prependIndent("  ") + "\n"
         return "$result}"
     }

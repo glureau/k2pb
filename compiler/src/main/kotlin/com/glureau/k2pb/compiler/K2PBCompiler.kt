@@ -3,6 +3,7 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.processing.impl.KSNameImpl
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import kotlinx.serialization.Serializable
@@ -39,7 +40,6 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 dependencies = protobufFile.dependencies
             )
             Logger.warn("---------------------------- ${protobufFile.path}")
-            Logger.warn("---------------------------- ${protobufFile.dependencies}")
             Logger.warn(protobufFile.toString())
         }
 
