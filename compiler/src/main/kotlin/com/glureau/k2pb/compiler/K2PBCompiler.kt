@@ -3,7 +3,6 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.processing.impl.KSNameImpl
-import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import kotlinx.serialization.Serializable
@@ -28,10 +27,15 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 protobufAggregator.recordKSClassDeclaration(it)
             }
         }
-        protobufAggregator.unknownReferences().forEach {
-            val referencedEnum = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
-            protobufAggregator.recordKSClassDeclaration(requireNotNull(referencedEnum))
-        }
+        do {
+            var done = true
+            protobufAggregator.unknownReferences().forEach {
+                val referencedEnum = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
+                Logger.warn("Checking locally unknown reference: $it -> $referencedEnum")
+                protobufAggregator.recordKSClassDeclaration(requireNotNull(referencedEnum))
+                done = false
+            }
+        } while (!done)
 
         protobufAggregator.buildFiles().forEach { protobufFile ->
             environment.writeProtobufFile(

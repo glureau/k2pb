@@ -1,5 +1,7 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
+
 class ProtobufAggregator {
     private val messages = mutableListOf<MessageNode>()
     private val enums = mutableListOf<EnumNode>()
@@ -20,12 +22,11 @@ class ProtobufAggregator {
     }
 
     fun unknownReferences(): Set<String> {
-        val references = messages.flatMap { it.fields }
+        val references: Set<String> = messages.flatMap { it.fields }
             .flatMap { it.allFieldTypes() }
             .filterIsInstance<ReferenceType>()
-            .map { it.name }
-            .toSet()
-        return references - qualifiedNameSet
+            .map { it.name }.toSet()
+        return references - (qualifiedNameSet + InlinedTypeRecorder.getAllInlinedTypes().keys)
     }
 
     fun buildFiles(): List<ProtobufFile> {

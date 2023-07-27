@@ -2,4 +2,4 @@
 **/build
 local.properties
 .gradle
-lib/
+./lib/

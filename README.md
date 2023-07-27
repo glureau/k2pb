@@ -35,3 +35,4 @@ Current known limitations / things I'd like to achieve:
 - proto2 is not supported
 - Support reserved fields
 - Support upgrading proto files (checking that the newly generated files are compatible with the current ones)
+- multi-module support

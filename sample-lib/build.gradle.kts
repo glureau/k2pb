@@ -1,8 +1,6 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("org.ajoberstar.git-publish")
-    id("org.ajoberstar.grgit")
     id("com.google.devtools.ksp")
     //id("com.glureau.k2pb") version "0.1.0"
 }
@@ -15,13 +13,9 @@ kotlin {
     jvm()
 
     sourceSets {
-        all {
-            languageSettings.optIn("kotlin.RequiresOptIn")
-        }
         commonMain {
             dependencies {
                 //implementation(project(":lib"))
-                implementation(project(":sample-lib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.5.0")
             }
         }
@@ -43,18 +37,7 @@ kotlin {
 }
 
 dependencies {
-    ksp(project(":sample-lib"))
     add("kspCommonMainMetadata", project(":compiler"))
-}
-
-// Publish the sample documentation on branch "demo"
-gitPublish {
-    repoUri.set("git@github.com:glureau/K2PB.git")
-    branch.set("demo")
-    contents.from("$buildDir/dokka/")
-    preserve { include("**") }
-    val head = grgit.head()
-    commitMessage.set("${head.abbreviatedId}: ${project.version} : ${head.fullMessage}")
 }
 
 tasks["jvmTest"].dependsOn("compileCommonMainKotlinMetadata")
