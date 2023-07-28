@@ -21,12 +21,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.5.0")
             }
         }
-        commonTest {
-            dependencies {
-                //implementation(kotlin("test-common"))
-                //implementation(kotlin("test-annotations-common"))
-            }
-        }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
