@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.mapping
 
-import com.glureau.k2pb.compiler.FieldType
+import com.glureau.k2pb.compiler.struct.FieldType
 
 object InlinedTypeRecorder {
     private val inlinedTypes = mutableMapOf<String, FieldType>()

@@ -50,6 +50,7 @@ subprojects {
             }
         }
     }
+
 }
 
 val gitUser = System.getenv("GIT_USER")

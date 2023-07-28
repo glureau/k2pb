@@ -118,14 +118,13 @@ message CommentedClass {
 File: k2pb/User.proto
 syntax = "proto3";
 
-import "Vehicle.Bike.proto";
-import "Vehicle.Car.proto";
+import "Vehicle.proto";
 
 message User {
   string name = 1;
   oneof vehicle {
-    Vehicle.Bike Bike = 1;
-    Vehicle.Car Car = 2;
+    Vehicle.Bike Bike = 2;
+    Vehicle.Car Car = 3;
   }
 }
 

@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.symbol.KSFile
 
 
@@ -59,6 +60,7 @@ fun computeImports(
     return (allTypeReferences - locallyDeclaredReferences.toSet())
         .map { TypeResolver.qualifiedNameToProtobufName[it]!! }
         .map { importResolver.resolve(it) }
+        .distinct()
 }
 
 fun FieldInterface.allFieldTypes(): List<FieldType> = when (this) {

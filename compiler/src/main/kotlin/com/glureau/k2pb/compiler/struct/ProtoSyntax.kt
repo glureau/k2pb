@@ -1,0 +1,3 @@
+package com.glureau.k2pb.compiler.struct
+
+enum class ProtoSyntax { v3 } // We don't deal with v2 at all for now...

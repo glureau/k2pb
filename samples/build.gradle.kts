@@ -12,7 +12,9 @@ repositories {
 }
 
 kotlin {
-    jvm()
+    jvm {
+        withJava()
+    }
 
     sourceSets {
         all {
@@ -37,6 +39,7 @@ kotlin {
                 implementation("org.junit.platform:junit-platform-runner:1.9.3")
                 implementation("org.junit.jupiter:junit-jupiter:5.9.3")
                 implementation("com.approvaltests:approvaltests:18.4.0")
+                implementation("com.google.protobuf:protobuf-kotlin:3.23.0")
             }
         }
     }
@@ -46,14 +49,24 @@ dependencies {
     add("kspCommonMainMetadata", project(":compiler"))
 }
 
-// Publish the sample documentation on branch "demo"
-gitPublish {
-    repoUri.set("git@github.com:glureau/K2PB.git")
-    branch.set("demo")
-    contents.from("$buildDir/dokka/")
-    preserve { include("**") }
-    val head = grgit.head()
-    commitMessage.set("${head.abbreviatedId}: ${project.version} : ${head.fullMessage}")
+task("runProtoc", type = Exec::class) {
+    val dirPath = "build/generated/ksp/metadata/commonMain/resources/k2pb/"
+    // The official gradle plugin doesn't support KMP yet: https://github.com/google/protobuf-gradle-plugin/issues/497
+    // So we are assuming protoc is locally installed for now.
+    // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)
+    val protoFiles = fileTree(dirPath) {
+        include("**/*.proto")
+    }.files
+    onlyIf { protoFiles.isNotEmpty() }
+    commandLine(
+        "protoc",
+        "--proto_path=$dirPath",
+        "--kotlin_out=src/jvmTest/kotlin",
+        "--java_out=src/jvmTest/java",
+        *protoFiles.map { it.absolutePath.substringAfter(dirPath) }.toTypedArray()
+    )
+    dependsOn("compileCommonMainKotlinMetadata")
 }
 
 tasks["jvmTest"].dependsOn("compileCommonMainKotlinMetadata")
+tasks["compileJava"].dependsOn("runProtoc")

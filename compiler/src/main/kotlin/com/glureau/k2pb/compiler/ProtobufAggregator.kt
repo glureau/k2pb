@@ -1,6 +1,7 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
+import com.glureau.k2pb.compiler.struct.*
 
 class ProtobufAggregator {
     private val messages = mutableListOf<MessageNode>()
@@ -32,6 +33,10 @@ class ProtobufAggregator {
     fun buildFiles(): List<ProtobufFile> {
         require(unknownReferences().isEmpty()) { "Unknown references: ${unknownReferences().joinToString()}" }
 
+        val importResolver = ImportResolver { protobufName ->
+            "${protobufName.substringBefore(".")}.proto"
+        }
+
         // TODO: warning, import computation is slightly correlated to this split logic (1 class by file)
         val updatedMessages = updateMessageForNesting(messages, enums)
         return updatedMessages.map { messageNode ->
@@ -45,9 +50,7 @@ class ProtobufAggregator {
                     messageNodes = listOf(messageNode),
                     enumNodes = listOf(),
                     locallyDeclaredReferences = messageNode.declaredReferences,
-                    importResolver = { protobufName ->
-                        "$protobufName.proto"
-                    }
+                    importResolver = importResolver
                 )
             )
         } + enums.mapNotNull { enumNode ->
@@ -62,9 +65,7 @@ class ProtobufAggregator {
                     messageNodes = listOf(),
                     enumNodes = listOf(enumNode),
                     locallyDeclaredReferences = enumNode.declaredReferences,
-                    importResolver = { protobufName ->
-                        "$protobufName.proto"
-                    },
+                    importResolver = importResolver,
                 )
             )
         }

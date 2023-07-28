@@ -1,6 +1,8 @@
 package com.glureau.k2pb.compiler.mapping
 
-import com.glureau.k2pb.compiler.*
+import com.glureau.k2pb.compiler.Logger
+import com.glureau.k2pb.compiler.ProtobufAggregator
+import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.*
 
@@ -74,7 +76,7 @@ private fun KSClassDeclaration.sealedClassToMessageNode(): MessageNode {
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    val fields = primaryConstructor!!.parameters.mapIndexed { index, param ->
+    val fields = primaryConstructor!!.parameters.map { param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
         val prop2 = this.getAllProperties().first { it.simpleName == param.name }
 
@@ -106,13 +108,13 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 name = param.name!!.asString(), // TODO annotation SerialName
                 comment = prop.docString,
                 fields = (resolvedType.declaration as KSClassDeclaration).getSealedSubclasses()
-                    .mapIndexed { index, subclass ->
+                    .map { subclass ->
                         // TODO: Handle oneOf recursively
                         TypedField(
                             name = subclass.simpleName.asString(), // TODO annotation SerialName
                             type = subclass.asType(emptyList()).toProtobufFieldType(),
                             comment = subclass.docString,
-                            number = index + 1, // TODO annotation + local increment
+                            annotatedNumber = null, // TODO annotation + local increment
                         )
                     }.toList(),
             )
@@ -122,7 +124,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 name = param.name!!.asString(), // TODO annotation SerialName
                 type = ReferenceType(prop.type.toString()),
                 comment = prop.docString,
-                number = index + 1, // TODO annotation + local increment
+                annotatedNumber = null, // TODO annotation + local increment
             )
                 .also { Logger.warn("resolvedType.isError -> $it") }
         } else {
@@ -130,7 +132,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 name = param.name!!.asString(), // TODO annotation SerialName
                 type = resolvedType.toProtobufFieldType(),
                 comment = prop.docString,
-                number = index + 1, // TODO annotation + local increment
+                annotatedNumber = null, // TODO annotation + local increment
             )
         }
     }
@@ -186,3 +188,5 @@ fun KSClassDeclaration.protobufName(): String {
     return ((if (p != null) p.protobufName() + "." else null) ?: "") +
             simpleName.asString()
 }
+
+fun String?.toProtobufComment(): String = if (!isNullOrBlank()) "/*$this*/\n" else ""
