@@ -79,7 +79,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         val prop2 = this.getAllProperties().first { it.simpleName == param.name }
 
         val resolvedType = param.type.resolve()
-        if (param.toString() == "dataClassFromLib") {
+        if (param.toString() == "dataClassFromLib" || param.toString() == "valueClassFromLib") {
             Logger.warn("---------------------------")
             Logger.warn("param = $param", param)
             Logger.warn("param.type = ${param.type}", param.type)
@@ -117,7 +117,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     }.toList(),
             )
         } else if (resolvedType.isError) {
-
+            Logger.warn("WRONG NAME PATH: ${prop.type.toString()}")
             TypedField(
                 name = param.name!!.asString(), // TODO annotation SerialName
                 type = ReferenceType(prop.type.toString()),
@@ -174,6 +174,7 @@ private fun KSType.toProtobufFieldType(): FieldType {
             if (name.contains("error", false)) {
                 Logger.warn("!!! Cannot resolve type $this from ${this.declaration.containingFile}")
             }
+            Logger.warn("SEEING REF: $name")
             ReferenceType(name)
         }
     }

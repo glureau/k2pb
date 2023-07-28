@@ -43,7 +43,6 @@ kotlin {
 }
 
 dependencies {
-    ksp(project(":sample-lib"))
     add("kspCommonMainMetadata", project(":compiler"))
 }
 
