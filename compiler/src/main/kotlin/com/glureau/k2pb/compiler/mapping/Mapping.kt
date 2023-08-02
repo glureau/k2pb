@@ -131,7 +131,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         } else if (resolvedType.isError) {
             Logger.warn("WRONG NAME PATH: ${prop.type.toString()}")
             TypedField(
-                name = param.name!!.asString(), // TODO annotation SerialName
+                name = prop.serialName,
                 type = ReferenceType(prop.type.toString()),
                 comment = prop.docString,
                 annotatedNumber = null, // TODO annotation + local increment
@@ -139,7 +139,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 .also { Logger.warn("resolvedType.isError -> $it") }
         } else {
             TypedField(
-                name = param.name!!.asString(), // TODO annotation SerialName
+                name = prop.serialName,
                 type = resolvedType.toProtobufFieldType(),
                 comment = prop.docString,
                 annotatedNumber = null, // TODO annotation + local increment

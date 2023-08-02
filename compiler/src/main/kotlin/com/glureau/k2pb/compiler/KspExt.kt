@@ -3,7 +3,9 @@ package com.glureau.k2pb.compiler
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.protobuf.ProtoNumber
 import java.io.OutputStream
 import kotlin.reflect.KProperty1
 
@@ -49,10 +51,17 @@ val KSClassDeclaration.serialName: String
     get() = serialNameInternal ?: simpleName.asString()
 
 val KSPropertyDeclaration.serialName: String
-    get() = serialNameInternal ?: type.resolve().declaration.simpleName.asString()
+    get() = serialNameInternal ?: simpleName.asString()
 
 private val KSAnnotated.serialNameInternal: String?
     get() =
         annotations.toList()
             .firstOrNull { it.shortName.asString() == SerialName::class.simpleName }
             ?.getArg<String>(SerialName::value)
+
+@OptIn(ExperimentalSerializationApi::class)
+val KSPropertyDeclaration.protoNumber: Int?
+    get() =
+        annotations.toList()
+            .firstOrNull { it.shortName.asString() == ProtoNumber::class.simpleName }
+            ?.getArg<Int>(ProtoNumber::number)
