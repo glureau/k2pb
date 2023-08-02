@@ -103,7 +103,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 Logger.error("STOP HERE")
             }
         }
-        if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) {
+        if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) { // TODO: standard polymorphic serialization
             OneOfField(
                 name = param.name!!.asString(), // TODO annotation SerialName
                 comment = prop.docString,

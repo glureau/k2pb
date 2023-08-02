@@ -122,16 +122,9 @@ import "Vehicle.proto";
 
 message User {
   string name = 1;
-  Vehicle vehicle = 2;
+  oneof vehicle {
+    Vehicle.Bike Bike = 2;
+    Vehicle.Car Car = 3;
+  }
 }
 
-// Polymorphism structure for 'Vehicle'
-message Vehicle {
-  // serial name of the class implementing the interface/sealed class
-  // possible values are:
-  // - 'Bike'
-  // - 'Car'
-  string type = 1;
-  // Data to be deserialized based on the field 'type'
-  bytes value = 2;
-}
