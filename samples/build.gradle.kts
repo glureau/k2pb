@@ -71,5 +71,4 @@ task("runProtoc", type = Exec::class) {
     dependsOn("compileCommonMainKotlinMetadata")
 }
 
-tasks["compileTestKotlinJvm"].dependsOn("runProtoc")
 tasks["compileTestJava"].dependsOn("runProtoc")
