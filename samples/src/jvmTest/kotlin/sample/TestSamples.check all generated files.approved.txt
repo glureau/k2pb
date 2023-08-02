@@ -1,3 +1,13 @@
+File: k2pb/AnnotatedClass.proto
+syntax = "proto3";
+
+message AnnotatedClass {
+  int32 a = 1;
+  int32 b = 4;
+  string c = 3;
+  string d = 5;
+}
+
 File: k2pb/WithNestClassB.proto
 syntax = "proto3";
 

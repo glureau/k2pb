@@ -46,22 +46,3 @@ fun KSAnnotation.argFrom(kProp: KProperty1<*, *>): KSValueArgument =
 @Suppress("UNCHECKED_CAST")
 fun KSAnnotation.classesFrom(kProp: KProperty1<*, *>): List<KSType> =
     (argFrom(kProp).value as? List<KSType>).orEmpty()
-
-val KSClassDeclaration.serialName: String
-    get() = serialNameInternal ?: simpleName.asString()
-
-val KSPropertyDeclaration.serialName: String
-    get() = serialNameInternal ?: simpleName.asString()
-
-private val KSAnnotated.serialNameInternal: String?
-    get() =
-        annotations.toList()
-            .firstOrNull { it.shortName.asString() == SerialName::class.simpleName }
-            ?.getArg<String>(SerialName::value)
-
-@OptIn(ExperimentalSerializationApi::class)
-val KSPropertyDeclaration.protoNumber: Int?
-    get() =
-        annotations.toList()
-            .firstOrNull { it.shortName.asString() == ProtoNumber::class.simpleName }
-            ?.getArg<Int>(ProtoNumber::number)

@@ -2,10 +2,13 @@ package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
-import com.glureau.k2pb.compiler.serialName
+import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.protobuf.ProtoNumber
 import java.util.*
 
 
@@ -39,15 +42,16 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
 }
 
 private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
+    val numberManager = NumberManager(0)
     val entries = declarations.toList()
         .filterIsInstance<KSClassDeclaration>()
         .filter { it.classKind == ClassKind.ENUM_ENTRY }
-        .mapIndexed { index, entry ->
+        .map { entry ->
+            val name = entry.serialName
             EnumEntry(
-                name = entry.simpleName.asString(),
+                name = name,
                 comment = entry.docString,
-                // TODO: handle annotations for name and number
-                number = index, // proto3: enum starts at 0
+                number = numberManager.resolve(name, entry.protoNumber), // proto3: enum starts at 0
             )
         }
     return EnumNode(
@@ -60,14 +64,6 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
 }
 
 private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
-    val sealedSubClasses = getSealedSubclasses().map { it.qualifiedName!!.asString() }.toList()
-    Logger.warn(
-        "annotations for ${this.simpleName.asString()} => ${
-            annotations.toList().map { it.shortName.asString() }
-        }"
-    )
-    // This is required to handle nested sealed classes
-    // TODO: could be improved if we create it ONLY when there's nesting
     return MessageNode(
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
@@ -126,7 +122,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
                 type = resolvedType.toProtobufFieldType(),
                 comment = prop.docString,
-                annotatedNumber = null, // TODO annotation + local increment
+                annotatedNumber = prop.protoNumber,
             )
         } else if (resolvedType.isError) {
             Logger.warn("WRONG NAME PATH: ${prop.type.toString()}")
@@ -134,7 +130,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 name = prop.serialName,
                 type = ReferenceType(prop.type.toString()),
                 comment = prop.docString,
-                annotatedNumber = null, // TODO annotation + local increment
+                annotatedNumber = prop.protoNumber,
             )
                 .also { Logger.warn("resolvedType.isError -> $it") }
         } else {
@@ -142,7 +138,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 name = prop.serialName,
                 type = resolvedType.toProtobufFieldType(),
                 comment = prop.docString,
-                annotatedNumber = null, // TODO annotation + local increment
+                annotatedNumber = prop.protoNumber,
             )
         }
     }
@@ -207,3 +203,29 @@ fun String?.toProtobufComment(): String =
             .joinToString("\n") { "// $it" } + "\n"
     else
         ""
+
+
+val KSClassDeclaration.serialName: String
+    get() = serialNameInternal ?: simpleName.asString()
+
+val KSPropertyDeclaration.serialName: String
+    get() = serialNameInternal ?: simpleName.asString()
+
+private val KSAnnotated.serialNameInternal: String?
+    get() =
+        annotations.toList()
+            .firstOrNull { it.shortName.asString() == SerialName::class.simpleName }
+            ?.getArg<String>(SerialName::value)
+
+val KSClassDeclaration.protoNumber: Int?
+    get() = protoNumberInternal
+
+val KSPropertyDeclaration.protoNumber: Int?
+    get() = protoNumberInternal
+
+@OptIn(ExperimentalSerializationApi::class)
+private val KSAnnotated.protoNumberInternal: Int?
+    get() =
+        annotations.toList()
+            .firstOrNull { it.shortName.asString() == ProtoNumber::class.simpleName }
+            ?.getArg<Int>(ProtoNumber::number)
