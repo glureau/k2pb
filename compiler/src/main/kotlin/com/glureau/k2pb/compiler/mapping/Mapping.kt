@@ -2,19 +2,19 @@ package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
+import com.glureau.k2pb.compiler.serialName
 import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.*
+import java.util.*
 
 
 val KSClassDeclaration.isDataClass: Boolean
     get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.DATA)
 val KSClassDeclaration.isAbstractClass: Boolean
     get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.ABSTRACT)
-val KSClassDeclaration.isSealedClass: Boolean
-    get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.SEALED)
-val KSClassDeclaration.isSealedInterface: Boolean
-    get() = classKind == ClassKind.INTERFACE && this.modifiers.contains(Modifier.SEALED)
+val KSClassDeclaration.isSealed: Boolean
+    get() = this.modifiers.contains(Modifier.SEALED)
 val KSClassDeclaration.isInlineClass: Boolean
     get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.VALUE)
 val KSClassDeclaration.isEnum: Boolean
@@ -22,7 +22,7 @@ val KSClassDeclaration.isEnum: Boolean
 
 fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
     when {
-        declaration.isSealedClass -> recordMessageNode(declaration.sealedClassToMessageNode())
+        declaration.isSealed -> recordMessageNode(declaration.sealedToMessageNode())
         declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
@@ -59,18 +59,36 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
     )
 }
 
-private fun KSClassDeclaration.sealedClassToMessageNode(): MessageNode {
-    OneOfRecorder.recordSealedClass(
-        qualifiedName!!.asString(),
-        getSealedSubclasses().map { it.qualifiedName!!.asString() }.toList()
+private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
+    val sealedSubClasses = getSealedSubclasses().map { it.qualifiedName!!.asString() }.toList()
+    Logger.warn(
+        "annotations for ${this.simpleName.asString()} => ${
+            annotations.toList().map { it.shortName.asString() }
+        }"
     )
     // This is required to handle nested sealed classes
     // TODO: could be improved if we create it ONLY when there's nesting
     return MessageNode(
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        comment = docString,
-        fields = emptyList(),
+        comment = "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'",
+        fields = listOf(
+            TypedField(
+                comment =
+                "Serial name of the class implementing the interface/sealed class.\n" +
+                        "Possible values are:\n" +
+                        getSealedSubclasses().joinToString("\n") { "- '${it.serialName}'" },
+                type = ScalarType.string,
+                name = "type",
+                annotatedNumber = 1
+            ),
+            TypedField(
+                comment = "Data to be deserialized based on the field 'type'",
+                type = ScalarType.bytes,
+                name = "value",
+                annotatedNumber = 2
+            )
+        ),
         originalFile = containingFile
     )
 }
@@ -103,20 +121,12 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 Logger.error("STOP HERE")
             }
         }
-        if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) { // TODO: standard polymorphic serialization
-            OneOfField(
-                name = param.name!!.asString(), // TODO annotation SerialName
+        if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) {
+            TypedField(
+                name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                type = resolvedType.toProtobufFieldType(),
                 comment = prop.docString,
-                fields = (resolvedType.declaration as KSClassDeclaration).getSealedSubclasses()
-                    .map { subclass ->
-                        // TODO: Handle oneOf recursively
-                        TypedField(
-                            name = subclass.simpleName.asString(), // TODO annotation SerialName
-                            type = subclass.asType(emptyList()).toProtobufFieldType(),
-                            comment = subclass.docString,
-                            annotatedNumber = null, // TODO annotation + local increment
-                        )
-                    }.toList(),
+                annotatedNumber = null, // TODO annotation + local increment
             )
         } else if (resolvedType.isError) {
             Logger.warn("WRONG NAME PATH: ${prop.type.toString()}")
@@ -189,4 +199,11 @@ fun KSClassDeclaration.protobufName(): String {
             simpleName.asString()
 }
 
-fun String?.toProtobufComment(): String = if (!isNullOrBlank()) "/*$this*/\n" else ""
+fun String?.toProtobufComment(): String =
+    if (!isNullOrBlank())
+        this.split("\n")
+            .dropWhile { it.isBlank() }
+            .dropLastWhile { it.isBlank() }
+            .joinToString("\n") { "// $it" } + "\n"
+    else
+        ""

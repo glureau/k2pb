@@ -5,13 +5,13 @@ import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
 import FooEventOuterClass
-import UserOuterClass
+import VehicleKt.bike
 import VehicleKt.car
-import VehicleOuterClass
 import WithNestClassAOuterClass
 import com.glureau.sample.*
 import org.junit.Test
 import user
+import vehicle
 
 class EncodingTest : BaseEncodingTest() {
 
@@ -85,40 +85,29 @@ class EncodingTest : BaseEncodingTest() {
     }
 
     @Test
-    fun checkSealedOneOf() {
-        assertCompatibleSerialization(
-            ktInstance = User(name = "Tony", vehicle = Vehicle.Car("Tesla")),
-            protocInstance = UserOuterClass.User.newBuilder()
-                .setName("Tony")
-                .setCar(
-                    VehicleOuterClass.Vehicle.Car.newBuilder()
-                        .setBrand("Tesla")
-                        .build()
-                )
-                .build()
-        )
-
-        assertCompatibleSerialization(
-            ktInstance = User(name = "Francis", vehicle = Vehicle.Bike("Peugeot")),
-            protocInstance = UserOuterClass.User.newBuilder()
-                .setName("Francis")
-                .setBike(
-                    VehicleOuterClass.Vehicle.Bike.newBuilder()
-                        .setBrand("Peugeot")
-                        .build()
-                )
-                .build()
-        )
-    }
-
-    @Test
-    fun checkSealedOneOfWithProtocKotlinDsl() {
+    fun checkSealedClass() {
         assertCompatibleSerialization(
             ktInstance = User(name = "Tony", vehicle = Vehicle.Car("Tesla")),
             protocInstance = user {
                 name = "Tony"
-                car {
-                    brand = "Tesla"
+                vehicle = vehicle {
+                    type = "Vehicle.Car"
+                    value = car {
+                        brand = "Tesla"
+                    }.toByteString()
+                }
+            }
+        )
+
+        assertCompatibleSerialization(
+            ktInstance = User(name = "Francis", vehicle = Vehicle.Bike("Peugeot")),
+            protocInstance = user {
+                name = "Francis"
+                vehicle = vehicle {
+                    type = "Vehicle.Bike"
+                    value = bike {
+                        brand = "Peugeot"
+                    }.toByteString()
                 }
             }
         )

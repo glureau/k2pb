@@ -93,7 +93,15 @@ message CollectionTypeEvent {
 File: k2pb/Vehicle.proto
 syntax = "proto3";
 
+// Polymorphism structure for 'Vehicle'
 message Vehicle {
+  // Serial name of the class implementing the interface/sealed class.
+  // Possible values are:
+  // - 'Vehicle.Bike'
+  // - 'Vehicle.Car'
+  string type = 1;
+  // Data to be deserialized based on the field 'type'
+  bytes value = 2;
   message Bike {
     string brand = 1;
   }
@@ -105,13 +113,9 @@ message Vehicle {
 File: k2pb/CommentedClass.proto
 syntax = "proto3";
 
-/*
- This class has kdoc comment.
-*/
+//  This class has kdoc comment.
 message CommentedClass {
-  /*
-   This field has kdoc comment.
-  */
+  //  This field has kdoc comment.
   string fieldWithComment = 1;
 }
 
@@ -125,13 +129,3 @@ message User {
   Vehicle vehicle = 2;
 }
 
-// Polymorphism structure for 'Vehicle'
-message Vehicle {
-  // serial name of the class implementing the interface/sealed class
-  // possible values are:
-  // - 'Bike'
-  // - 'Car'
-  string type = 1;
-  // Data to be deserialized based on the field 'type'
-  bytes value = 2;
-}
