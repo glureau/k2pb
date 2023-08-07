@@ -105,14 +105,13 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             Logger.warn("param.type.element = ${(param.type.element as? KSClassifierReference)?.qualifier}")
             Logger.warn("param.type.element = ${(param.type.element as? KSClassifierReference)?.referencedName()}")
             Logger.warn("param.type.parent = ${param.type.parent}")
-            Logger.warn("param.type.resolve() = $resolvedType")
+            Logger.error("param.type.resolve() = $resolvedType")
             Logger.warn("prop = $prop", prop)
             Logger.warn("prop = ${prop.type}")
             Logger.warn("prop.type.element = ${prop.type.element}")
-            Logger.warn("prop = ${prop.type.resolve()}")
+            Logger.error("prop = ${prop.type.resolve()}")
             Logger.warn("prop2 = $prop2")
-            Logger.warn("prop2 = ${prop2}")
-            Logger.warn("prop2 = ${prop2.type.resolve()}")
+            Logger.error("prop2 = ${prop2.type.resolve()}")
             if (resolvedType.isError) {
                 Logger.error("STOP HERE")
             }

@@ -1,17 +1,17 @@
 package sample
 
-import BarEventOuterClass
-import CollectionTypeEventOuterClass
-import CommentedClassOuterClass
-import CommonClassOuterClass
-import FooEventOuterClass
-import VehicleKt.bike
-import VehicleKt.car
-import WithNestClassAOuterClass
+import com.k2pb.BarEventOuterClass
+import com.k2pb.CollectionTypeEventOuterClass
+import com.k2pb.CommentedClassOuterClass
+import com.k2pb.CommonClassOuterClass
+import com.k2pb.FooEventOuterClass
+import com.k2pb.VehicleKt.bike
+import com.k2pb.VehicleKt.car
+import com.k2pb.WithNestClassAOuterClass
 import com.glureau.sample.*
 import org.junit.Test
-import user
-import vehicle
+import com.k2pb.user
+import com.k2pb.vehicle
 
 class EncodingTest : BaseEncodingTest() {
 

@@ -42,7 +42,7 @@ class ProtobufAggregator {
         return updatedMessages.map { messageNode ->
             ProtobufFile(
                 path = "k2pb/${messageNode.name}",
-                packageName = null,
+                packageName = "com.k2pb",
                 syntax = ProtoSyntax.v3,
                 messages = listOf(messageNode),
                 enums = emptyList(),
@@ -57,7 +57,7 @@ class ProtobufAggregator {
             if (enumNode.name.contains(".")) return@mapNotNull null // Skip nested enums
             ProtobufFile(
                 path = "k2pb/$enumNode",
-                packageName = null,
+                packageName = "com.k2pb",
                 syntax = ProtoSyntax.v3,
                 messages = emptyList(),
                 enums = listOf(enumNode),

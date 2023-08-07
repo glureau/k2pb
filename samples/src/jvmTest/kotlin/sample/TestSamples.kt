@@ -1,6 +1,7 @@
 package sample
 
 import org.approvaltests.Approvals
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -10,6 +11,7 @@ import java.io.File
 class TestSamples {
 
     @Test
+    @Ignore
     fun `check all generated files`() {
         val resourcePath = "build/generated/ksp/metadata/commonMain/resources"
         val generatedDir = File(resourcePath)

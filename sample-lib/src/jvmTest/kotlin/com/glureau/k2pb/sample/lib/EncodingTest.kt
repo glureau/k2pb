@@ -1,6 +1,7 @@
 package com.glureau.k2pb.sample.lib
 
 import com.glureau.sample.lib.DataClassFromLib
+import com.k2pb.DataClassFromLibOuterClass
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
