@@ -6,5 +6,4 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MultiModule(
     val dataClassFromLib: DataClassFromLib,
-    //val valueClassFromLib: ValueClassFromLib,
 )

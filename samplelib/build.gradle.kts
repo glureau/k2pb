@@ -1,7 +1,6 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("com.google.devtools.ksp")
 }
 
 repositories {
@@ -9,20 +8,13 @@ repositories {
 }
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    jvm()
 
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":samplelib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
             }
         }
     }
-}
-
-dependencies {
-    add("kspCommonMainMetadata", project(":compiler"))
 }

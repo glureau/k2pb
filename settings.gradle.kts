@@ -7,15 +7,8 @@ pluginManagement {
         id("com.google.devtools.ksp") version kspVersion
         kotlin("plugin.serialization") version kotlinVersion
     }
-    repositories {
-        mavenLocal()
-        gradlePluginPortal()
-        google()
-    }
 }
 
-//include(":lib")
 include(":compiler")
-include(":gradle-plugin")
-include(":sample-lib")
+include(":samplelib")
 include(":samples")
