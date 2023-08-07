@@ -36,25 +36,25 @@ kotlin {
                 implementation("com.google.protobuf:protobuf-kotlin:3.23.0")
             }
             java.sourceSets {
-                getByName("test").java.srcDirs("build/generated/ksp/metadata/jvmTest/java")
+                getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
             }
-            kotlin.srcDir("build/generated/ksp/metadata/jvmTest/kotlin")
+            kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
         }
     }
 }
 
 dependencies {
-    add("kspCommonMainMetadata", project(":compiler"))
+    add("kspJvm", project(":compiler"))
 }
 
 task("runProtoc", type = Exec::class) {
-    val dirPath = "build/generated/ksp/metadata/commonMain/resources/k2pb/"
+    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/"
     // The official gradle plugin doesn't support KMP yet: https://github.com/google/protobuf-gradle-plugin/issues/497
     // So we are assuming protoc is locally installed for now.
     // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)
     // onlyIf { protoFiles.isNotEmpty() } // Not possible, as proto files are also generated...
-    File("$buildDir/generated/ksp/metadata/jvmTest/kotlin").mkdirs()
-    File("$buildDir/generated/ksp/metadata/jvmTest/java").mkdirs()
+    File("$buildDir/generated/ksp/jvm/jvmTest/kotlin").mkdirs()
+    File("$buildDir/generated/ksp/jvm/jvmTest/java").mkdirs()
 
     doFirst {
         val protoFiles = fileTree(dirPath) {
@@ -63,12 +63,12 @@ task("runProtoc", type = Exec::class) {
         commandLine(
             "protoc",
             "--proto_path=$dirPath",
-            "--kotlin_out=build/generated/ksp/metadata/jvmTest/kotlin",
-            "--java_out=build/generated/ksp/metadata/jvmTest/java",
+            "--kotlin_out=build/generated/ksp/jvm/jvmTest/kotlin",
+            "--java_out=build/generated/ksp/jvm/jvmTest/java",
             *protoFiles.map { it.absolutePath.substringAfter(dirPath) }.toTypedArray()
         )
     }
-    dependsOn("compileCommonMainKotlinMetadata")
+    dependsOn("compileKotlinJvm")
 }
 
-tasks["compileTestJava"].dependsOn("runProtoc")
+tasks["compileTestKotlinJvm"].dependsOn("runProtoc")
