@@ -92,30 +92,11 @@ private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     val fields = primaryConstructor!!.parameters.map { param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
-        val prop2 = this.getAllProperties().first { it.simpleName == param.name }
 
         val resolvedType = param.type.resolve()
-        if (param.toString() == "dataClassFromLib" || param.toString() == "valueClassFromLib") {
-            Logger.warn("---------------------------")
-            Logger.warn("param = $param", param)
-            Logger.warn("param.type = ${param.type}", param.type)
-            Logger.warn("param.type class = ${param.type::class}")
-            Logger.warn("param.type.element = ${param.type.element}")
-            Logger.warn("param.type.element class = ${param.type.element!!::class}")
-            Logger.warn("param.type.element = ${(param.type.element as? KSClassifierReference)?.qualifier}")
-            Logger.warn("param.type.element = ${(param.type.element as? KSClassifierReference)?.referencedName()}")
-            Logger.warn("param.type.parent = ${param.type.parent}")
-            Logger.warn("param.type.resolve() = $resolvedType")
-            Logger.warn("prop = $prop", prop)
-            Logger.warn("prop = ${prop.type}")
-            Logger.warn("prop.type.element = ${prop.type.element}")
-            Logger.warn("prop = ${prop.type.resolve()}")
-            Logger.warn("prop2 = $prop2")
-            Logger.warn("prop2 = ${prop2}")
-            Logger.warn("prop2 = ${prop2.type.resolve()}")
-            if (resolvedType.isError) {
-                Logger.error("STOP HERE")
-            }
+        if (resolvedType.declaration.modifiers.contains(Modifier.INLINE)) {
+            val inlinedFieldType = resolvedType.toProtobufFieldType()
+            InlinedTypeRecorder.recordInlinedType(resolvedType.declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
         if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) {
             TypedField(
@@ -179,10 +160,6 @@ private fun KSType.toProtobufFieldType(): FieldType {
         "kotlinx.datetime.Instant" -> ScalarType.string
 
         else -> {
-            if (name.contains("error", false)) {
-                Logger.warn("!!! Cannot resolve type $this from ${this.declaration.containingFile}")
-            }
-            Logger.warn("SEEING REF: $name")
             ReferenceType(name)
         }
     }

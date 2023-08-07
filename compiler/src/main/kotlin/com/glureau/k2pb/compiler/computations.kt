@@ -58,7 +58,7 @@ fun computeImports(
             ).distinct()
 
     return (allTypeReferences - locallyDeclaredReferences.toSet())
-        .map { TypeResolver.qualifiedNameToProtobufName[it]!! }
+        .mapNotNull { TypeResolver.qualifiedNameToProtobufName[it] }
         .map { importResolver.resolve(it) }
         .distinct()
 }

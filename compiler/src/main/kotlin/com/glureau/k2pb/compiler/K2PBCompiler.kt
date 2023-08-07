@@ -30,9 +30,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         do {
             var done = true
             protobufAggregator.unknownReferences().forEach {
-                val referencedEnum = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
-                Logger.warn("Checking locally unknown reference: $it -> $referencedEnum")
-                protobufAggregator.recordKSClassDeclaration(requireNotNull(referencedEnum))
+                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
+                protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false
             }
         } while (!done)

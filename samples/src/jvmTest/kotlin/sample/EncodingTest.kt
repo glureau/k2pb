@@ -9,6 +9,10 @@ import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
 import com.glureau.sample.*
+import com.glureau.sample.lib.DataClassFromLib
+import com.glureau.sample.lib.ValueClassFromLib
+import dataClassFromLib
+import multiModule
 import org.junit.Test
 import user
 import vehicle
@@ -109,6 +113,20 @@ class EncodingTest : BaseEncodingTest() {
                         brand = "Peugeot"
                     }.toByteString()
                 }
+            }
+        )
+    }
+
+
+    @Test
+    fun checkMultiModule() {
+        assertCompatibleSerialization(
+            ktInstance = MultiModule(DataClassFromLib(51), ValueClassFromLib("42")),
+            protocInstance = multiModule {
+                dataClassFromLib = dataClassFromLib {
+                    myInt = 51
+                }
+                valueClassFromLib = "42"
             }
         )
     }

@@ -26,8 +26,11 @@ message WithNestClassB {
 File: k2pb/MultiModule.proto
 syntax = "proto3";
 
+import "DataClassFromLib.proto";
+
 message MultiModule {
-  string todo = 1;
+  DataClassFromLib dataClassFromLib = 1;
+  string valueClassFromLib = 2;
 }
 
 File: k2pb/WithNestedEnum.proto
@@ -40,6 +43,13 @@ message WithNestedEnum {
     B = 1;
     C = 2;
   }
+}
+
+File: k2pb/DataClassFromLib.proto
+syntax = "proto3";
+
+message DataClassFromLib {
+  int32 myInt = 1;
 }
 
 File: k2pb/WithNestClassA.proto
