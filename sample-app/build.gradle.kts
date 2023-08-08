@@ -11,6 +11,10 @@ repositories {
     mavenCentral()
 }
 
+ksp {
+    arg("k2pb:replacement", "BigDecimal=kotlin.String;AnotherCustomType=kotlin.Int")
+}
+
 kotlin {
     jvm {
         withJava()

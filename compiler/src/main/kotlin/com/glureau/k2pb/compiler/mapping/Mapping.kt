@@ -1,6 +1,7 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.compiler.Logger
+import com.glureau.k2pb.compiler.OptionManager
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.struct.*
@@ -26,7 +27,7 @@ val KSClassDeclaration.isEnum: Boolean
 fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
     when {
         declaration.isSealed -> recordMessageNode(declaration.sealedToMessageNode())
-        declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode())
+        declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode(options))
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.resolve().toProtobufFieldType()
@@ -37,7 +38,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
             // Cannot instantiate this class, so ignore it
         }
         // TODO: not sure about "class" and other kinds, crash for reporting them...
-        else -> error("Unsupported class kind: ${declaration.classKind} with modifiers: ${declaration.modifiers}")
+        else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
     }
 }
 
@@ -89,7 +90,7 @@ private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
     )
 }
 
-private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
+private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): MessageNode {
     val fields = primaryConstructor!!.parameters.map { param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
 
@@ -98,29 +99,48 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             val inlinedFieldType = resolvedType.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(resolvedType.declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
-        if (resolvedType.declaration.modifiers.contains(Modifier.SEALED)) {
-            TypedField(
-                name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
-                type = resolvedType.toProtobufFieldType(),
-                comment = prop.docString,
-                annotatedNumber = prop.protoNumber,
-            )
-        } else if (resolvedType.isError) {
-            Logger.warn("WRONG NAME PATH: ${prop.type.toString()}")
-            TypedField(
-                name = prop.serialName,
-                type = ReferenceType(prop.type.toString()),
-                comment = prop.docString,
-                annotatedNumber = prop.protoNumber,
-            )
-                .also { Logger.warn("resolvedType.isError -> $it") }
-        } else {
-            TypedField(
-                name = prop.serialName,
-                type = resolvedType.toProtobufFieldType(),
-                comment = prop.docString,
-                annotatedNumber = prop.protoNumber,
-            )
+
+        val replacement = options.replace(prop.type.toString())
+        when {
+            replacement != null -> {
+                TypedField(
+                    name = prop.serialName,
+                    type = mapQfnToFieldType(replacement),
+                    comment = prop.docString,
+                    annotatedNumber = prop.protoNumber,
+                )
+            }
+
+            resolvedType.declaration.modifiers.contains(Modifier.SEALED) -> {
+                TypedField(
+                    name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                    type = resolvedType.toProtobufFieldType(),
+                    comment = prop.docString,
+                    annotatedNumber = prop.protoNumber,
+                )
+            }
+
+            resolvedType.isError -> {
+                Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
+                Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")
+                Logger.warn("options.replacementMap = ${options.replacementMap}")
+                TypedField(
+                    name = prop.serialName,
+                    type = ReferenceType(prop.type.toString()),
+                    comment = prop.docString,
+                    annotatedNumber = prop.protoNumber,
+                )
+                    .also { Logger.warn("resolvedType.isError -> $it") }
+            }
+
+            else -> {
+                TypedField(
+                    name = prop.serialName,
+                    type = resolvedType.toProtobufFieldType(),
+                    comment = prop.docString,
+                    annotatedNumber = prop.protoNumber,
+                )
+            }
         }
     }
     return MessageNode(
@@ -138,7 +158,11 @@ private fun KSType.toProtobufFieldType(): FieldType {
         Logger.exception(IllegalStateException("resolution issue"))
         return ReferenceType(this.declaration.simpleName.asString())
     }
-    return when (val name = this.declaration.qualifiedName!!.asString()) {
+    return mapQfnToFieldType(this.declaration.qualifiedName!!.asString(), arguments)
+}
+
+private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emptyList()): FieldType {
+    return when (qfn) {
         "kotlin.String" -> ScalarType.string
         "kotlin.Int" -> ScalarType.int32
         "kotlin.Char" -> ScalarType.int32
@@ -160,7 +184,7 @@ private fun KSType.toProtobufFieldType(): FieldType {
         "kotlinx.datetime.Instant" -> ScalarType.string
 
         else -> {
-            ReferenceType(name)
+            ReferenceType(qfn)
         }
     }
 }

@@ -130,4 +130,14 @@ class EncodingTest : BaseEncodingTest() {
             }
         )
     }
+
+    @Test
+    fun checkCustomSerializer() {
+        assertCompatibleSerialization(
+            ktInstance = BigDecimalHolder(java.math.BigDecimal("42.42")),
+            protocInstance = BigDecimalHolderOuterClass.BigDecimalHolder.newBuilder()
+                .setBd("42.42")
+                .build()
+        )
+    }
 }

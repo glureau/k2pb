@@ -18,7 +18,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         sharedLogger = environment.logger
     }
 
-    private val protobufAggregator = ProtobufAggregator()
+    private val options = OptionManager(environment.options)
+    private val protobufAggregator = ProtobufAggregator(options)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation(Serializable::class.qualifiedName!!)

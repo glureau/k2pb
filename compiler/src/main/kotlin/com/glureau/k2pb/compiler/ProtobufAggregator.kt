@@ -3,7 +3,7 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.glureau.k2pb.compiler.struct.*
 
-class ProtobufAggregator {
+class ProtobufAggregator(val options: OptionManager) {
     private val messages = mutableListOf<MessageNode>()
     private val enums = mutableListOf<EnumNode>()
     private val qualifiedNameSet = mutableSetOf<String>()

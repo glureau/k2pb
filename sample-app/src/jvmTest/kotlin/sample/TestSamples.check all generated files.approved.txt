@@ -77,6 +77,13 @@ message NativeTypeEvent {
   int32 byte = 9;
 }
 
+File: k2pb/BigDecimalHolder.proto
+syntax = "proto3";
+
+message BigDecimalHolder {
+  string bd = 1;
+}
+
 File: k2pb/CommonClass.proto
 syntax = "proto3";
 
