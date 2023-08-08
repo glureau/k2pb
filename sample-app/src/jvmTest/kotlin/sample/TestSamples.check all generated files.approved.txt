@@ -91,6 +91,15 @@ message CommonClass {
   string id = 1;
 }
 
+File: k2pb/EnumClass.proto
+syntax = "proto3";
+
+enum EnumClass {
+  A = 0;
+  B = 1;
+  C = 2;
+}
+
 File: k2pb/FooEvent.proto
 syntax = "proto3";
 

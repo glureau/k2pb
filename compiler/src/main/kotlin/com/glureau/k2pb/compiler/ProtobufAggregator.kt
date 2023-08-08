@@ -56,7 +56,7 @@ class ProtobufAggregator(val options: OptionManager) {
         } + enums.mapNotNull { enumNode ->
             if (enumNode.name.contains(".")) return@mapNotNull null // Skip nested enums
             ProtobufFile(
-                path = "k2pb/$enumNode",
+                path = "k2pb/${enumNode.name}",
                 packageName = null,
                 syntax = ProtoSyntax.v3,
                 messages = emptyList(),
