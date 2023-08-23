@@ -21,6 +21,8 @@ val KSClassDeclaration.isSealed: Boolean
     get() = this.modifiers.contains(Modifier.SEALED)
 val KSClassDeclaration.isInlineClass: Boolean
     get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.VALUE)
+val KSClassDeclaration.isObject: Boolean
+    get() = classKind == ClassKind.OBJECT
 val KSClassDeclaration.isEnum: Boolean
     get() = classKind == ClassKind.ENUM_CLASS
 
@@ -28,6 +30,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
     when {
         declaration.isSealed -> recordMessageNode(declaration.sealedToMessageNode())
         declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode(options))
+        declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.resolve().toProtobufFieldType()
@@ -97,6 +100,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): M
         val resolvedType = param.type.resolve()
         if (resolvedType.declaration.modifiers.contains(Modifier.INLINE)) {
             val inlinedFieldType = resolvedType.toProtobufFieldType()
+            Logger.warn("GREG - Parameter ${param.name?.asString()} of ${qualifiedName!!.asString()} is an inline class -> $inlinedFieldType")
             InlinedTypeRecorder.recordInlinedType(resolvedType.declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
 
@@ -152,6 +156,15 @@ private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): M
     )
 }
 
+private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
+    qualifiedName = qualifiedName!!.asString(),
+    name = protobufName(),
+    comment = docString,
+    // `object` can be serialized, also as the data is static, fields are not serialized
+    fields = emptyList(),
+    originalFile = containingFile
+)
+
 private fun KSType.toProtobufFieldType(): FieldType {
     if (this.declaration.qualifiedName == null) {
         Logger.warn("Cannot resolve type ${this.declaration.simpleName.asString()} from ${this.declaration.containingFile} ($this)")
@@ -184,6 +197,7 @@ private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emp
         "kotlinx.datetime.Instant" -> ScalarType.string
 
         else -> {
+            Logger.warn("GREG - ReferenceType $qfn")
             ReferenceType(qfn)
         }
     }

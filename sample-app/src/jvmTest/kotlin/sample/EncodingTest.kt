@@ -140,4 +140,13 @@ class EncodingTest : BaseEncodingTest() {
                 .build()
         )
     }
+
+
+    @Test
+    fun checkObjectClass() {
+        assertCompatibleSerialization(
+            ktInstance = ObjectClass,
+            protocInstance = ObjectClassOuterClass.ObjectClass.newBuilder().build(),
+        )
+    }
 }

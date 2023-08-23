@@ -109,6 +109,12 @@ message FooEvent {
   CommonClass common = 1;
 }
 
+File: k2pb/ObjectClass.proto
+syntax = "proto3";
+
+message ObjectClass {
+}
+
 File: k2pb/BarEvent.proto
 syntax = "proto3";
 
