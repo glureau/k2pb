@@ -6,6 +6,7 @@ import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.sharedOptions
 import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
+import com.google.devtools.ksp.hasAnnotation
 import com.google.devtools.ksp.symbol.*
 import com.google.devtools.ksp.symbol.impl.kotlin.KSErrorType.arguments
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -96,9 +97,12 @@ private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    val fields = primaryConstructor!!.parameters.map { param ->
+    val fields = primaryConstructor!!.parameters.mapNotNull { param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
-
+        if (prop.hasAnnotation("kotlinx.serialization.Transient")) {
+            Logger.warn("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+            return@mapNotNull null
+        }
         val resolvedType = param.type.resolve()
         val resolvedDeclaration = resolvedType.declaration
         if (resolvedDeclaration is KSClassDeclaration &&

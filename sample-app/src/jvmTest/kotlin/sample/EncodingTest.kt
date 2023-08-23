@@ -1,10 +1,13 @@
 package sample
 
 import BarEventOuterClass
+import BigDecimalHolderOuterClass
 import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
 import FooEventOuterClass
+import ObjectClassOuterClass
+import TransientFieldOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
@@ -141,12 +144,20 @@ class EncodingTest : BaseEncodingTest() {
         )
     }
 
-
     @Test
     fun checkObjectClass() {
         assertCompatibleSerialization(
             ktInstance = ObjectClass,
             protocInstance = ObjectClassOuterClass.ObjectClass.newBuilder().build(),
+        )
+    }
+
+    @Test
+    fun checkTransientField() {
+        assertCompatibleSerialization(
+            // Here the default value is required because the assertion is checking via 'data class' equals
+            ktInstance = TransientField(fieldSerialized = "hello", fieldTransient = "default value"),
+            protocInstance = TransientFieldOuterClass.TransientField.newBuilder().setFieldSerialized("hello").build(),
         )
     }
 }

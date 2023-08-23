@@ -45,6 +45,13 @@ message WithNestedEnum {
   }
 }
 
+File: k2pb/TransientField.proto
+syntax = "proto3";
+
+message TransientField {
+  string fieldSerialized = 1;
+}
+
 File: k2pb/BigDecimalValueClassHolder.proto
 syntax = "proto3";
 
