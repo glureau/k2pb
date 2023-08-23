@@ -7,6 +7,7 @@ import com.glureau.k2pb.compiler.sharedOptions
 import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.symbol.impl.kotlin.KSErrorType.arguments
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.protobuf.ProtoNumber
@@ -34,9 +35,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
         declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
-            debugContext = "detecting inlined CLASS from $declaration / ${declaration.getDeclaredProperties().first()}"
-            val inlinedFieldType = declaration.getDeclaredProperties().first().type.resolve().toProtobufFieldType()
-            Logger.warn("recordInlinedType " + declaration.qualifiedName!!.asString() + " -> " + inlinedFieldType)
+            val inlinedFieldType = declaration.getDeclaredProperties().first().type.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
 
@@ -106,12 +105,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(Modifier.VALUE))
         ) {
             val type = resolvedDeclaration.getDeclaredProperties().first().type
-            debugContext = "detecting inlined type from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()}) type=$type -> ${type.resolve()}"
-            val inlinedFieldType = type.resolve().toProtobufFieldType()
-            Logger.warn(
-                "GREG - Parameter ${param.name?.asString()} of " +
-                        "${resolvedDeclaration.qualifiedName!!.asString()} is an inline class -> $inlinedFieldType"
-            )
+            val inlinedFieldType = type.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(resolvedDeclaration.qualifiedName!!.asString(), inlinedFieldType)
         }
 
@@ -127,10 +121,9 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             }
 
             resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
-                debugContext = "detecting SEALED type from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()})"
                 TypedField(
                     name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
-                    type = resolvedType.toProtobufFieldType(),
+                    type = prop.type.toProtobufFieldType(),
                     comment = prop.docString,
                     annotatedNumber = prop.protoNumber,
                 )
@@ -150,10 +143,9 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             }
 
             else -> {
-                debugContext = "ELSE from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()})"
                 TypedField(
                     name = prop.serialName,
-                    type = resolvedType.toProtobufFieldType(),
+                    type = prop.type.toProtobufFieldType(),
                     comment = prop.docString,
                     annotatedNumber = prop.protoNumber,
                 )
@@ -178,17 +170,18 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     originalFile = containingFile
 )
 
-var debugContext: String = ""
-private fun KSType.toProtobufFieldType(): FieldType {
-    val qualifiedName = this.declaration.qualifiedName
-    if (qualifiedName == null) {
-        Logger.warn("Cannot resolve declaration for $this from ${this.declaration.containingFile} ($this)")
-        Logger.warn("debugContext=$debugContext")
-        Logger.exception(IllegalStateException("resolution issue: ${this.declaration}"))
-        return ReferenceType(this.declaration.simpleName.asString())
+private fun KSTypeReference.toProtobufFieldType(): FieldType {
+    val declaration = this.resolve().declaration
+    val qualifiedName = declaration.qualifiedName?.asString()
+    val resolvedQualifiedName = sharedOptions.replace(this.toString()) ?: qualifiedName
+    if (resolvedQualifiedName == null) {
+        // TODO: TU for that case
+        Logger.warn("Cannot resolve declaration for $qualifiedName from ${declaration.containingFile} ($this)")
+        Logger.exception(IllegalStateException("resolution issue: $declaration"))
+        return ReferenceType(declaration.simpleName.asString())
     }
 
-    return mapQfnToFieldType(sharedOptions.replace(qualifiedName.asString()) ?: qualifiedName.asString(), arguments)
+    return mapQfnToFieldType(resolvedQualifiedName, this.resolve().arguments)
 }
 
 private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emptyList()): FieldType {
@@ -203,17 +196,15 @@ private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emp
         "kotlin.Double" -> ScalarType.double
         "kotlin.Boolean" -> ScalarType.bool
         "kotlin.collections.List" -> {
-            debugContext = "detecting LIST type from ${arguments[0].type} ($qfn / ${arguments.joinToString { it.type.toString() }})"
             ListType(
-                repeatedType = arguments[0].type!!.resolve().toProtobufFieldType() // TODO: List<List<Int>> is not supported
+                repeatedType = arguments[0].type!!.toProtobufFieldType() // TODO: List<List<Int>> is not supported
             )
         }
 
         "kotlin.collections.Map" -> {
-            debugContext = "detecting MAP types ..."
             MapType(
-                keyType = arguments[0].type!!.resolve().toProtobufFieldType(), // TODO: Map<Map<X, X>, X> is not supported
-                valueType = arguments[1].type!!.resolve().toProtobufFieldType(),
+                keyType = arguments[0].type!!.toProtobufFieldType(), // TODO: Map<Map<X, X>, X> is not supported
+                valueType = arguments[1].type!!.toProtobufFieldType(),
             )
         }
 
