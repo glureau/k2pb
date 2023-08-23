@@ -28,3 +28,10 @@ class CustomSerializer : KSerializer<BigDecimal> {
 //  with different serializer and different type used, so we cannot extract just 1 proto file in theory)
 @Serializable
 data class BigDecimalHolder(@Serializable(CustomSerializer::class) val bd: BigDecimal)
+
+@JvmInline
+@Serializable
+value class BigDecimalValueClass(@Serializable(CustomSerializer::class) val bd: BigDecimal)
+
+@Serializable
+data class BigDecimalValueClassHolder(val bdValue: BigDecimalValueClass)

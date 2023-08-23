@@ -12,7 +12,7 @@ repositories {
 }
 
 ksp {
-    arg("k2pb:replacement", "BigDecimal=kotlin.String;AnotherCustomType=kotlin.Int")
+    arg("k2pb:replacement", "BigDecimal=kotlin.String;java.math.BigDecimal=kotlin.String;AnotherCustomType=kotlin.Int")
 }
 
 kotlin {

@@ -107,8 +107,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         ) {
             val type = resolvedDeclaration.getDeclaredProperties().first().type
             debugContext = "detecting inlined type from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()}) type=$type -> ${type.resolve()}"
-            val inlinedFieldType =
-                type.resolve().toProtobufFieldType()
+            val inlinedFieldType = type.resolve().toProtobufFieldType()
             Logger.warn(
                 "GREG - Parameter ${param.name?.asString()} of " +
                         "${resolvedDeclaration.qualifiedName!!.asString()} is an inline class -> $inlinedFieldType"
@@ -181,13 +180,15 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
 
 var debugContext: String = ""
 private fun KSType.toProtobufFieldType(): FieldType {
-    if (this.declaration.qualifiedName == null) {
+    val qualifiedName = this.declaration.qualifiedName
+    if (qualifiedName == null) {
         Logger.warn("Cannot resolve declaration for $this from ${this.declaration.containingFile} ($this)")
         Logger.warn("debugContext=$debugContext")
         Logger.exception(IllegalStateException("resolution issue: ${this.declaration}"))
         return ReferenceType(this.declaration.simpleName.asString())
     }
-    return mapQfnToFieldType(this.declaration.qualifiedName!!.asString(), arguments)
+
+    return mapQfnToFieldType(sharedOptions.replace(qualifiedName.asString()) ?: qualifiedName.asString(), arguments)
 }
 
 private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emptyList()): FieldType {

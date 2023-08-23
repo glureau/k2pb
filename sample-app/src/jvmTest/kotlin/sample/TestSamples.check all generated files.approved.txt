@@ -45,6 +45,13 @@ message WithNestedEnum {
   }
 }
 
+File: k2pb/BigDecimalValueClassHolder.proto
+syntax = "proto3";
+
+message BigDecimalValueClassHolder {
+  string bdValue = 1;
+}
+
 File: k2pb/DataClassFromLib.proto
 syntax = "proto3";
 
