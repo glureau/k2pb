@@ -43,7 +43,6 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
         declaration.isAbstractClass -> {
             // Cannot instantiate this class, so ignore it
         }
-        // TODO: not sure about "class" and other kinds, crash for reporting them...
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
     }
 }
