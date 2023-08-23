@@ -25,10 +25,19 @@ class ProtobufAggregator() {
     }
 
     fun unknownReferences(): Set<String> {
-        val references: Set<String> = messages.flatMap { it.fields }
-            .flatMap { it.allFieldTypes() }
-            .filterIsInstance<ReferenceType>()
-            .map { it.name }.toSet()
+        val fieldTypeList: List<FieldType> = messages.flatMap { it.fields }.flatMap { it.allFieldTypes() }
+        val stdRefs = fieldTypeList.filterIsInstance<ReferenceType>().map { it.name }
+        // TODO: recursivity + TU for List@Map
+        val listRefs = fieldTypeList.filterIsInstance<ListType>()
+            .mapNotNull { if (it.repeatedType is ReferenceType) it.repeatedType.name else null }
+        val mapRefs = fieldTypeList.filterIsInstance<MapType>()
+            .flatMap {
+                val list = mutableListOf<String>()
+                if (it.keyType is ReferenceType) list.add(it.keyType.name)
+                if (it.valueType is ReferenceType) list.add(it.valueType.name)
+                list
+            }
+        val references: Set<String> = (stdRefs + listRefs + mapRefs).toSet()
         return references - (qualifiedNameSet + InlinedTypeRecorder.getAllInlinedTypes().keys)
     }
 
