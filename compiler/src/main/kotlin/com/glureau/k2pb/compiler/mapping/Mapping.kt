@@ -1,9 +1,9 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.compiler.Logger
-import com.glureau.k2pb.compiler.OptionManager
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.getArg
+import com.glureau.k2pb.compiler.sharedOptions
 import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.*
@@ -20,7 +20,8 @@ val KSClassDeclaration.isAbstractClass: Boolean
 val KSClassDeclaration.isSealed: Boolean
     get() = this.modifiers.contains(Modifier.SEALED)
 val KSClassDeclaration.isInlineClass: Boolean
-    get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.VALUE)
+    get() = classKind == ClassKind.CLASS &&
+            (this.modifiers.contains(Modifier.INLINE) || this.modifiers.contains(Modifier.VALUE))
 val KSClassDeclaration.isObject: Boolean
     get() = classKind == ClassKind.OBJECT
 val KSClassDeclaration.isEnum: Boolean
@@ -29,11 +30,13 @@ val KSClassDeclaration.isEnum: Boolean
 fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
     when {
         declaration.isSealed -> recordMessageNode(declaration.sealedToMessageNode())
-        declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode(options))
+        declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode())
         declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
+            debugContext = "detecting inlined CLASS from $declaration / ${declaration.getDeclaredProperties().first()}"
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.resolve().toProtobufFieldType()
+            Logger.warn("recordInlinedType " + declaration.qualifiedName!!.asString() + " -> " + inlinedFieldType)
             InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
 
@@ -93,18 +96,27 @@ private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
     )
 }
 
-private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): MessageNode {
+private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     val fields = primaryConstructor!!.parameters.map { param ->
         val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
 
         val resolvedType = param.type.resolve()
-        if (resolvedType.declaration.modifiers.contains(Modifier.INLINE)) {
-            val inlinedFieldType = resolvedType.toProtobufFieldType()
-            Logger.warn("GREG - Parameter ${param.name?.asString()} of ${qualifiedName!!.asString()} is an inline class -> $inlinedFieldType")
-            InlinedTypeRecorder.recordInlinedType(resolvedType.declaration.qualifiedName!!.asString(), inlinedFieldType)
+        val resolvedDeclaration = resolvedType.declaration
+        if (resolvedDeclaration is KSClassDeclaration &&
+            (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(Modifier.VALUE))
+        ) {
+            val type = resolvedDeclaration.getDeclaredProperties().first().type
+            debugContext = "detecting inlined type from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()}) type=$type -> ${type.resolve()}"
+            val inlinedFieldType =
+                type.resolve().toProtobufFieldType()
+            Logger.warn(
+                "GREG - Parameter ${param.name?.asString()} of " +
+                        "${resolvedDeclaration.qualifiedName!!.asString()} is an inline class -> $inlinedFieldType"
+            )
+            InlinedTypeRecorder.recordInlinedType(resolvedDeclaration.qualifiedName!!.asString(), inlinedFieldType)
         }
 
-        val replacement = options.replace(prop.type.toString())
+        val replacement = sharedOptions.replace(prop.type.toString())
         when {
             replacement != null -> {
                 TypedField(
@@ -115,7 +127,8 @@ private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): M
                 )
             }
 
-            resolvedType.declaration.modifiers.contains(Modifier.SEALED) -> {
+            resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
+                debugContext = "detecting SEALED type from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()})"
                 TypedField(
                     name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
                     type = resolvedType.toProtobufFieldType(),
@@ -127,7 +140,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): M
             resolvedType.isError -> {
                 Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
                 Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")
-                Logger.warn("options.replacementMap = ${options.replacementMap}")
+                Logger.warn("options.replacementMap = ${sharedOptions.replacementMap}")
                 TypedField(
                     name = prop.serialName,
                     type = ReferenceType(prop.type.toString()),
@@ -138,6 +151,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(options: OptionManager): M
             }
 
             else -> {
+                debugContext = "ELSE from $resolvedType (${this.simpleName.asString()}.${param.name?.asString()})"
                 TypedField(
                     name = prop.serialName,
                     type = resolvedType.toProtobufFieldType(),
@@ -165,10 +179,12 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     originalFile = containingFile
 )
 
+var debugContext: String = ""
 private fun KSType.toProtobufFieldType(): FieldType {
     if (this.declaration.qualifiedName == null) {
-        Logger.warn("Cannot resolve type ${this.declaration.simpleName.asString()} from ${this.declaration.containingFile} ($this)")
-        Logger.exception(IllegalStateException("resolution issue"))
+        Logger.warn("Cannot resolve declaration for $this from ${this.declaration.containingFile} ($this)")
+        Logger.warn("debugContext=$debugContext")
+        Logger.exception(IllegalStateException("resolution issue: ${this.declaration}"))
         return ReferenceType(this.declaration.simpleName.asString())
     }
     return mapQfnToFieldType(this.declaration.qualifiedName!!.asString(), arguments)
@@ -185,21 +201,24 @@ private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emp
         "kotlin.Float" -> ScalarType.float
         "kotlin.Double" -> ScalarType.double
         "kotlin.Boolean" -> ScalarType.bool
-        "kotlin.collections.List" -> ListType(
-            repeatedType = arguments[0].type!!.resolve().toProtobufFieldType() // TODO: List<List<Int>> is not supported
-        )
+        "kotlin.collections.List" -> {
+            debugContext = "detecting LIST type from ${arguments[0].type} ($qfn / ${arguments.joinToString { it.type.toString() }})"
+            ListType(
+                repeatedType = arguments[0].type!!.resolve().toProtobufFieldType() // TODO: List<List<Int>> is not supported
+            )
+        }
 
-        "kotlin.collections.Map" -> MapType(
-            keyType = arguments[0].type!!.resolve().toProtobufFieldType(), // TODO: Map<Map<X, X>, X> is not supported
-            valueType = arguments[1].type!!.resolve().toProtobufFieldType(),
-        )
+        "kotlin.collections.Map" -> {
+            debugContext = "detecting MAP types ..."
+            MapType(
+                keyType = arguments[0].type!!.resolve().toProtobufFieldType(), // TODO: Map<Map<X, X>, X> is not supported
+                valueType = arguments[1].type!!.resolve().toProtobufFieldType(),
+            )
+        }
 
         "kotlinx.datetime.Instant" -> ScalarType.string
 
-        else -> {
-            Logger.warn("GREG - ReferenceType $qfn")
-            ReferenceType(qfn)
-        }
+        else -> ReferenceType(qfn)
     }
 }
 

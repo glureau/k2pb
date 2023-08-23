@@ -57,20 +57,23 @@ task("runProtoc", type = Exec::class) {
     // So we are assuming protoc is locally installed for now.
     // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)
     // onlyIf { protoFiles.isNotEmpty() } // Not possible, as proto files are also generated...
-    File("$buildDir/generated/ksp/jvm/jvmTest/kotlin").mkdirs()
-    File("$buildDir/generated/ksp/jvm/jvmTest/java").mkdirs()
 
     doFirst {
+        File("$buildDir/generated/ksp/jvm/jvmTest/kotlin").mkdirs()
+        File("$buildDir/generated/ksp/jvm/jvmTest/java").mkdirs()
+
         val protoFiles = fileTree(dirPath) {
             include("**/*.proto")
         }.files
-        commandLine(
+        val cmd = listOf(
             "protoc",
             "--proto_path=$dirPath",
             "--kotlin_out=build/generated/ksp/jvm/jvmTest/kotlin",
             "--java_out=build/generated/ksp/jvm/jvmTest/java",
             *protoFiles.map { it.absolutePath.substringAfter(dirPath) }.toTypedArray()
         )
+        println("Running protoc: $cmd")
+        commandLine(cmd)
     }
     dependsOn("compileKotlinJvm")
 }

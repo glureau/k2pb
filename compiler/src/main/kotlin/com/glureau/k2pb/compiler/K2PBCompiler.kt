@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
+internal lateinit var sharedOptions: OptionManager
 
 internal object Logger : KSPLogger by sharedLogger
 
@@ -16,10 +17,10 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
     init {
         sharedLogger = environment.logger
+        sharedOptions = OptionManager(environment.options)
     }
 
-    private val options = OptionManager(environment.options)
-    private val protobufAggregator = ProtobufAggregator(options)
+    private val protobufAggregator = ProtobufAggregator()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation(Serializable::class.qualifiedName!!)
@@ -32,6 +33,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             var done = true
             protobufAggregator.unknownReferences().forEach {
                 val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
+                Logger.warn("Unknown references to resolve: $it => $reference")
                 protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false
             }
@@ -43,8 +45,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
-            Logger.warn("---------------------------- ${protobufFile.path}")
-            Logger.warn(protobufFile.toString())
+            //Logger.warn("---------------------------- ${protobufFile.path}")
+            //Logger.warn(protobufFile.toString())
         }
 
         return emptyList()

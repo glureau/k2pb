@@ -1,7 +1,5 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.compiler.TypeResolver
-import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.glureau.k2pb.compiler.mapping.toProtobufComment
 
 data class TypedField(
@@ -15,11 +13,7 @@ data class TypedField(
         result += comment.toProtobufComment()
         result += when (type) {
             is ScalarType -> type.name
-            // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
-            // both solutions are valid for protobuf.
-            is ReferenceType -> TypeResolver.qualifiedNameToProtobufName[type.name]
-                ?: InlinedTypeRecorder.getInlinedType(type.name)
-                ?: type.name
+            is ReferenceType -> type.toString()
             is ListType -> type.toString()
             is MapType -> type.toString()
             else -> error("unknown type $type")

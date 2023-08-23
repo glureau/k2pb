@@ -3,7 +3,7 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.glureau.k2pb.compiler.struct.*
 
-class ProtobufAggregator(val options: OptionManager) {
+class ProtobufAggregator() {
     private val messages = mutableListOf<MessageNode>()
     private val enums = mutableListOf<EnumNode>()
     private val qualifiedNameSet = mutableSetOf<String>()
@@ -12,6 +12,7 @@ class ProtobufAggregator(val options: OptionManager) {
         messages += it
         require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
         qualifiedNameSet += it.qualifiedName
+        Logger.warn("recordMessageNode ${it.qualifiedName} => ${it.name}")
         TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
     }
 
@@ -19,6 +20,7 @@ class ProtobufAggregator(val options: OptionManager) {
         enums += it
         require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
         qualifiedNameSet += it.qualifiedName
+        Logger.warn("recordEnumNode ${it.qualifiedName} => ${it.name}")
         TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
     }
 
