@@ -4,12 +4,12 @@ data class OneOfField(
     override val comment: String?,
     override val name: String,
     val fields: List<FieldInterface>,
-) : FieldInterface {
-    override fun toString(numberManager: NumberManager): String {
-        var result = ""
-        result += "oneof $name {\n"
-        result += fields.joinToString("\n") { it.toString(numberManager).prependIndent("  ") }
-        result += "\n}"
-        return result
+) : FieldInterface
+
+fun StringBuilder.appendOneOfField(indentLevel: Int, field: OneOfField, numberManager: NumberManager) {
+    appendLineWithIndent(indentLevel, "oneof ${field.name} {")
+    field.fields.forEach { subclass ->
+        appendField(indentLevel + 1, subclass, numberManager)
     }
+    appendLineWithIndent(indentLevel, "}")
 }

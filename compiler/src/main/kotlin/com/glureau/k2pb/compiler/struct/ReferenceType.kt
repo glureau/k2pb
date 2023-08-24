@@ -5,18 +5,27 @@ import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.glureau.k2pb.compiler.sharedOptions
 
-data class ReferenceType(val name: String) : FieldType {
-    override fun toString(): String {
-        // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
-        // both solutions are valid for protobuf.
+data class ReferenceType(val name: String) : FieldType
 
-        val resolvedType = TypeResolver.qualifiedNameToProtobufName[name]
-            ?: InlinedTypeRecorder.getInlinedType(name)
+fun StringBuilder.appendReferenceType(type: ReferenceType) {
+    // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
+    // both solutions are valid for protobuf.
 
-        return resolvedType?.toString()
-            ?: sharedOptions.replace(name)
-            ?: (name.also {
-                Logger.warn("Nothing found for $name, or is it just an ENUM ?")
-            })
+    TypeResolver.qualifiedNameToProtobufName[type.name]?.let { resolvedType: String ->
+        append(resolvedType)
+        return
     }
+
+    InlinedTypeRecorder.getInlinedType(type.name)?.let { inlinedType: FieldType ->
+        appendFieldType(inlinedType)
+        return
+    }
+
+    sharedOptions.replace(type.name)?.let { replacement: String ->
+        append(replacement)
+        return
+    }
+
+    Logger.warn("Nothing found for ${type.name}, or is it just an ENUM ?")
+    append(type.name)
 }

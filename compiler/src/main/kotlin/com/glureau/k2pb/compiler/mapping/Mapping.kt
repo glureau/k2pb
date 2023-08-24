@@ -8,7 +8,6 @@ import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.hasAnnotation
 import com.google.devtools.ksp.symbol.*
-import com.google.devtools.ksp.symbol.impl.kotlin.KSErrorType.arguments
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.protobuf.ProtoNumber
@@ -43,6 +42,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
         declaration.isAbstractClass -> {
             // Cannot instantiate this class, so ignore it
         }
+
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
     }
 }
@@ -224,15 +224,16 @@ fun KSClassDeclaration.protobufName(): String {
             simpleName.asString()
 }
 
-fun String?.toProtobufComment(): String =
-    if (!isNullOrBlank())
-        this.split("\n")
+fun StringBuilder.appendComment(indentLevel: Int, comment: String?) {
+    if (!comment.isNullOrBlank()) {
+        comment.split("\n")
             .dropWhile { it.isBlank() }
             .dropLastWhile { it.isBlank() }
-            .joinToString("\n") { "// $it" } + "\n"
-    else
-        ""
-
+            .forEach {
+                appendLineWithIndent(indentLevel, "// $it")
+            }
+    }
+}
 
 val KSClassDeclaration.serialName: String
     get() = serialNameInternal ?: simpleName.asString()

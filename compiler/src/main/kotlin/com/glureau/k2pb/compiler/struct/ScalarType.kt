@@ -17,3 +17,7 @@ enum class ScalarType : FieldType { // https://protobuf.dev/programming-guides/p
     string,
     bytes,
 }
+
+fun StringBuilder.appendScalarType(type: ScalarType) {
+    append(type.name)
+}

@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.compiler.mapping.toProtobufComment
+import com.glureau.k2pb.compiler.mapping.appendComment
 import com.google.devtools.ksp.symbol.KSFile
 
 data class MessageNode(
@@ -21,29 +21,20 @@ data class MessageNode(
             return result
         }
     val nestedNodes: MutableList<Node> = mutableListOf()
-    override fun toString(): String {
-        var result = comment.toProtobufComment()
-        result += "message ${name.substringAfterLast(".")} {\n"
-        //var lastUsedFieldNumber = 0
-        if (fields.isNotEmpty()) {
-            result += fields.joinToString("\n", transform = { it.toString(numberManager) })
-                .prependIndent("  ") + "\n"
-            /*
-            TODO: Keeping this block, as we'll need it to handle properly numbers in oneOfs.
-            fields.forEach { field ->
-                when (field) {
-                    is OneOfField -> {
-                        result += "  oneof ${field.name} {\n"
-                        fields.forEach { subclass ->
-                            result += "    ${TypeResolver.qualifiedNameToProtobufName[subclass.name] ?: subclass} $subclass = ${lastUsedFieldNumber++};\n"
-                        }
-                    }
 
-                    is TypedField -> result += "  $field\n"
-                }
-            }*/
-        }
-        if (nestedNodes.isNotEmpty()) result += nestedNodes.joinToString("\n").prependIndent("  ") + "\n"
-        return "$result}"
+}
+
+fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) {
+    appendComment(indentLevel, messageNode.comment)
+    appendLineWithIndent(indentLevel, "message ${messageNode.name.substringAfterLast(".")} {")
+    messageNode.fields.forEach {
+        appendField(indentLevel + 1, it, messageNode.numberManager)
     }
+    messageNode.nestedNodes.forEach {
+        when (it) {
+            is MessageNode -> appendMessageNode(indentLevel + 1, it)
+            is EnumNode -> appendEnumNode(indentLevel + 1, it)
+        }
+    }
+    appendLineWithIndent(indentLevel, "}")
 }

@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.compiler.mapping.toProtobufComment
+import com.glureau.k2pb.compiler.mapping.appendComment
 import com.google.devtools.ksp.symbol.KSFile
 
 data class EnumNode(
@@ -9,12 +9,13 @@ data class EnumNode(
     val comment: String?,
     val entries: List<EnumEntry>,
     override val originalFile: KSFile?,
-) : Node() {
-    override fun toString(): String {
-        var result = ""
-        result += comment.toProtobufComment()
-        result += "enum ${name.substringAfterLast(".")} {\n"
-        if (entries.isNotEmpty()) result += entries.joinToString("\n").prependIndent("  ") + "\n"
-        return "$result}"
+) : Node()
+
+fun StringBuilder.appendEnumNode(indentLevel: Int, enumNode: EnumNode) {
+    appendComment(indentLevel, enumNode.comment)
+    appendLineWithIndent(indentLevel, "enum ${enumNode.name.substringAfterLast(".")} {")
+    enumNode.entries.forEach {
+        appendEnumEntry(indentLevel + 1, it)
     }
+    appendLineWithIndent(indentLevel, "}")
 }

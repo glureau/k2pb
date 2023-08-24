@@ -23,7 +23,11 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
     private val protobufAggregator = ProtobufAggregator()
     private var runDone = false
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (runDone) return emptyList()
+        Logger.warn("----------------------------------------- PROCESS START $runDone")
+        if (runDone) {
+            Logger.warn("----------------------------------------- PROCESS DONE")
+            return emptyList()
+        }
         runDone = true
         val symbols = resolver.getSymbolsWithAnnotation(Serializable::class.qualifiedName!!)
         symbols.forEach {
@@ -31,6 +35,9 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 protobufAggregator.recordKSClassDeclaration(it)
             }
         }
+        Logger.warn("-------------- SCAN DONE")
+        System.gc()
+        System.gc()
         do {
             var done = true
             protobufAggregator.unknownReferences().forEach {
@@ -39,17 +46,21 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false
             }
+            Logger.warn("-------------- UNKNOWN REF SCAN DONE $done")
         } while (!done)
+        System.gc()
+        System.gc()
         protobufAggregator.buildFiles(moduleName(resolver)).forEach { protobufFile ->
+            Logger.warn("---------------------------- ${protobufFile.path} START")
             environment.writeProtobufFile(
-                protobufFile.toString().toByteArray(),
+                protobufFile.toProtoString().toByteArray(),
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
-            Logger.warn("---------------------------- ${protobufFile.path}")
+            Logger.warn("---------------------------- ${protobufFile.path} END")
             //Logger.warn(protobufFile.toString())
         }
-
+        Logger.warn("----------------------------------------- PROCESS END")
         return emptyList()
     }
 }
