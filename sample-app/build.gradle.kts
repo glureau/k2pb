@@ -61,7 +61,11 @@ task("runProtoc", type = Exec::class) {
     doFirst {
         File("$buildDir/generated/ksp/jvm/jvmTest/kotlin").mkdirs()
         File("$buildDir/generated/ksp/jvm/jvmTest/java").mkdirs()
-
+        // Copy files from sample-lib, as protoc requires every files to be present in the same directory
+        File("$rootDir/sample-lib/build/generated/ksp/jvm/jvmMain/resources/k2pb/")
+            .listFiles().forEach {
+                it.copyTo(File("$buildDir/generated/ksp/jvm/jvmMain/resources/k2pb/${it.name}"), true)
+            }
         val protoFiles = fileTree(dirPath) {
             include("**/*.proto")
         }.files

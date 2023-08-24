@@ -41,16 +41,18 @@ class ProtobufAggregator() {
         return references - (qualifiedNameSet + InlinedTypeRecorder.getAllInlinedTypes().keys)
     }
 
-    fun buildFiles(): List<ProtobufFile> {
-        require(unknownReferences().isEmpty()) { "Unknown references: ${unknownReferences().joinToString()}" }
-
+    fun buildFiles(moduleName: String): List<ProtobufFile> {
         val importResolver = ImportResolver { protobufName ->
             "${protobufName.substringBefore(".")}.proto"
         }
 
         // TODO: warning, import computation is slightly correlated to this split logic (1 class by file)
         val updatedMessages = updateMessageForNesting(messages, enums)
-        return updatedMessages.map { messageNode ->
+        return updatedMessages.mapNotNull { messageNode ->
+            if (messageNode.originalFile == null) return@mapNotNull null // Skip messages without original file
+            // TODO: this could be an option instead of default behavior
+            if (!messageNode.originalFile.filePath.contains(moduleName)) return@mapNotNull null // Skip messages from other modules
+
             ProtobufFile(
                 path = "k2pb/${messageNode.name}",
                 packageName = null,

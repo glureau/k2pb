@@ -38,8 +38,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 done = false
             }
         } while (!done)
-
-        protobufAggregator.buildFiles().forEach { protobufFile ->
+        protobufAggregator.buildFiles(moduleName(resolver)).forEach { protobufFile ->
             environment.writeProtobufFile(
                 protobufFile.toString().toByteArray(),
                 fileName = protobufFile.path,
@@ -51,7 +50,22 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         return emptyList()
     }
+}
 
+/**
+ * todo use `resolver.moduleName` when [https://github.com/google/ksp/issues/1015] is done
+ * @return gradle module name
+ */
+private fun moduleName(resolver: Resolver): String {
+    val moduleDescriptor = resolver::class.java
+        .getDeclaredField("module")
+        .apply { isAccessible = true }
+        .get(resolver)
+    val rawName = moduleDescriptor::class.java
+        .getMethod("getName")
+        .invoke(moduleDescriptor)
+        .toString()
+    return rawName.removeSurrounding("<", ">")
 }
 
 class K2PBCompilerProvider : SymbolProcessorProvider {
