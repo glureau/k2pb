@@ -3,7 +3,7 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.glureau.k2pb.compiler.struct.*
 
-class ProtobufAggregator() {
+class ProtobufAggregator {
     private val messages = mutableListOf<MessageNode>()
     private val enums = mutableListOf<EnumNode>()
     private val qualifiedNameSet = mutableSetOf<String>()
@@ -12,7 +12,7 @@ class ProtobufAggregator() {
         messages += it
         require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
         qualifiedNameSet += it.qualifiedName
-        Logger.warn("recordMessageNode ${it.qualifiedName} => ${it.name}")
+        Logger.info("recordMessageNode ${it.qualifiedName} => ${it.name}")
         TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
     }
 
@@ -20,14 +20,14 @@ class ProtobufAggregator() {
         enums += it
         require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
         qualifiedNameSet += it.qualifiedName
-        Logger.warn("recordEnumNode ${it.qualifiedName} => ${it.name}")
+        Logger.info("recordEnumNode ${it.qualifiedName} => ${it.name}")
         TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
     }
 
     fun unknownReferences(): Set<String> {
         val fieldTypeList: List<FieldType> = messages.flatMap { it.fields }.flatMap { it.allFieldTypes() }
         val stdRefs = fieldTypeList.filterIsInstance<ReferenceType>().map { it.name }
-        // TODO: recursivity + TU for List@Map
+        // TODO: recursivity + TU for List&Map
         val listRefs = fieldTypeList.filterIsInstance<ListType>()
             .mapNotNull { if (it.repeatedType is ReferenceType) it.repeatedType.name else null }
         val mapRefs = fieldTypeList.filterIsInstance<MapType>()
@@ -48,7 +48,7 @@ class ProtobufAggregator() {
 
         // TODO: warning, import computation is slightly correlated to this split logic (1 class by file)
         val updatedMessages = updateMessageForNesting(messages, enums)
-        return sequence<ProtobufFile> {
+        return sequence {
             updatedMessages.forEach { messageNode ->
                 if (messageNode.originalFile == null) return@forEach // Skip messages without original file
                 // TODO: this could be an option instead of default behavior

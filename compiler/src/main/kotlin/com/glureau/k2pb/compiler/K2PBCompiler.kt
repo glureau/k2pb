@@ -21,8 +21,10 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
     }
 
     private val protobufAggregator = ProtobufAggregator()
-
+    private var runDone = false
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        if (runDone) return emptyList()
+        runDone = true
         val symbols = resolver.getSymbolsWithAnnotation(Serializable::class.qualifiedName!!)
         symbols.forEach {
             if (it is KSClassDeclaration) {
@@ -33,7 +35,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             var done = true
             protobufAggregator.unknownReferences().forEach {
                 val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
-                Logger.warn("Unknown references to resolve: $it => $reference")
+                Logger.info("Unknown references to resolve: $it => $reference")
                 protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false
             }
@@ -44,7 +46,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
-            //Logger.warn("---------------------------- ${protobufFile.path}")
+            Logger.warn("---------------------------- ${protobufFile.path}")
             //Logger.warn(protobufFile.toString())
         }
 
