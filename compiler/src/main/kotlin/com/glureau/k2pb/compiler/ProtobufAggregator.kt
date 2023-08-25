@@ -50,39 +50,59 @@ class ProtobufAggregator {
         val updatedMessages = updateMessageForNesting(messages, enums)
         return sequence {
             updatedMessages.forEach { messageNode ->
-                if (messageNode.originalFile == null) return@forEach // Skip messages without original file
+                if (messageNode.originalFile == null) {
+                    Logger.warn("No original file for ${messageNode.name}, skipping generation...")
+                    return@forEach
+                }
                 // TODO: this could be an option instead of default behavior
-                if (!messageNode.originalFile.filePath.contains(moduleName)) return@forEach // Skip messages from other modules
+                if (!messageNode.originalFile.filePath.contains(moduleName)) {
+                    Logger.warn("Skipping message from other module (current module = $moduleName): ${messageNode.name} // ${messageNode.originalFile.filePath}")
+                    return@forEach
+                }
 
-                yield(ProtobufFile(
-                    path = "k2pb/${messageNode.name}",
-                    packageName = null,
-                    syntax = ProtoSyntax.v3,
-                    messages = listOf(messageNode),
-                    enums = emptyList(),
-                    imports = computeImports(
-                        messageNodes = listOf(messageNode),
-                        enumNodes = listOf(),
-                        locallyDeclaredReferences = messageNode.declaredReferences,
-                        importResolver = importResolver
+                yield(
+                    ProtobufFile(
+                        path = "k2pb/${messageNode.name}",
+                        packageName = null,
+                        syntax = ProtoSyntax.v3,
+                        messages = listOf(messageNode),
+                        enums = emptyList(),
+                        imports = computeImports(
+                            messageNodes = listOf(messageNode),
+                            enumNodes = listOf(),
+                            locallyDeclaredReferences = messageNode.declaredReferences,
+                            importResolver = importResolver
+                        )
                     )
-                ))
+                )
             }
-            enums.mapNotNull { enumNode ->
-                if (enumNode.name.contains(".")) return@mapNotNull null // Skip nested enums
-                yield(ProtobufFile(
-                    path = "k2pb/${enumNode.name}",
-                    packageName = null,
-                    syntax = ProtoSyntax.v3,
-                    messages = emptyList(),
-                    enums = listOf(enumNode),
-                    imports = computeImports(
-                        messageNodes = listOf(),
-                        enumNodes = listOf(enumNode),
-                        locallyDeclaredReferences = enumNode.declaredReferences,
-                        importResolver = importResolver,
+            enums.forEach { enumNode ->
+                if (enumNode.originalFile == null) {
+                    Logger.warn("No original file for ${enumNode.name}, skipping generation...")
+                    return@forEach
+                }
+                // TODO: this could be an option instead of default behavior
+                if (!enumNode.originalFile.filePath.contains(moduleName)) {
+                    Logger.warn("Skipping message from other module (current module = $moduleName): ${enumNode.name} // ${enumNode.originalFile.filePath}")
+                    return@forEach
+                }
+
+                if (enumNode.name.contains(".")) return@forEach // Skip nested enums
+                yield(
+                    ProtobufFile(
+                        path = "k2pb/${enumNode.name}",
+                        packageName = null,
+                        syntax = ProtoSyntax.v3,
+                        messages = emptyList(),
+                        enums = listOf(enumNode),
+                        imports = computeImports(
+                            messageNodes = listOf(),
+                            enumNodes = listOf(enumNode),
+                            locallyDeclaredReferences = enumNode.declaredReferences,
+                            importResolver = importResolver,
+                        )
                     )
-                ))
+                )
             }
         }
     }

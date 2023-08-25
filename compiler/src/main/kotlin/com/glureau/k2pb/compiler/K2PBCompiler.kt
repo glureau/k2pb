@@ -23,9 +23,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
     private val protobufAggregator = ProtobufAggregator()
     private var runDone = false
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        Logger.warn("----------------------------------------- PROCESS START $runDone")
         if (runDone) {
-            Logger.warn("----------------------------------------- PROCESS DONE")
             return emptyList()
         }
         runDone = true
@@ -35,33 +33,37 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 protobufAggregator.recordKSClassDeclaration(it)
             }
         }
-        Logger.warn("-------------- SCAN DONE")
-        System.gc()
-        System.gc()
-        do {
-            var done = true
-            protobufAggregator.unknownReferences().forEach {
-                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
-                Logger.info("Unknown references to resolve: $it => $reference")
-                protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
-                done = false
-            }
-            Logger.warn("-------------- UNKNOWN REF SCAN DONE $done")
-        } while (!done)
-        System.gc()
-        System.gc()
+
+        resolveDependencies(resolver)
+
         protobufAggregator.buildFiles(moduleName(resolver)).forEach { protobufFile ->
-            Logger.warn("---------------------------- ${protobufFile.path} START")
             environment.writeProtobufFile(
                 protobufFile.toProtoString().toByteArray(),
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
-            Logger.warn("---------------------------- ${protobufFile.path} END")
-            //Logger.warn(protobufFile.toString())
         }
-        Logger.warn("----------------------------------------- PROCESS END")
         return emptyList()
+    }
+
+    private fun resolveDependencies(resolver: Resolver) {
+        val lastSignatures = mutableSetOf<String>()
+        do {
+            var done = true
+            val unknownReferences = protobufAggregator.unknownReferences()
+            unknownReferences.forEach {
+                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
+                protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
+                done = false
+            }
+            if (!done && lastSignatures.isNotEmpty() && lastSignatures == unknownReferences) {
+                Logger.warn("Cannot resolve the following references: $unknownReferences")
+                done = true // Need to stop the processor, otherwise it will loop forever.
+            } else {
+                lastSignatures.clear()
+                lastSignatures.addAll(unknownReferences)
+            }
+        } while (!done)
     }
 }
 
@@ -79,9 +81,10 @@ private fun moduleName(resolver: Resolver): String {
         .invoke(moduleDescriptor)
         .toString()
     return rawName.removeSurrounding("<", ">")
+        // TODO: should we ignore all KMP possible suffixes?
+        .removeSuffix("_commonMain")
 }
 
 class K2PBCompilerProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment) =
-        K2PBCompiler(environment)
+    override fun create(environment: SymbolProcessorEnvironment): K2PBCompiler = K2PBCompiler(environment)
 }
