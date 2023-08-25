@@ -1,10 +1,18 @@
 package com.glureau.k2pb.compiler
 
 class OptionManager(options: Map<String, String>) {
-    internal val replacementMap: Map<String, String> = options["k2pb:replacement"].orEmpty()
+
+    data class Replacement(val name: String, val shouldImport: Boolean)
+
+    internal val replacementMap: Map<String, Replacement> = options["k2pb:replacement"].orEmpty()
         .split(";") // each replacement is separated by a semicolon
         .groupBy({ it.substringBefore("=") }, { it.substringAfter("=") })
-        .mapValues { it.value.first() }
+        .mapValues {
+            val data = it.value.first()
+            val shouldImport = data.endsWith("[IMPORT]")
+            Replacement(name = data.removeSuffix("[IMPORT]"), shouldImport = shouldImport)
+        }
 
-    fun replace(asString: String): String? = replacementMap[asString]
+    fun replace(className: String): String? = replacementMap[className]?.name
+    fun shouldImportForReplace(className: String): Boolean? = replacementMap[className]?.shouldImport
 }

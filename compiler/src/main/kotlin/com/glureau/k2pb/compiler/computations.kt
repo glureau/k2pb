@@ -58,7 +58,16 @@ fun computeImports(
             ).distinct()
 
     return (allTypeReferences - locallyDeclaredReferences.toSet())
-        .mapNotNull { TypeResolver.qualifiedNameToProtobufName[it] }
+        .mapNotNull {
+            TypeResolver.qualifiedNameToProtobufName[it] ?: run {
+                // TODO: TU
+                if (sharedOptions.shouldImportForReplace(it) == true) {
+                    sharedOptions.replace(it)
+                } else {
+                    null
+                }
+            }
+        }
         .map { importResolver.resolve(it) }
         .distinct()
 }

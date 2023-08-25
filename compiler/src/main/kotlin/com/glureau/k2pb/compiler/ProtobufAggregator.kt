@@ -51,12 +51,19 @@ class ProtobufAggregator {
         return sequence {
             updatedMessages.forEach { messageNode ->
                 if (messageNode.originalFile == null) {
-                    Logger.warn("No original file for ${messageNode.name}, skipping generation...")
+                    Logger.info(
+                        "No original file for ${messageNode.name} " +
+                                "(possibly coming from another module/library), skipping generation..."
+                    )
                     return@forEach
                 }
-                // TODO: this could be an option instead of default behavior
+                // TODO: this could be an option instead of default behavior,
+                //  also it may be useless given originalFile should be null for classes coming from other libs...
                 if (!messageNode.originalFile.filePath.contains(moduleName)) {
-                    Logger.warn("Skipping message from other module (current module = $moduleName): ${messageNode.name} // ${messageNode.originalFile.filePath}")
+                    Logger.warn(
+                        "Skipping message from other module (current module = $moduleName): " +
+                                "${messageNode.name} // ${messageNode.originalFile.filePath}"
+                    )
                     return@forEach
                 }
 
@@ -78,12 +85,19 @@ class ProtobufAggregator {
             }
             enums.forEach { enumNode ->
                 if (enumNode.originalFile == null) {
-                    Logger.warn("No original file for ${enumNode.name}, skipping generation...")
+                    Logger.info(
+                        "No original file for ${enumNode.name} " +
+                                "(possibly coming from another module/library), skipping generation..."
+                    )
                     return@forEach
                 }
-                // TODO: this could be an option instead of default behavior
+                // TODO: this could be an option instead of default behavior,
+                //  also it may be useless given originalFile should be null for classes coming from other libs...
                 if (!enumNode.originalFile.filePath.contains(moduleName)) {
-                    Logger.warn("Skipping message from other module (current module = $moduleName): ${enumNode.name} // ${enumNode.originalFile.filePath}")
+                    Logger.warn(
+                        "Skipping message from other module (current module = $moduleName): " +
+                                "${enumNode.name} // ${enumNode.originalFile.filePath}"
+                    )
                     return@forEach
                 }
 
