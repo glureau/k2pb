@@ -1,5 +1,7 @@
 package sample
 
+import AbstractClassOuterClass
+import AbstractSubClassOuterClass
 import BarEventOuterClass
 import BigDecimalHolderOuterClass
 import CollectionTypeEventOuterClass
@@ -158,6 +160,32 @@ class EncodingTest : BaseEncodingTest() {
             // Here the default value is required because the assertion is checking via 'data class' equals
             ktInstance = TransientField(fieldSerialized = "hello", fieldTransient = "default value"),
             protocInstance = TransientFieldOuterClass.TransientField.newBuilder().setFieldSerialized("hello").build(),
+        )
+    }
+
+    @Test
+    fun checkAbstractSubClass() {
+        assertCompatibleSerialization(
+            ktInstance = AbstractSubClass(foo = 2, bar = "asc"),
+            protocInstance = AbstractSubClassOuterClass.AbstractSubClass.newBuilder().setFoo(2).setBar("asc").build(),
+        )
+    }
+
+    @Test
+    fun checkAbstractClassPolymorphism() {
+        // de/serialization is done via AbstractClass polymorphism
+        assertCompatibleSerialization<AbstractClass>(
+            ktInstance = AbstractSubClass(foo = 2, bar = "asc"),
+            protocInstance = AbstractClassOuterClass.AbstractClass.newBuilder()
+                .setType("AbstractSubClass")
+                .setValue(
+                    AbstractSubClassOuterClass.AbstractSubClass.newBuilder()
+                        .setFoo(2)
+                        .setBar("asc")
+                        .build()
+                        .toByteString()
+                )
+                .build(),
         )
     }
 }

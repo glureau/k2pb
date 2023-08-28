@@ -1,9 +1,14 @@
 package sample
 
+import com.glureau.sample.AbstractClass
+import com.glureau.sample.AbstractSubClass
 import com.google.protobuf.GeneratedMessageV3
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.protobuf.ProtoBuf
 import org.junit.Assert.assertEquals
 import kotlin.test.assertContentEquals
@@ -12,7 +17,13 @@ import kotlin.test.assertContentEquals
 abstract class BaseEncodingTest {
 
     @PublishedApi
-    internal val protoBuf: ProtoBuf = ProtoBuf {}
+    internal val protoBuf: ProtoBuf = ProtoBuf {
+        serializersModule = SerializersModule {
+            polymorphic(AbstractClass::class) {
+                subclass(AbstractSubClass::class)
+            }
+        }
+    }
 
     inline fun <reified Kt : Any> assertCompatibleSerialization(
         ktInstance: Kt,

@@ -30,17 +30,13 @@ val KSClassDeclaration.isEnum: Boolean
 
 fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
     when {
-        declaration.isSealed -> recordMessageNode(declaration.sealedToMessageNode())
+        declaration.isSealed || declaration.isAbstractClass -> recordMessageNode(declaration.abstractToMessageNode())
         declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode())
         declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
-        }
-
-        declaration.isAbstractClass -> {
-            // Cannot instantiate this class, so ignore it
         }
 
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
@@ -69,7 +65,14 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
     )
 }
 
-private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
+private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
+    val subclasses = getSealedSubclasses().toList()
+    val possibleValuesText = if (subclasses.isNotEmpty()) {
+        "Possible values are:\n" +
+                subclasses.joinToString("\n") { "- '${it.serialName}'" }
+    } else {
+        "(subclasses cannot be listed automatically)"
+    }
     return MessageNode(
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
@@ -78,8 +81,7 @@ private fun KSClassDeclaration.sealedToMessageNode(): MessageNode {
             TypedField(
                 comment =
                 "Serial name of the class implementing the interface/sealed class.\n" +
-                        "Possible values are:\n" +
-                        getSealedSubclasses().joinToString("\n") { "- '${it.serialName}'" },
+                        possibleValuesText,
                 type = ScalarType.string,
                 name = "type",
                 annotatedNumber = 1

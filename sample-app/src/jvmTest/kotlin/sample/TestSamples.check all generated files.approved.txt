@@ -33,6 +33,14 @@ message MultiModule {
   string valueClassFromLib = 2;
 }
 
+File: k2pb/AbstractSubClass.proto
+syntax = "proto3";
+
+message AbstractSubClass {
+  int32 foo = 1;
+  string bar = 2;
+}
+
 File: k2pb/WithNestedEnum.proto
 syntax = "proto3";
 
@@ -96,6 +104,18 @@ syntax = "proto3";
 
 message BigDecimalHolder {
   string bd = 1;
+}
+
+File: k2pb/AbstractClass.proto
+syntax = "proto3";
+
+// Polymorphism structure for 'AbstractClass'
+message AbstractClass {
+  // Serial name of the class implementing the interface/sealed class.
+  // (subclasses cannot be listed automatically)
+  string type = 1;
+  // Data to be deserialized based on the field 'type'
+  bytes value = 2;
 }
 
 File: k2pb/CommonClass.proto
