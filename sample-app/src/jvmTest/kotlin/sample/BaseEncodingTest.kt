@@ -18,6 +18,7 @@ abstract class BaseEncodingTest {
 
     @PublishedApi
     internal val protoBuf: ProtoBuf = ProtoBuf {
+        encodeDefaults = true
         serializersModule = SerializersModule {
             polymorphic(AbstractClass::class) {
                 subclass(AbstractSubClass::class)

@@ -4,14 +4,30 @@ import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.sharedOptions
-import com.glureau.k2pb.compiler.struct.*
+import com.glureau.k2pb.compiler.struct.EnumEntry
+import com.glureau.k2pb.compiler.struct.EnumNode
+import com.glureau.k2pb.compiler.struct.FieldType
+import com.glureau.k2pb.compiler.struct.ListType
+import com.glureau.k2pb.compiler.struct.MapType
+import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.NumberManager
+import com.glureau.k2pb.compiler.struct.ReferenceType
+import com.glureau.k2pb.compiler.struct.ScalarType
+import com.glureau.k2pb.compiler.struct.TypedField
+import com.glureau.k2pb.compiler.struct.appendLineWithIndent
 import com.google.devtools.ksp.getDeclaredProperties
-import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSTypeArgument
+import com.google.devtools.ksp.symbol.KSTypeReference
+import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.protobuf.ProtoNumber
-import java.util.*
+import java.util.Locale
 
 
 val KSClassDeclaration.isDataClass: Boolean
@@ -200,6 +216,7 @@ private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emp
         "kotlin.Float" -> ScalarType.float
         "kotlin.Double" -> ScalarType.double
         "kotlin.Boolean" -> ScalarType.bool
+        "kotlin.ByteArray" -> ScalarType.bytes
         "kotlin.collections.List" -> {
             ListType(
                 repeatedType = arguments[0].type!!.toProtobufFieldType() // TODO: List<List<Int>> is not supported

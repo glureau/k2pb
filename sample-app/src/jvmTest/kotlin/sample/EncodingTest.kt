@@ -8,6 +8,7 @@ import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
 import FooEventOuterClass
+import NativeTypeEventOuterClass
 import ObjectClassOuterClass
 import TransientFieldOuterClass
 import VehicleKt.bike
@@ -16,11 +17,15 @@ import WithNestClassAOuterClass
 import com.glureau.sample.*
 import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.ValueClassFromLib
+import com.google.protobuf.ByteString
+import com.google.protobuf.kotlin.toByteString
+import com.google.protobuf.kotlin.toByteStringUtf8
 import dataClassFromLib
 import multiModule
 import org.junit.Test
 import user
 import vehicle
+import java.nio.charset.Charset
 
 class EncodingTest : BaseEncodingTest() {
 
@@ -44,6 +49,36 @@ class EncodingTest : BaseEncodingTest() {
                         .setId("helloworld")
                         .build()
                 )
+                .build()
+        )
+    }
+
+    @Test
+    fun checkNativeType() {
+        assertCompatibleSerialization(
+            ktInstance = NativeTypeEvent(
+                integer = 42, // int32
+                long = 84L, // int64
+                float = 12.34f, // float
+                double = 56.789, // float
+                string = "Hello World", // string
+                short = 5342, // int32
+                char = 'G', // int32
+                boolean = true, // bool
+                byte = 42.toByte(), // int32
+                byteArray = "Hello World".toByteArray(),
+            ),
+            protocInstance = NativeTypeEventOuterClass.NativeTypeEvent.newBuilder()
+                .setInteger(42)
+                .setLong(84L)
+                .setFloat(12.34f)
+                .setDouble(56.789)
+                .setString("Hello World")
+                .setShort(5342)
+                .setChar('G'.toInt())
+                .setBoolean(true)
+                .setByte(42)
+                .setByteArray("Hello World".toByteStringUtf8())
                 .build()
         )
     }

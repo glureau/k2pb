@@ -97,6 +97,7 @@ message NativeTypeEvent {
   int32 char = 7;
   bool boolean = 8;
   int32 byte = 9;
+  bytes byteArray = 10;
 }
 
 File: k2pb/BigDecimalHolder.proto
