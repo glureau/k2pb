@@ -2,7 +2,7 @@ package sample
 
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
-import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.GeneratedMessage
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
@@ -27,7 +27,7 @@ abstract class BaseEncodingTest {
 
     inline fun <reified Kt : Any> assertCompatibleSerialization(
         ktInstance: Kt,
-        protocInstance: GeneratedMessageV3,
+        protocInstance: GeneratedMessage,
     ) {
         val encodedViaKtxSerialization = protoBuf.encodeToByteArray<Kt>(ktInstance)
         val encodedViaProtocGeneratedCode = protocInstance.toByteArray()

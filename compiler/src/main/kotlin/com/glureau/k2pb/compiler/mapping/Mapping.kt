@@ -6,8 +6,8 @@ import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.sharedOptions
 import com.glureau.k2pb.compiler.struct.*
 import com.google.devtools.ksp.getDeclaredProperties
-import com.google.devtools.ksp.hasAnnotation
 import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.protobuf.ProtoNumber

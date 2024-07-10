@@ -28,7 +28,7 @@ kotlin {
             dependencies {
                 //implementation(project(":lib"))
                 implementation(project(":sample-lib"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.5.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
             }
         }
         val jvmTest by getting {
@@ -37,7 +37,7 @@ kotlin {
                 implementation("org.junit.platform:junit-platform-runner:1.9.3")
                 implementation("org.junit.jupiter:junit-jupiter:5.9.3")
                 implementation("com.approvaltests:approvaltests:18.4.0")
-                implementation("com.google.protobuf:protobuf-kotlin:3.23.0")
+                implementation("com.google.protobuf:protobuf-kotlin:4.26.0")
             }
             java.sourceSets {
                 getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
@@ -70,7 +70,7 @@ task("runProtoc", type = Exec::class) {
             include("**/*.proto")
         }.files
         val cmd = listOf(
-            "protoc",
+            "$rootDir/protoc/bin/protoc",
             "--proto_path=$dirPath",
             "--kotlin_out=build/generated/ksp/jvm/jvmTest/kotlin",
             "--java_out=build/generated/ksp/jvm/jvmTest/java",
