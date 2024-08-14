@@ -1,0 +1,137 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.glureau.k2pb",
+    "module": "compiler",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.5.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-protobuf",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.9.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "compiler-0.1.0.jar",
+          "url": "compiler-0.1.0.jar",
+          "size": 92442,
+          "sha512": "f8fb9daaa2964a664f40821fa5af1c7b7c358d9996bb3d67834dd17400780f89716bb343282c155f093f0b29de643e08e236099987fb7e69505c9064787d87af",
+          "sha256": "e706dd5b37559edafb6c763460f3a28cc92b9ddd0044a4421d5f927d518129be",
+          "sha1": "ddf33bf9c0129aedcf7f06b6fed61befd9f157db",
+          "md5": "0c8b5b4945c6fc9919700d9f540fd734"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.squareup",
+          "module": "kotlinpoet",
+          "version": {
+            "requires": "1.10.2"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "kotlin-reflect"
+            }
+          ]
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "com.squareup",
+          "module": "kotlinpoet-ksp",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "com.google.devtools.ksp",
+          "module": "symbol-processing",
+          "version": {
+            "requires": "1.9.0-1.0.13"
+          }
+        },
+        {
+          "group": "com.google.devtools.ksp",
+          "module": "symbol-processing-api",
+          "version": {
+            "requires": "1.9.0-1.0.13"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-protobuf",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.9.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "compiler-0.1.0.jar",
+          "url": "compiler-0.1.0.jar",
+          "size": 92442,
+          "sha512": "f8fb9daaa2964a664f40821fa5af1c7b7c358d9996bb3d67834dd17400780f89716bb343282c155f093f0b29de643e08e236099987fb7e69505c9064787d87af",
+          "sha256": "e706dd5b37559edafb6c763460f3a28cc92b9ddd0044a4421d5f927d518129be",
+          "sha1": "ddf33bf9c0129aedcf7f06b6fed61befd9f157db",
+          "md5": "0c8b5b4945c6fc9919700d9f540fd734"
+        }
+      ]
+    }
+  ]
+}
