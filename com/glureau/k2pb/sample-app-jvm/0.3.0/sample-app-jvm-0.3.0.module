@@ -1,0 +1,113 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../sample-app/0.3.0/sample-app-0.3.0.module",
+    "group": "com.glureau.k2pb",
+    "module": "sample-app",
+    "version": "0.3.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.5.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "1.9.22"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sample-app-jvm-0.3.0.jar",
+          "url": "sample-app-jvm-0.3.0.jar",
+          "size": 145199,
+          "sha512": "65387022ef912858fc16077d60641c52c80a83a16e0c8a68053dbaa0915a22d2d596f19608d15a7c12aee6e9f486e4366a89fa67cbe366980267bb572e46bf41",
+          "sha256": "bdd9df49585b61c70ec90246e50c79455ce28abba41ae43534cabd2d7bedc29d",
+          "sha1": "467c745891cb579bed553cc2056c7c2c8f929ef1",
+          "md5": "4ed6683218acf0f17cbd339dd204c9ae"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "1.9.22"
+          }
+        },
+        {
+          "group": "com.glureau.k2pb",
+          "module": "sample-lib",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-protobuf",
+          "version": {
+            "requires": "1.6.3"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sample-app-jvm-0.3.0.jar",
+          "url": "sample-app-jvm-0.3.0.jar",
+          "size": 145199,
+          "sha512": "65387022ef912858fc16077d60641c52c80a83a16e0c8a68053dbaa0915a22d2d596f19608d15a7c12aee6e9f486e4366a89fa67cbe366980267bb572e46bf41",
+          "sha256": "bdd9df49585b61c70ec90246e50c79455ce28abba41ae43534cabd2d7bedc29d",
+          "sha1": "467c745891cb579bed553cc2056c7c2c8f929ef1",
+          "md5": "4ed6683218acf0f17cbd339dd204c9ae"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "sample-app-jvm-0.3.0-sources.jar",
+          "url": "sample-app-jvm-0.3.0-sources.jar",
+          "size": 6721,
+          "sha512": "6332f9f98fb87cedc998d01eed1b3b1fa3e9b3cf1c6a44c2a9939d71dea9dbdc684538204b502925a725821372c40712c70ce4ad1542abe37343863568d72ca1",
+          "sha256": "85a28f53e7e911c0c93e2f634fae93c27b58f49889ed6452e2cb1f7f58b48285",
+          "sha1": "f60cad1618072e195a8b710864046664d81c697c",
+          "md5": "461c594817a0cc63df29c5ca2f07b6e1"
+        }
+      ]
+    }
+  ]
+}
