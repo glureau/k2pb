@@ -10,7 +10,7 @@
   },
   "createdBy": {
     "gradle": {
-      "version": "7.5.1"
+      "version": "8.1.1"
     }
   },
   "variants": [
@@ -45,11 +45,11 @@
         {
           "name": "compiler-0.3.0.jar",
           "url": "compiler-0.3.0.jar",
-          "size": 92387,
-          "sha512": "15f2438983e39a363fd3367b1ff15bd1c4002e5003b903e0fd3c7706098bdc2b25d8d725a971c415d98d09ae72273be3f0e0e0483df60de1483fd9b3140bbd85",
-          "sha256": "c76c3e77a91c9eefd5786e71a63f6089e31ebb7505a5b6b0eb71ec0b67d6ebfd",
-          "sha1": "3059404a61de86236a7bc77350652f432798406e",
-          "md5": "5fd896512b095a0b8bca5e2f1541b52b"
+          "size": 93742,
+          "sha512": "c544cae8bab825a72920a0c5cae031ae90f1153af8e77e12c004cf6cebdbda5f2a769c48a63a91d876996c4ab15f9a6cce2e3f18b7f0187a68b7060858db599c",
+          "sha256": "2d0bd6a8dda97519d99b89a55055970b4fbbd9b71eaa0749fb2f9802d190b9c3",
+          "sha1": "2e9eb6c877d1a4b964aea1ddc08bf37dc592b11a",
+          "md5": "e446ac27c5f5ecd0d050da181216bf16"
         }
       ]
     },
@@ -125,11 +125,11 @@
         {
           "name": "compiler-0.3.0.jar",
           "url": "compiler-0.3.0.jar",
-          "size": 92387,
-          "sha512": "15f2438983e39a363fd3367b1ff15bd1c4002e5003b903e0fd3c7706098bdc2b25d8d725a971c415d98d09ae72273be3f0e0e0483df60de1483fd9b3140bbd85",
-          "sha256": "c76c3e77a91c9eefd5786e71a63f6089e31ebb7505a5b6b0eb71ec0b67d6ebfd",
-          "sha1": "3059404a61de86236a7bc77350652f432798406e",
-          "md5": "5fd896512b095a0b8bca5e2f1541b52b"
+          "size": 93742,
+          "sha512": "c544cae8bab825a72920a0c5cae031ae90f1153af8e77e12c004cf6cebdbda5f2a769c48a63a91d876996c4ab15f9a6cce2e3f18b7f0187a68b7060858db599c",
+          "sha256": "2d0bd6a8dda97519d99b89a55055970b4fbbd9b71eaa0749fb2f9802d190b9c3",
+          "sha1": "2e9eb6c877d1a4b964aea1ddc08bf37dc592b11a",
+          "md5": "e446ac27c5f5ecd0d050da181216bf16"
         }
       ]
     }
