@@ -1,8 +1,8 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
+import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.processing.*
-import com.google.devtools.ksp.processing.impl.KSNameImpl
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import kotlinx.serialization.Serializable
