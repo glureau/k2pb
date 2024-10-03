@@ -117,12 +117,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    Logger.warn("getDeclaredProperties")
-    Logger.warn(getDeclaredProperties().toList().toString())
-    Logger.warn("getAllProperties")
-    Logger.warn(getAllProperties().toList().toString())
     val fields = getDeclaredProperties().mapNotNull { prop ->
-        //val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
         if (prop.hasAnnotation("kotlinx.serialization.Transient")) {
             Logger.warn("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
             return@mapNotNull null
