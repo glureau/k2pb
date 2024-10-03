@@ -30,6 +30,8 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import java.util.Locale
 
 
+val KSClassDeclaration.isClass: Boolean
+    get() = classKind == ClassKind.CLASS
 val KSClassDeclaration.isDataClass: Boolean
     get() = classKind == ClassKind.CLASS && this.modifiers.contains(Modifier.DATA)
 val KSClassDeclaration.isAbstractClass: Boolean
@@ -54,6 +56,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
+        declaration.isClass -> recordMessageNode(declaration.dataClassToMessageNode())
 
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
     }
@@ -114,13 +117,17 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    val fields = primaryConstructor!!.parameters.mapNotNull { param ->
-        val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
+    Logger.warn("getDeclaredProperties")
+    Logger.warn(getDeclaredProperties().toList().toString())
+    Logger.warn("getAllProperties")
+    Logger.warn(getAllProperties().toList().toString())
+    val fields = getDeclaredProperties().mapNotNull { prop ->
+        //val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
         if (prop.hasAnnotation("kotlinx.serialization.Transient")) {
             Logger.warn("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
             return@mapNotNull null
         }
-        val resolvedType = param.type.resolve()
+        val resolvedType = prop.type.resolve()
         val resolvedDeclaration = resolvedType.declaration
         if (resolvedDeclaration is KSClassDeclaration &&
             (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(Modifier.VALUE))
@@ -177,7 +184,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
         comment = docString,
-        fields = fields,
+        fields = fields.toList(),
         originalFile = containingFile
     )
 }

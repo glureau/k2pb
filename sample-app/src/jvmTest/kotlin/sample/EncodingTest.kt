@@ -14,18 +14,33 @@ import TransientFieldOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
-import com.glureau.sample.*
+import com.glureau.sample.AbstractClass
+import com.glureau.sample.AbstractSubClass
+import com.glureau.sample.BarEvent
+import com.glureau.sample.BigDecimalHolder
+import com.glureau.sample.CollectionTypeEvent
+import com.glureau.sample.CommentedClass
+import com.glureau.sample.CommonClass
+import com.glureau.sample.FooEvent
+import com.glureau.sample.MultiModule
+import com.glureau.sample.NativeTypeEvent
+import com.glureau.sample.ObjectClass
+import com.glureau.sample.StandardClass
+import com.glureau.sample.TransientField
+import com.glureau.sample.User
+import com.glureau.sample.Vehicle
+import com.glureau.sample.WithNestClassA
 import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.ValueClassFromLib
-import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteString
 import com.google.protobuf.kotlin.toByteStringUtf8
 import dataClassFromLib
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
 import multiModule
 import org.junit.Test
 import user
 import vehicle
-import java.nio.charset.Charset
 
 class EncodingTest : BaseEncodingTest() {
 
@@ -221,6 +236,18 @@ class EncodingTest : BaseEncodingTest() {
                         .toByteString()
                 )
                 .build(),
+        )
+    }
+
+    @Test
+    fun checkStandardClass() {
+        assertCompatibleSerialization(
+            ktInstance = StandardClass("000-00", "helloworld".toByteArray()),
+            protocInstance = StandardClassOuterClass.StandardClass.newBuilder()
+                .setEventUUID("000-00")
+                .setBytes("helloworld".toByteArray().toByteString())
+                .setFoo("hello")
+                .build()
         )
     }
 }
