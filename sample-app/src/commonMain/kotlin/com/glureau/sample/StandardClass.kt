@@ -10,6 +10,9 @@ class StandardClass(
 
     val foo: String = "hello"
 
+    val noBack: String
+        get() = "noBackingFieldHere"
+
     override fun toString(): String {
         return "StandardClass(eventUUID='$eventUUID', bytes=${bytes.contentToString()})"
     }

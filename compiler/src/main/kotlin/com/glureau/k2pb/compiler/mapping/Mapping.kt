@@ -119,7 +119,11 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     val fields = getDeclaredProperties().mapNotNull { prop ->
         if (prop.hasAnnotation("kotlinx.serialization.Transient")) {
-            Logger.warn("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+            Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+            return@mapNotNull null
+        }
+        if (!prop.hasBackingField) {
+            Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
             return@mapNotNull null
         }
         val resolvedType = prop.type.resolve()
