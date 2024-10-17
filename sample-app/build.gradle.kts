@@ -29,6 +29,7 @@ kotlin {
                 implementation(project(":annotations"))
                 implementation(project(":runtime"))
                 implementation(project(":sample-lib"))
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
             }
         }
         val jvmTest by getting {

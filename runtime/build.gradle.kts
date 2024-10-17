@@ -45,6 +45,11 @@ kotlin {
         all {
             languageSettings.optIn("kotlin.RequiresOptIn")
         }
+        commonMain {
+            dependencies {
+                api(project(":annotations"))
+            }
+        }
     }
 
     targets.all {

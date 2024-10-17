@@ -36,13 +36,22 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         resolveDependencies(resolver)
 
-        protobufAggregator.buildFiles(moduleName(resolver)).forEach { protobufFile ->
+        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName(resolver)).forEach { protobufFile ->
             environment.writeProtobufFile(
                 protobufFile.toProtoString().toByteArray(),
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
         }
+        /*
+        ProtobufSerializerProducer(protobufAggregator).buildFiles().forEach { protobufFile ->
+            environment.writeProtobufFile(
+                protobufFile.toProtoString().toByteArray(),
+                fileName = protobufFile.path,
+                dependencies = protobufFile.dependencies
+            )
+        }
+        */
         return emptyList()
     }
 

@@ -1,4 +1,4 @@
-package com.glureau.k2pb.runtime.ktx;
+package com.glureau.k2pb;
 
 public enum class ProtoIntegerType(internal val signature: Long) {
     DEFAULT(0L shl 33),

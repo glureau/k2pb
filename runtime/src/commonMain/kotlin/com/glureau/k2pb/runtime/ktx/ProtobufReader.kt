@@ -5,6 +5,8 @@
 
 package com.glureau.k2pb.runtime.ktx
 
+import com.glureau.k2pb.ProtoIntegerType
+
 //import kotlinx.serialization.*
 //import kotlinx.serialization.protobuf.*
 //import kotlin.jvm.*

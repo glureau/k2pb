@@ -1,20 +1,19 @@
 /*
  * Copyright 2017-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
-//@file:OptIn(ExperimentalSerializationApi::class)
 
 package com.glureau.k2pb.runtime.ktx
 
-//import kotlinx.serialization.*
-//import kotlinx.serialization.protobuf.*
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.annotation.ProtobufWriter
 
-internal class ProtobufWriter(private val out: ByteArrayOutput) {
-    fun writeBytes(bytes: ByteArray, tag: Int) {
+internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWriter {
+    override fun writeBytes(bytes: ByteArray, tag: Int) {
         out.encode32(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(tag))
         writeBytes(bytes)
     }
 
-    fun writeBytes(bytes: ByteArray) {
+    override fun writeBytes(bytes: ByteArray) {
         out.encode32(bytes.size)
         out.write(bytes)
     }
@@ -29,51 +28,51 @@ internal class ProtobufWriter(private val out: ByteArrayOutput) {
         out.write(output)
     }
 
-    fun writeInt(value: Int, tag: Int, format: ProtoIntegerType) {
+    override fun writeInt(value: Int, tag: Int, format: ProtoIntegerType) {
         val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.i32 else ProtoWireType.VARINT
         out.encode32(wireType.wireIntWithTag(tag))
         out.encode32(value, format)
     }
 
-    fun writeInt(value: Int) {
+    override fun writeInt(value: Int) {
         out.encode32(value)
     }
 
-    fun writeLong(value: Long, tag: Int, format: ProtoIntegerType) {
+    override fun writeLong(value: Long, tag: Int, format: ProtoIntegerType) {
         val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.i64 else ProtoWireType.VARINT
         out.encode32(wireType.wireIntWithTag(tag))
         out.encode64(value, format)
     }
 
-    fun writeLong(value: Long) {
+    override fun writeLong(value: Long) {
         out.encode64(value)
     }
 
-    fun writeString(value: String, tag: Int) {
+    override fun writeString(value: String, tag: Int) {
         val bytes = value.encodeToByteArray()
         writeBytes(bytes, tag)
     }
 
-    fun writeString(value: String) {
+    override fun writeString(value: String) {
         val bytes = value.encodeToByteArray()
         writeBytes(bytes)
     }
 
-    fun writeDouble(value: Double, tag: Int) {
+    override fun writeDouble(value: Double, tag: Int) {
         out.encode32(ProtoWireType.i64.wireIntWithTag(tag))
         out.writeLong(value.reverseBytes())
     }
 
-    fun writeDouble(value: Double) {
+    override fun writeDouble(value: Double) {
         out.writeLong(value.reverseBytes())
     }
 
-    fun writeFloat(value: Float, tag: Int) {
+    override fun writeFloat(value: Float, tag: Int) {
         out.encode32(ProtoWireType.i32.wireIntWithTag(tag))
         out.writeInt(value.reverseBytes())
     }
 
-    fun writeFloat(value: Float) {
+    override fun writeFloat(value: Float) {
         out.writeInt(value.reverseBytes())
     }
 

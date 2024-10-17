@@ -1,6 +1,7 @@
 package sample
 
 import com.glureau.k2pb.runtime.K2PB
+import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.google.protobuf.GeneratedMessage

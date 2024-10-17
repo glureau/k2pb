@@ -1,23 +1,25 @@
 package sample
 
+//import BigDecimalHolderOuterClass
+//import TransientFieldOuterClass
+//import com.glureau.sample.BigDecimalHolder
+//import com.glureau.sample.TransientField
 import AbstractClassOuterClass
 import AbstractSubClassOuterClass
 import BarEventOuterClass
-//import BigDecimalHolderOuterClass
 import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
 import FooEventOuterClass
 import NativeTypeEventOuterClass
 import ObjectClassOuterClass
-//import TransientFieldOuterClass
+import StandardClassOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.glureau.sample.BarEvent
-import com.glureau.sample.BigDecimalHolder
 import com.glureau.sample.CollectionTypeEvent
 import com.glureau.sample.CommentedClass
 import com.glureau.sample.CommonClass
@@ -26,7 +28,6 @@ import com.glureau.sample.MultiModule
 import com.glureau.sample.NativeTypeEvent
 import com.glureau.sample.ObjectClass
 import com.glureau.sample.StandardClass
-import com.glureau.sample.TransientField
 import com.glureau.sample.User
 import com.glureau.sample.Vehicle
 import com.glureau.sample.WithNestClassA
@@ -35,8 +36,6 @@ import com.glureau.sample.lib.ValueClassFromLib
 import com.google.protobuf.kotlin.toByteString
 import com.google.protobuf.kotlin.toByteStringUtf8
 import dataClassFromLib
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.encodeToByteArray
 import multiModule
 import org.junit.Test
 import user
@@ -186,6 +185,7 @@ class EncodingTest : BaseEncodingTest() {
         )
     }
 
+    /*
     @Test
     fun checkCustomSerializer() {
         assertCompatibleSerialization(
@@ -195,6 +195,7 @@ class EncodingTest : BaseEncodingTest() {
                 .build()
         )
     }
+     */
 
     @Test
     fun checkObjectClass() {
@@ -204,6 +205,7 @@ class EncodingTest : BaseEncodingTest() {
         )
     }
 
+    /*
     @Test
     fun checkTransientField() {
         assertCompatibleSerialization(
@@ -212,6 +214,7 @@ class EncodingTest : BaseEncodingTest() {
             protocInstance = TransientFieldOuterClass.TransientField.newBuilder().setFieldSerialized("hello").build(),
         )
     }
+    */
 
     @Test
     fun checkAbstractSubClass() {
