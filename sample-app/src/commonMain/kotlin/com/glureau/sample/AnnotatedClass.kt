@@ -1,19 +1,15 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package com.glureau.sample
 
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.protobuf.ProtoNumber
+import com.glureau.k2pb.annotation.ProtoMessage
+import com.glureau.k2pb.annotation.ProtoName
+import com.glureau.k2pb.annotation.ProtoNumber
 
-@Serializable
-@SerialName("MyAnnotatedClass")
+@ProtoMessage("MyAnnotatedClass")
 data class AnnotatedClass(
-    @SerialName("a")
+    @ProtoName("a")
     val fieldA: Int,
     @ProtoNumber(4)
-    @SerialName("b")
+    @ProtoName("b")
     val fieldB: Int,
     @ProtoNumber(3)
     val c: String,

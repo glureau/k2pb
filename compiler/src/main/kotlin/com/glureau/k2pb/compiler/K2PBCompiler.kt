@@ -1,11 +1,11 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import kotlinx.serialization.Serializable
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
@@ -27,7 +27,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             return emptyList()
         }
         runDone = true
-        val symbols = resolver.getSymbolsWithAnnotation(Serializable::class.qualifiedName!!)
+        val symbols = resolver.getSymbolsWithAnnotation(ProtoMessage::class.qualifiedName!!)
         symbols.forEach {
             if (it is KSClassDeclaration) {
                 protobufAggregator.recordKSClassDeclaration(it)

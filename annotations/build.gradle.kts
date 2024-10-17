@@ -53,11 +53,11 @@ kotlin {
             // may be related to https://youtrack.jetbrains.com/issue/KT-46636
             kotlinOptions.allWarningsAsErrors = false
         }
-    }
+    }/*
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
+    }*/
 }
 /*
 // For when nodejs.org is down...

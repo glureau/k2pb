@@ -3,14 +3,14 @@ package sample
 import AbstractClassOuterClass
 import AbstractSubClassOuterClass
 import BarEventOuterClass
-import BigDecimalHolderOuterClass
+//import BigDecimalHolderOuterClass
 import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
 import FooEventOuterClass
 import NativeTypeEventOuterClass
 import ObjectClassOuterClass
-import TransientFieldOuterClass
+//import TransientFieldOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass

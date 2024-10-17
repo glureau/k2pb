@@ -17,15 +17,14 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                //implementation(project(":lib"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
+                implementation(project(":annotations"))
             }
         }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("org.junit.platform:junit-platform-runner:1.9.3")
-                implementation("org.junit.jupiter:junit-jupiter:5.9.3")
+                implementation("org.junit.platform:junit-platform-runner:1.10.2")
+                implementation("org.junit.jupiter:junit-jupiter:5.10.2")
                 implementation("com.approvaltests:approvaltests:18.4.0")
                 implementation("com.google.protobuf:protobuf-kotlin:4.26.0")
             }

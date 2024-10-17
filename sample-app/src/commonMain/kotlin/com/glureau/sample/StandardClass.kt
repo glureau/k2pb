@@ -1,8 +1,9 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@Serializable
+
+@ProtoMessage
 class StandardClass(
     val eventUUID: String,
     val bytes: ByteArray,

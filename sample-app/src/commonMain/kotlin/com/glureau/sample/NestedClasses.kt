@@ -1,22 +1,23 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@Serializable
+
+@ProtoMessage
 data class WithNestClassA(
     val a: NestedClass = NestedClass("nested A"),
 ) {
-    @Serializable
+    @ProtoMessage
     data class NestedClass(
         val nested: String = "nested",
     )
 }
 
-@Serializable
+@ProtoMessage
 data class WithNestClassB(
     val b: NestedClass = NestedClass(),
 ) {
-    @Serializable
+    @ProtoMessage
     data class NestedClass(
         val nestedEnum: NestedEnum = NestedEnum.C,
     ) {
@@ -27,7 +28,7 @@ data class WithNestClassB(
 }
 
 
-@Serializable
+@ProtoMessage
 data class WithNestedEnum(
     val enum: NestedEnum = NestedEnum.C,
 ) {

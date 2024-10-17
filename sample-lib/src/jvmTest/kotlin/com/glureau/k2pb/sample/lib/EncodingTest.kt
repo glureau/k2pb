@@ -7,7 +7,7 @@ import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import org.junit.Test
 
-@OptIn(ExperimentalSerializationApi::class)
+
 class EncodingTest {
 
     private val protoBuf: ProtoBuf = ProtoBuf {}

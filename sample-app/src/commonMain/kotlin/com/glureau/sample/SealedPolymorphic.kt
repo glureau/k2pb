@@ -1,18 +1,15 @@
 package com.glureau.sample
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@SerialName("Vehicle")
-@Serializable
+@ProtoMessage("Vehicle")
 sealed class Vehicle {
-    @SerialName("Vehicle.Car")
-    @Serializable
+    @ProtoMessage("Vehicle.Car")
     data class Car(val brand: String) : Vehicle()
-    @SerialName("Vehicle.Bike")
-    @Serializable
+
+    @ProtoMessage("Vehicle.Bike")
     data class Bike(val brand: String) : Vehicle()
 }
 
-@Serializable
+@ProtoMessage
 data class User(val name: String, val vehicle: Vehicle? = null)

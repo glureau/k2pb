@@ -14,8 +14,10 @@ pluginManagement {
     }
 }
 
-//include(":lib")
+include(":annotations")
 include(":compiler")
+include(":runtime")
 include(":gradle-plugin")
+
 include(":sample-lib")
 include(":sample-app")

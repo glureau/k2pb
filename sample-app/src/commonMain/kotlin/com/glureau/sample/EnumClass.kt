@@ -1,10 +1,8 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-// @Serializable is not required usually, but here the enum is not referenced in another serializable,
-// and we want to trigger the generation.
-@Serializable
+@ProtoMessage
 enum class EnumClass {
     A,
     B,

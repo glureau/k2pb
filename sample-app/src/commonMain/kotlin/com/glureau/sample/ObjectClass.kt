@@ -1,8 +1,9 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@Serializable
+
+@ProtoMessage
 object ObjectClass {
     val foo: Int = 42 // Not serializable
 }

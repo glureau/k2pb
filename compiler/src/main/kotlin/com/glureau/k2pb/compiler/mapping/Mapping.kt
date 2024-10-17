@@ -1,5 +1,7 @@
 package com.glureau.k2pb.compiler.mapping
 
+import com.glureau.k2pb.annotation.ProtoName
+import com.glureau.k2pb.annotation.ProtoNumber
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.getArg
@@ -24,9 +26,6 @@ import com.google.devtools.ksp.symbol.KSTypeArgument
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.impl.hasAnnotation
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.protobuf.ProtoNumber
 import java.util.Locale
 
 
@@ -269,8 +268,8 @@ val KSPropertyDeclaration.serialName: String
 private val KSAnnotated.serialNameInternal: String?
     get() =
         annotations.toList()
-            .firstOrNull { it.shortName.asString() == SerialName::class.simpleName }
-            ?.getArg<String>(SerialName::value)
+            .firstOrNull { it.shortName.asString() == ProtoName::class.simpleName }
+            ?.getArg<String>(ProtoName::name)
 
 val KSClassDeclaration.protoNumber: Int?
     get() = protoNumberInternal
@@ -278,7 +277,6 @@ val KSClassDeclaration.protoNumber: Int?
 val KSPropertyDeclaration.protoNumber: Int?
     get() = protoNumberInternal
 
-@OptIn(ExperimentalSerializationApi::class)
 private val KSAnnotated.protoNumberInternal: Int?
     get() =
         annotations.toList()

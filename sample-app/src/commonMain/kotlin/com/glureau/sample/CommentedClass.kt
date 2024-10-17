@@ -1,11 +1,11 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
 /**
  * This class has kdoc comment.
  */
-@Serializable
+@ProtoMessage
 data class CommentedClass(
     /**
      * This field has kdoc comment.

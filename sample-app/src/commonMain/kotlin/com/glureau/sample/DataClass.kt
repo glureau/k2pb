@@ -1,20 +1,20 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
 
-@Serializable
+@ProtoMessage
 data class FooEvent(
     val common: CommonClass = CommonClass("id"),
 )
 
-@Serializable
+@ProtoMessage
 data class BarEvent(
     val common: CommonClass = CommonClass("id"),
 )
 
 // Ensure this class is NOT duplicated in the generated code.
-@Serializable
+@ProtoMessage
 data class CommonClass(
     val id: String
 ) : EventInterface

@@ -1,14 +1,8 @@
 package com.glureau.sample
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import com.glureau.k2pb.annotation.ProtoMessage
 import java.math.BigDecimal
-
+/*
 class CustomSerializer : KSerializer<BigDecimal> {
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor("Decimal", PrimitiveKind.STRING)
@@ -26,12 +20,14 @@ class CustomSerializer : KSerializer<BigDecimal> {
 // So we need to add an argument in the build.gradle file.
 // (note that the @Contextual annotation could also be used and the mapping define multiple times  in other modules
 //  with different serializer and different type used, so we cannot extract just 1 proto file in theory)
-@Serializable
-data class BigDecimalHolder(@Serializable(CustomSerializer::class) val bd: BigDecimal)
+@ProtoMessage
+data class BigDecimalHolder(@ProtoMessage(CustomSerializer::class) val bd: BigDecimal)
 
 @JvmInline
-@Serializable
-value class BigDecimalValueClass(@Serializable(CustomSerializer::class) val bd: BigDecimal)
+@ProtoMessage
+value class BigDecimalValueClass(@ProtoMessage(CustomSerializer::class) val bd: BigDecimal)
 
-@Serializable
+@ProtoMessage
 data class BigDecimalValueClassHolder(val bdValue: BigDecimalValueClass)
+
+ */

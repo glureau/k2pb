@@ -1,6 +1,7 @@
 package com.glureau.sample.lib
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@Serializable
+
+@ProtoMessage
 data class DataClassFromLib(val myInt: Int)

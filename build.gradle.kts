@@ -66,7 +66,7 @@ tasks.create<Delete>("cleanMavenLocalArtifacts") {
 
 tasks.create<Sync>("copyMavenLocalArtifacts") {
     group = "publishing"
-    dependsOn(":compiler:publishToMavenLocal", /*":lib:publishToMavenLocal", */":gradle-plugin:publishToMavenLocal")
+    dependsOn(":compiler:publishToMavenLocal", ":annotations:publishToMavenLocal", ":gradle-plugin:publishToMavenLocal")
 
     val userHome = System.getProperty("user.home")
     val groupDir = project.group.toString().replace('.', '/')

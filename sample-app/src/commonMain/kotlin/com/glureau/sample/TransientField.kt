@@ -1,11 +1,11 @@
 package com.glureau.sample
+/*
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-
-@Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
+@ProtoMessage
 data class TransientField(
     val fieldSerialized: String,
     @Transient
     val fieldTransient: String = "default value",
 )
+*/

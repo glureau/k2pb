@@ -1,8 +1,8 @@
 package com.glureau.sample
 
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@Serializable
+@ProtoMessage
 data class NativeTypeEvent(
     // Using same mapping than in Kotlinx Serialization:
     // https://github.com/Kotlin/kotlinx.serialization/blob/master/formats/protobuf/commonMain/src/kotlinx/serialization/protobuf/internal/ProtobufEncoding.kt

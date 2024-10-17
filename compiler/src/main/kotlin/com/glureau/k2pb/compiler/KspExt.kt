@@ -3,9 +3,6 @@ package com.glureau.k2pb.compiler
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.*
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.protobuf.ProtoNumber
 import java.io.OutputStream
 import kotlin.reflect.KProperty1
 

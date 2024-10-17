@@ -1,13 +1,11 @@
 package com.glureau.sample
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.glureau.k2pb.annotation.ProtoMessage
 
-@Serializable
+@ProtoMessage
 abstract class AbstractClass {
     abstract val foo: Int
 }
 
-@SerialName("AbstractSubClass")
-@Serializable
+@ProtoMessage("AbstractSubClass")
 data class AbstractSubClass(override val foo: Int, val bar: String) : AbstractClass()

@@ -2,7 +2,7 @@
 
 (WIP)
 
-Using KSP to generate protobuf from @Serializable kotlin classes.
+Using KSP to generate protobuf from @ProtoMessage kotlin classes.
 
 ### Comparison with KotlinX Serialization ProtoBufSchemaGenerator
 
