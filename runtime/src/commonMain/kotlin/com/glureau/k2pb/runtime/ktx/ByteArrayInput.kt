@@ -1,5 +1,6 @@
 package com.glureau.k2pb.runtime.ktx
-internal class ByteArrayInput(private var array: ByteArray, private val endIndex: Int = array.size) {
+
+public class ByteArrayInput(private var array: ByteArray, private val endIndex: Int = array.size) {
     private var position: Int = 0
     val availableBytes: Int get() = endIndex - position
 
@@ -53,7 +54,7 @@ internal class ByteArrayInput(private var array: ByteArray, private val endIndex
         var currentPosition = position
         var result = array[currentPosition++].toInt()
         if (result >= 0) {
-            position  = currentPosition
+            position = currentPosition
             return result
         } else if (endIndex - position > 1) {
             result = result xor (array[currentPosition++].toInt() shl 7)
@@ -76,7 +77,7 @@ internal class ByteArrayInput(private var array: ByteArray, private val endIndex
         var currentPosition = position
         var result = array[currentPosition++].toLong()
         if (result >= 0) {
-            position  = currentPosition
+            position = currentPosition
             return result
         } else if (endIndex - position > 1) {
             result = result xor (array[currentPosition++].toLong() shl 7)

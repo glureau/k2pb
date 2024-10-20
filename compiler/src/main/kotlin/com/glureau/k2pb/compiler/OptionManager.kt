@@ -13,6 +13,8 @@ class OptionManager(options: Map<String, String>) {
             Replacement(name = data.removeSuffix("[IMPORT]"), shouldImport = shouldImport)
         }
 
+    internal var useKspPolymorphism = true // To be handled via options?
+
     fun replace(className: String): String? = replacementMap[className]?.name
     fun shouldImportForReplace(className: String): Boolean? = replacementMap[className]?.shouldImport
 }

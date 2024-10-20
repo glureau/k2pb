@@ -1,6 +1,4 @@
-package com.glureau.k2pb.annotation
-
-import com.glureau.k2pb.ProtoIntegerType
+package com.glureau.k2pb
 
 interface ProtobufWriter {
     fun writeBytes(bytes: ByteArray, tag: Int)
@@ -16,3 +14,4 @@ interface ProtobufWriter {
     fun writeFloat(value: Float, tag: Int)
     fun writeFloat(value: Float)
 }
+

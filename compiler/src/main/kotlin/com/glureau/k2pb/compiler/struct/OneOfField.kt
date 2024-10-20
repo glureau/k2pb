@@ -3,6 +3,7 @@ package com.glureau.k2pb.compiler.struct
 data class OneOfField(
     override val comment: String?,
     override val name: String,
+    override val protoNumber: Int,
     val fields: List<FieldInterface>,
 ) : FieldInterface
 

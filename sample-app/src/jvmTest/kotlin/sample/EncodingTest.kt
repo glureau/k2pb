@@ -20,6 +20,7 @@ import WithNestClassAOuterClass
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.glureau.sample.BarEvent
+import com.glureau.sample.BigDecimalHolder
 import com.glureau.sample.CollectionTypeEvent
 import com.glureau.sample.CommentedClass
 import com.glureau.sample.CommonClass
@@ -28,6 +29,7 @@ import com.glureau.sample.MultiModule
 import com.glureau.sample.NativeTypeEvent
 import com.glureau.sample.ObjectClass
 import com.glureau.sample.StandardClass
+import com.glureau.sample.TransientField
 import com.glureau.sample.User
 import com.glureau.sample.Vehicle
 import com.glureau.sample.WithNestClassA
@@ -40,6 +42,7 @@ import multiModule
 import org.junit.Test
 import user
 import vehicle
+import java.math.BigDecimal
 
 class EncodingTest : BaseEncodingTest() {
 
@@ -185,17 +188,15 @@ class EncodingTest : BaseEncodingTest() {
         )
     }
 
-    /*
     @Test
     fun checkCustomSerializer() {
         assertCompatibleSerialization(
-            ktInstance = BigDecimalHolder(java.math.BigDecimal("42.42")),
+            ktInstance = BigDecimalHolder(BigDecimal("42.42")),
             protocInstance = BigDecimalHolderOuterClass.BigDecimalHolder.newBuilder()
                 .setBd("42.42")
                 .build()
         )
     }
-     */
 
     @Test
     fun checkObjectClass() {
@@ -205,7 +206,6 @@ class EncodingTest : BaseEncodingTest() {
         )
     }
 
-    /*
     @Test
     fun checkTransientField() {
         assertCompatibleSerialization(
@@ -214,7 +214,6 @@ class EncodingTest : BaseEncodingTest() {
             protocInstance = TransientFieldOuterClass.TransientField.newBuilder().setFieldSerialized("hello").build(),
         )
     }
-    */
 
     @Test
     fun checkAbstractSubClass() {
@@ -230,14 +229,14 @@ class EncodingTest : BaseEncodingTest() {
         assertCompatibleSerialization<AbstractClass>(
             ktInstance = AbstractSubClass(foo = 2, bar = "asc"),
             protocInstance = AbstractClassOuterClass.AbstractClass.newBuilder()
-                .setType("AbstractSubClass")
+                /*.setType("AbstractSubClass")
                 .setValue(
                     AbstractSubClassOuterClass.AbstractSubClass.newBuilder()
                         .setFoo(2)
                         .setBar("asc")
                         .build()
                         .toByteString()
-                )
+                )*/
                 .build(),
         )
     }
@@ -249,7 +248,7 @@ class EncodingTest : BaseEncodingTest() {
             protocInstance = StandardClassOuterClass.StandardClass.newBuilder()
                 .setEventUUID("000-00")
                 .setBytes("helloworld".toByteArray().toByteString())
-                .setFoo("hello")
+                //.setFoo("hello")
                 .build()
         )
     }

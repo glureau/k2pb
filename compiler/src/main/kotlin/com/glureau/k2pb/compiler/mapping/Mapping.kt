@@ -1,7 +1,10 @@
 package com.glureau.k2pb.compiler.mapping
 
+import com.glureau.k2pb.CustomStringSerializer
+import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoName
 import com.glureau.k2pb.annotation.ProtoNumber
+import com.glureau.k2pb.annotation.ProtoStringSerializer
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.getArg
@@ -14,7 +17,7 @@ import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.NumberManager
 import com.glureau.k2pb.compiler.struct.ReferenceType
-import com.glureau.k2pb.compiler.struct.ScalarType
+import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.appendLineWithIndent
 import com.google.devtools.ksp.getDeclaredProperties
@@ -22,10 +25,10 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeArgument
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
-import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import java.util.Locale
 
 
@@ -55,6 +58,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
         }
+
         declaration.isClass -> recordMessageNode(declaration.dataClassToMessageNode())
 
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
@@ -91,33 +95,46 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
     } else {
         "(subclasses cannot be listed automatically)"
     }
+
     return MessageNode(
+        packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        comment = "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'",
-        fields = listOf(
-            TypedField(
-                comment =
-                "Serial name of the class implementing the interface/sealed class.\n" +
-                        possibleValuesText,
-                type = ScalarType.string,
-                name = "type",
-                annotatedNumber = 1
-            ),
-            TypedField(
-                comment = "Data to be deserialized based on the field 'type'",
-                type = ScalarType.bytes,
-                name = "value",
-                annotatedNumber = 2
-            )
-        ),
+        comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'" else "",
+        isObject = false,
+        isPolymorphic = true,
+        fields = if (sharedOptions.useKspPolymorphism)
+            listOf(
+                TypedField(
+                    comment =
+                    "Serial name of the class implementing the interface/sealed class.\n" +
+                            possibleValuesText,
+                    type = ScalarFieldType.String,
+                    name = "type",
+                    annotatedName = "type",
+                    protoNumber = 1,
+                    annotatedNumber = 1,
+                ),
+                TypedField(
+                    comment = "Data to be deserialized based on the field 'type'",
+                    type = ScalarFieldType.ByteArray,
+                    name = "value",
+                    annotatedName = "value",
+                    protoNumber = 2,
+                    annotatedNumber = 2
+                )
+            ) else emptyList(),
         originalFile = containingFile
     )
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    val fields = getDeclaredProperties().mapNotNull { prop ->
-        if (prop.hasAnnotation("kotlinx.serialization.Transient")) {
+    var currentProtoNumber = 1
+    val fields = primaryConstructor!!.parameters.mapNotNull { param ->
+        val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
+
+        //val fields = getDeclaredProperties().mapNotNull { prop ->
+        if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
             Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
             return@mapNotNull null
         }
@@ -136,22 +153,45 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         }
 
         val replacement = sharedOptions.replace(prop.type.toString())
+        // TODO: Handle all serializers... eventually remove the replacement via options
+        val annotatedSerializer = prop.annotations
+            .firstOrNull { it.shortName.asString() == ProtoStringSerializer::class.simpleName }
+            ?.getArg<KSType?>(ProtoStringSerializer::serializer)
+            ?.also { Logger.warn("$it") }
+        val annotatedDerivedType = when (annotatedSerializer) {
+            is CustomStringSerializer<*> -> ScalarFieldType.String
+            else -> null
+        }
+        val annotatedNumber = prop.protoNumberInternal
+        if (annotatedNumber != null && currentProtoNumber < annotatedNumber) {
+            Logger.warn(
+                "Proto number is not sequential on ${(qualifiedName ?: simpleName).asString()}: " +
+                        "${prop.serialName} ($currentProtoNumber -> $annotatedNumber)"
+            )
+            currentProtoNumber = annotatedNumber
+        }
         when {
             replacement != null -> {
                 TypedField(
-                    name = prop.serialName,
-                    type = mapQfnToFieldType(replacement),
+                    name = prop.simpleName.asString(),
+                    annotatedName = prop.serialName,
+                    type = annotatedDerivedType ?: mapQfnToFieldType(replacement),
                     comment = prop.docString,
-                    annotatedNumber = prop.protoNumber,
+                    annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedSerializer,
+                    protoNumber = currentProtoNumber++,
                 )
             }
 
             resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                 TypedField(
-                    name = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
-                    type = prop.type.toProtobufFieldType(),
+                    name = prop.simpleName.asString(),
+                    annotatedName = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                    type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                     comment = prop.docString,
-                    annotatedNumber = prop.protoNumber,
+                    annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedSerializer,
+                    protoNumber = currentProtoNumber++,
                 )
             }
 
@@ -160,40 +200,55 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")
                 Logger.warn("options.replacementMap = ${sharedOptions.replacementMap}")
                 TypedField(
-                    name = prop.serialName,
-                    type = ReferenceType(prop.type.toString()),
+                    name = prop.simpleName.asString(),
+                    annotatedName = prop.serialName,
+                    type = annotatedDerivedType ?: ReferenceType(
+                        prop.type.toString(),
+                        prop.type.resolve().isMarkedNullable
+                    ),
                     comment = prop.docString,
-                    annotatedNumber = prop.protoNumber,
+                    annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedSerializer,
+                    protoNumber = currentProtoNumber++,
                 )
                     .also { Logger.warn("resolvedType.isError -> $it") }
             }
 
             else -> {
                 TypedField(
-                    name = prop.serialName,
-                    type = prop.type.toProtobufFieldType(),
+                    name = prop.simpleName.asString(),
+                    annotatedName = prop.serialName,
+                    type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                     comment = prop.docString,
-                    annotatedNumber = prop.protoNumber,
+                    annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedSerializer,
+                    protoNumber = currentProtoNumber++,
                 )
             }
         }
     }
     return MessageNode(
+        packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
         comment = docString,
         fields = fields.toList(),
-        originalFile = containingFile
+        originalFile = containingFile,
+        isPolymorphic = false,
+        isObject = false, // because it's a data class
     )
 }
 
 private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
+    packageName = this.packageName.asString(),
     qualifiedName = qualifiedName!!.asString(),
     name = protobufName(),
     comment = docString,
     // `object` can be serialized, also as the data is static, fields are not serialized
     fields = emptyList(),
-    originalFile = containingFile
+    originalFile = containingFile,
+    isPolymorphic = false,
+    isObject = true,
 )
 
 private fun KSTypeReference.toProtobufFieldType(): FieldType {
@@ -204,7 +259,7 @@ private fun KSTypeReference.toProtobufFieldType(): FieldType {
         // TODO: TU for that case
         Logger.warn("Cannot resolve declaration for $qualifiedName from ${declaration.containingFile} ($this)")
         Logger.exception(IllegalStateException("resolution issue: $declaration"))
-        return ReferenceType(declaration.simpleName.asString())
+        return ReferenceType(declaration.simpleName.asString(), this.resolve().isMarkedNullable)
     }
 
     return mapQfnToFieldType(resolvedQualifiedName, this.resolve().arguments)
@@ -212,16 +267,16 @@ private fun KSTypeReference.toProtobufFieldType(): FieldType {
 
 private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emptyList()): FieldType {
     return when (qfn) {
-        "kotlin.String" -> ScalarType.string
-        "kotlin.Int" -> ScalarType.int32
-        "kotlin.Char" -> ScalarType.int32
-        "kotlin.Short" -> ScalarType.int32
-        "kotlin.Byte" -> ScalarType.int32
-        "kotlin.Long" -> ScalarType.int64
-        "kotlin.Float" -> ScalarType.float
-        "kotlin.Double" -> ScalarType.double
-        "kotlin.Boolean" -> ScalarType.bool
-        "kotlin.ByteArray" -> ScalarType.bytes
+        "kotlin.String" -> ScalarFieldType.String
+        "kotlin.Int" -> ScalarFieldType.Int
+        "kotlin.Char" -> ScalarFieldType.Char
+        "kotlin.Short" -> ScalarFieldType.Short
+        "kotlin.Byte" -> ScalarFieldType.Byte
+        "kotlin.Long" -> ScalarFieldType.Long
+        "kotlin.Float" -> ScalarFieldType.Float
+        "kotlin.Double" -> ScalarFieldType.Double
+        "kotlin.Boolean" -> ScalarFieldType.Boolean
+        "kotlin.ByteArray" -> ScalarFieldType.ByteArray
         "kotlin.collections.List" -> {
             ListType(
                 repeatedType = arguments[0].type!!.toProtobufFieldType() // TODO: List<List<Int>> is not supported
@@ -235,9 +290,10 @@ private fun mapQfnToFieldType(qfn: String, arguments: List<KSTypeArgument> = emp
             )
         }
 
-        "kotlinx.datetime.Instant" -> ScalarType.string
+        "kotlinx.datetime.Instant" -> ScalarFieldType.Instant
 
-        else -> ReferenceType(qfn)
+        // TODO: Consider nullability for the scalar types too!!
+        else -> ReferenceType(qfn, false)
     }
 }
 
@@ -270,6 +326,11 @@ private val KSAnnotated.serialNameInternal: String?
         annotations.toList()
             .firstOrNull { it.shortName.asString() == ProtoName::class.simpleName }
             ?.getArg<String>(ProtoName::name)
+            ?: annotations.toList()
+                .firstOrNull { it.shortName.asString() == ProtoMessage::class.simpleName }
+                ?.getArg<String>(ProtoMessage::name)
+                ?.takeIf { it.isNotBlank() }
+
 
 val KSClassDeclaration.protoNumber: Int?
     get() = protoNumberInternal

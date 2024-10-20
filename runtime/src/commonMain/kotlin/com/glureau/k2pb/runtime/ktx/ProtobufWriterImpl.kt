@@ -5,7 +5,7 @@
 package com.glureau.k2pb.runtime.ktx
 
 import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.annotation.ProtobufWriter
+import com.glureau.k2pb.ProtobufWriter
 
 internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWriter {
     override fun writeBytes(bytes: ByteArray, tag: Int) {

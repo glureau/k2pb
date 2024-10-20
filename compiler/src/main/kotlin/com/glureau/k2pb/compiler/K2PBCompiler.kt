@@ -6,6 +6,7 @@ import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.squareup.kotlinpoet.ksp.writeTo
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
@@ -36,22 +37,17 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         resolveDependencies(resolver)
 
-        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName(resolver)).forEach { protobufFile ->
+        val moduleName = moduleName(resolver)
+        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
             environment.writeProtobufFile(
                 protobufFile.toProtoString().toByteArray(),
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
         }
-        /*
-        ProtobufSerializerProducer(protobufAggregator).buildFiles().forEach { protobufFile ->
-            environment.writeProtobufFile(
-                protobufFile.toProtoString().toByteArray(),
-                fileName = protobufFile.path,
-                dependencies = protobufFile.dependencies
-            )
+        ProtobufSerializerProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
+            protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
         }
-        */
         return emptyList()
     }
 
