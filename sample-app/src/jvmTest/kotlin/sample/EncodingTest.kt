@@ -1,9 +1,5 @@
 package sample
 
-//import BigDecimalHolderOuterClass
-//import TransientFieldOuterClass
-//import com.glureau.sample.BigDecimalHolder
-//import com.glureau.sample.TransientField
 import AbstractClassOuterClass
 import AbstractSubClassOuterClass
 import BarEventOuterClass

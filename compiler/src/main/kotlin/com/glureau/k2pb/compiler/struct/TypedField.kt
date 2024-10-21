@@ -65,8 +65,10 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
         is ListType -> Unit
         is MapType -> Unit
         is ReferenceType -> {
-            beginControlFlow("${field.name} = with(delegate) {")
+            beginControlFlow("${field.name} = %M", readMessageExt)
+            beginControlFlow("with(delegate) {")
             addStatement("decode(${field.type.name}::class)")
+            endControlFlow()
             endControlFlow()
         }
 

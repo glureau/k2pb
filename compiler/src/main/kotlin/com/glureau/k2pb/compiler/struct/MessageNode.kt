@@ -59,6 +59,7 @@ fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) 
 fun MessageNode.asClassName(): ClassName = ClassName(packageName, name)
 fun MessageNode.serializerClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Serializer")
 val writeMessageExt = MemberName("com.glureau.k2pb.runtime", "writeMessage")
+val readMessageExt = MemberName("com.glureau.k2pb.runtime", "readMessage")
 
 fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
     addFileComment("Generated from ${messageNode.originalFile?.filePath}")
@@ -104,7 +105,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                         addStatement("val tag = readTag()")
                         beginControlFlow("when (tag)")
                         messageNode.fields.forEach { f ->
-                            beginControlFlow("${f.protoNumber} -> {")
+                            beginControlFlow("${f.protoNumber} ->")
                             decodeField(f)
                             endControlFlow()
                         }
