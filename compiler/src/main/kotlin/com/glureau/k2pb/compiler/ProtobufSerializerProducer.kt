@@ -15,16 +15,18 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
     )
 
     fun buildFileSpecs(moduleName: String): List<CodeFile> {
-        val fileSpecs = protobufAggregator.messages.map {
-            val builder = FileSpec.builder(it.packageName, "${it.name}Serializer")
-            builder.addMessageNote(it)
-            CodeFile(builder.build(), false)
-        }
+        val fileSpecs = protobufAggregator.messages
+            .filter { !it.isPolymorphic }
+            .map {
+                val builder = FileSpec.builder(it.serializerClassName())
+                builder.addMessageNote(it)
+                CodeFile(builder.build(), false)
+            }
         val packages = protobufAggregator.messages.map { it.packageName }
         // Find the common package
         val commonPackage =
             //if (packages.isEmpty()) ""
-             packages.reduce { acc, s -> acc.commonPrefixWith(s) }
+            packages.reduce { acc, s -> acc.commonPrefixWith(s) }
 
         // sample-lib => SampleLib
         val cleanModuleName = moduleName
@@ -37,11 +39,25 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                     .receiver(ClassName("com.glureau.k2pb.runtime", "K2PBConfig"))
                     .apply {
                         protobufAggregator.messages.forEach {
-                            addStatement(
-                                "registerSerializer(%T::class, %T())",
-                                it.asClassName(),
-                                it.serializerClassName()
-                            )
+                            if (it.isPolymorphic) {
+                                addStatement(
+                                    "registerPolymorphicParent(%T::class)",
+                                    it.asClassName(),
+                                )
+                            } else {
+                                addStatement(
+                                    "registerSerializer(%T::class, %T())",
+                                    it.asClassName(),
+                                    it.serializerClassName()
+                                )
+                            }
+                            it.superTypes.forEach { s ->
+                                addStatement(
+                                    "registerPolymorphicChild(%T::class, %T::class)",
+                                    s,
+                                    it.asClassName()
+                                )
+                            }
                         }
                     }
                     .build())

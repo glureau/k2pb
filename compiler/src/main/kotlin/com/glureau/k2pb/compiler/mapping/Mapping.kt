@@ -29,6 +29,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeArgument
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
+import com.squareup.kotlinpoet.ksp.toClassName
 import java.util.Locale
 
 
@@ -103,6 +104,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'" else "",
         isObject = false,
         isPolymorphic = true,
+        superTypes = emptyList(),
         fields = if (sharedOptions.useKspPolymorphism)
             listOf(
                 TypedField(
@@ -124,7 +126,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
                     annotatedNumber = 2
                 )
             ) else emptyList(),
-        originalFile = containingFile
+        originalFile = containingFile,
     )
 }
 
@@ -236,6 +238,9 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         originalFile = containingFile,
         isPolymorphic = false,
         isObject = false, // because it's a data class
+        superTypes = this.superTypes.map { it.resolve().toClassName() }
+            .filterNot { it.canonicalName == "kotlin.Any" }
+            .toList(),
     )
 }
 
@@ -249,6 +254,7 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     originalFile = containingFile,
     isPolymorphic = false,
     isObject = true,
+    superTypes = emptyList(),
 )
 
 private fun KSTypeReference.toProtobufFieldType(): FieldType {

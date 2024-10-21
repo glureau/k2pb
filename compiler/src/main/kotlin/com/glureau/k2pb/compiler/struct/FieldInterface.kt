@@ -1,5 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.squareup.kotlinpoet.FunSpec
+
 sealed interface FieldInterface {
     val comment: String?
     val name: String
@@ -12,3 +14,25 @@ fun StringBuilder.appendField(indentLevel: Int, field: FieldInterface, numberMan
         is OneOfField -> appendOneOfField(indentLevel, field, numberManager)
     }
 }
+
+fun FunSpec.Builder.encodeField(field: FieldInterface) {
+    when (field) {
+        is TypedField -> encodeTypedField(field)
+        is OneOfField -> encodeOneOfField(field)
+    }
+}
+
+fun FunSpec.Builder.decodeField(field: FieldInterface) {
+    when (field) {
+        is TypedField -> decodeTypedField(field)
+        is OneOfField -> decodeOneOfField(field)
+    }
+}
+
+fun FunSpec.Builder.encodeFieldVariableDefinition(field: FieldInterface) {
+    when (field) {
+        is TypedField -> decodeTypedFieldVariableDefinition(field)
+        is OneOfField -> encodeOneOfFieldVariableDefinition(field)
+    }
+}
+

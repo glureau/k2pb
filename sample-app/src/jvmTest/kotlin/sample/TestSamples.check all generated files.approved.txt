@@ -212,6 +212,5 @@ syntax = "proto3";
 message StandardClass {
   string eventUUID = 1;
   bytes bytes = 2;
-  string foo = 3;
 }
 

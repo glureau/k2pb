@@ -10,3 +10,12 @@ fun StringBuilder.appendFieldType(type: FieldType) {
         is MapType -> appendMapType(type)
     }
 }
+
+fun StringBuilder.appendKotlinDefinition(type: FieldType): String {
+    return when (type) {
+        is ScalarFieldType -> type.kotlinClass.canonicalName
+        is ReferenceType -> type.name
+        is ListType -> appendKotlinListDefinition(type).toString()
+        is MapType -> appendKotlinMapDefinition(type).toString()
+    }
+}

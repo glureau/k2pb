@@ -35,13 +35,47 @@ class K2PB internal constructor(config: K2PBConfig = K2PBConfig()) {
 
 fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
     val config = K2PBConfig().apply(configure)
+    config.verify()
     return K2PB(config)
 }
 
 class K2PBConfig internal constructor() {
+    @PublishedApi
     internal val serializers: MutableMap<KClass<*>, ProtoSerializer<*>> = mutableMapOf()
-    fun registerSerializer(klass: KClass<*>, serializer: ProtoSerializer<*>) {
-        serializers[klass] = serializer
+
+    @PublishedApi
+    internal val polymorphics: MutableMap<KClass<*>, MutableList<KClass<*>>> = mutableMapOf()
+
+    @PublishedApi
+    internal val polymorphicDefinitions: MutableMap<KClass<*>, Map<KClass<*>, Int>> = mutableMapOf()
+
+    inline fun registerSerializer(kClass: KClass<*>, serializer: ProtoSerializer<*>) {
+        serializers[kClass] = serializer
+    }
+
+    inline fun registerPolymorphicParent(kClass: KClass<*>) {
+        polymorphics += kClass to mutableListOf()
+    }
+
+    inline fun registerPolymorphicChild(parentKClass: KClass<*>, childKClass: KClass<*>) {
+        polymorphics.getOrPut(parentKClass, { mutableListOf() }).add(childKClass)
+    }
+
+    inline fun registerPolymorphicDefinition(parentKClass: KClass<*>, children: Map<KClass<*>, Int>) {
+        polymorphicDefinitions += parentKClass to children
+        children.keys.all {
+            it.qualifiedName == "a"
+        }
+    }
+
+    public fun verify() {
+        polymorphics.forEach { (parent, children) ->
+            children.forEach { child ->
+                if (!serializers.containsKey(child)) {
+                    throw IllegalArgumentException("Missing serializer for polymorphic child: $child")
+                }
+            }
+        }
     }
 }
 
@@ -63,7 +97,6 @@ internal class ConfiguredProtoSerializer(private val config: K2PBConfig) : Deleg
             }
         } ?: throw IllegalArgumentException("Unsupported type: $instanceClass")
     }
-
 }
 
 

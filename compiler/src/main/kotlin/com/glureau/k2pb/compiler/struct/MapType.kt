@@ -9,3 +9,7 @@ fun StringBuilder.appendMapType(type: MapType) {
     appendFieldType(type.valueType)
     append(">")
 }
+
+fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
+    append("Map<${appendKotlinDefinition(type.keyType)}, ${appendKotlinDefinition(type.valueType)}>")
+}

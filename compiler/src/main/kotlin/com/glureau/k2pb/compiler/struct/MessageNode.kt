@@ -22,6 +22,7 @@ data class MessageNode(
     override val name: String,
     val isObject: Boolean,
     val isPolymorphic: Boolean,
+    val superTypes: List<ClassName>,
     val comment: String?,
     val fields: List<FieldInterface>,
     override val originalFile: KSFile?,
@@ -77,30 +78,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                         addStatement("if (instance == null) return")
                         if (messageNode.isPolymorphic) return@apply // TODO: Handle polymorphic types
                         messageNode.fields.forEach {
-                            it as TypedField
-                            val tag = it.protoNumber
-                            when (it.type) {
-                                is ListType -> this
-                                is MapType -> this
-                                is ReferenceType -> {
-                                    beginControlFlow("%M($tag) {", writeMessageExt)
-                                    beginControlFlow("with(delegate) {")
-                                    addStatement("encode(instance.${it.name}, ${it.type.name}::class)")
-                                    endControlFlow()
-                                    endControlFlow()
-                                }
-
-                                is ScalarFieldType -> {
-                                    (it.annotatedSerializer?.let { s ->
-                                        addStatement(
-                                            "val ${it.name}Encoded = %T().encode(instance.${it.name})",
-                                            s.toClassName()
-                                        )
-                                        addCode(it.type.writeMethod("${it.name}Encoded", tag))
-                                    } ?: addCode(it.type.writeMethod("instance.${it.name}", tag)))
-                                        .also { addStatement("") }
-                                }
-                            }
+                            encodeField(it)
                         }
                     }
                     .build()
@@ -119,95 +97,65 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                             return@apply
                         }
                         messageNode.fields.forEach {
-                            val typeName = when (it) {
-                                is OneOfField -> TODO()
-                                is TypedField -> when (it.type) {
-                                    is ListType -> "List<*>"
-                                    is MapType -> "Map<*>"
-                                    is ReferenceType -> it.type.name
-                                    is ScalarFieldType -> it.type.kotlinClass.simpleName
-                                }
-                            }
-                            addStatement("var ${it.name}: ${typeName}? = null")
+                            encodeFieldVariableDefinition(it)
                         }
                         addStatement("")
                         beginControlFlow("while (!eof)")
                         addStatement("val tag = readTag()")
                         beginControlFlow("when (tag)")
                         messageNode.fields.forEach { f ->
-                            when (f) {
-                                is OneOfField -> TODO()
-                                is TypedField -> when (f.type) {
-                                    is ListType -> Unit
-                                    is MapType -> Unit
-                                    is ReferenceType -> {
-                                        beginControlFlow("${f.protoNumber} -> {")
-                                        beginControlFlow("${f.name} = with(delegate) {")
-                                        addStatement("decode(${f.type.name}::class)")
-                                        endControlFlow()
-                                        endControlFlow()
-                                    }
-
-                                    is ScalarFieldType -> {
-                                        addStatement("${f.protoNumber} -> ${f.name} = ${f.type.readMethod()}\n")
-                                    }
-                                }
-                            }
-                            //addStatement("${f.protoNumber} -> ${f.name} = readString()")
+                            beginControlFlow("${f.protoNumber} -> {")
+                            decodeField(f)
+                            endControlFlow()
                         }
-                        // addStatement("1 -> eventUUID = readString()")
-                        // addStatement("2 -> bytes = readByteArray()")
                         beginControlFlow("else -> ")
                         //addStatement("pushBackTag()") // ???
                         // TODO: Incomplete implementation, ignoring a tag should also ignore the next data...
                         addStatement("// Ignore unknown tag??")
                         addStatement("error(\"Ignoring unknown tag: \$tag\")")
                         endControlFlow()
-                        //addStatement("")
-                        //addStatement("}") // else block, endControlFlow can't be used here
+
                         endControlFlow() // when (tag)
                         endControlFlow() // while (!eof)
+
+
                         addStatement("return %T(", className)
                         messageNode.fields.forEach {
-                            val protoDefaultValue: (name: String) -> String = when (it) {
+                            when (it) {
                                 is OneOfField -> {
                                     TODO()
                                 }
 
-                                is TypedField -> when (it.type) {
-                                    is ListType -> { n -> "$n ?: emptyList()" }
-                                    is MapType -> { n -> "$n ?: emptyMap()" }
-                                    is ReferenceType -> { n -> if (it.type.isNullable) "$n ?: null" else "$n!!" }
-                                    ScalarFieldType.Double -> { n -> "$n ?: 0.0" }
-                                    ScalarFieldType.Float -> { n -> "$n ?: 0.0f" }
-                                    ScalarFieldType.Int -> { n -> "$n ?: 0" }
-                                    ScalarFieldType.Short -> { n -> "$n ?: 0" }
-                                    ScalarFieldType.Char -> { n -> "$n ?: 0.toChar()" }
-                                    ScalarFieldType.Long -> { n -> "$n ?: 0" }
-                                    ScalarFieldType.Byte -> { n -> "$n ?: 0" }
-                                    ScalarFieldType.Boolean -> { n -> "$n ?: false" }
-                                    ScalarFieldType.String -> { n -> "$n ?: \"\"" }
-                                    ScalarFieldType.ByteArray -> { n -> "$n ?: byteArrayOf()" }
-
-                                    is ScalarFieldType -> {
-                                        error("ScalarType not handled for protobuf serialization: ${it.type}")
-                                    }
-                                }
-                            }
-                            when (it) {
                                 is TypedField -> {
+                                    val protoDefaultValue: (name: String) -> String = when (it.type) {
+                                        is ListType -> { n -> "$n ?: emptyList()" }
+                                        is MapType -> { n -> "$n ?: emptyMap()" }
+                                        is ReferenceType -> { n -> if (it.type.isNullable) "$n ?: null" else "$n!!" }
+                                        ScalarFieldType.Double -> { n -> "$n ?: 0.0" }
+                                        ScalarFieldType.Float -> { n -> "$n ?: 0.0f" }
+                                        ScalarFieldType.Int -> { n -> "$n ?: 0" }
+                                        ScalarFieldType.Short -> { n -> "$n ?: 0" }
+                                        ScalarFieldType.Char -> { n -> "$n ?: 0.toChar()" }
+                                        ScalarFieldType.Long -> { n -> "$n ?: 0" }
+                                        ScalarFieldType.Byte -> { n -> "$n ?: 0" }
+                                        ScalarFieldType.Boolean -> { n -> "$n ?: false" }
+                                        ScalarFieldType.String -> { n -> "$n ?: \"\"" }
+                                        ScalarFieldType.ByteArray -> { n -> "$n ?: byteArrayOf()" }
+
+                                        is ScalarFieldType -> {
+                                            error("ScalarType not handled for protobuf serialization: ${it.type}")
+                                        }
+                                    }
                                     if (it.annotatedSerializer != null) {
-                                        addStatement("${it.name} = %T().decode(${protoDefaultValue(it.name)})", it.annotatedSerializer.toClassName())
+                                        addStatement(
+                                            "  ${it.name} = %T().decode(${protoDefaultValue(it.name)})",
+                                            it.annotatedSerializer.toClassName()
+                                        )
                                     } else {
-                                        addStatement("${it.name} = ${protoDefaultValue(it.name)},")
+                                        addStatement("  ${it.name} = ${protoDefaultValue(it.name)},")
                                     }
                                 }
-
-                                else -> {
-                                    TODO()
-                                }
                             }
-                            //addStatement("${it.name} = ${protoDefaultValue(it.name)},")
                         }
                         addStatement(")")
                     }
