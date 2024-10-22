@@ -34,6 +34,8 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
         is ListType -> StringBuilder().appendKotlinListDefinition(field.type) // TODO
         is MapType -> Unit // TODO
         is ReferenceType -> {
+            /*
+            // Inelegant approach for inlining...
             field.type.inlineOf?.let {
                 if (it is ScalarFieldType) {
                     encodeTypedField(
@@ -48,6 +50,7 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
                     TODO("Handle non scalar inlined types!")
                 }
             }
+            */
             beginControlFlow("%M($tag) {", writeMessageExt)
             beginControlFlow("with(delegate) {")
             addStatement("encode(instance.${field.name}, ${field.type.name}::class)")

@@ -40,7 +40,6 @@ abstract class BaseEncodingTest {
         ktInstance: Kt,
         protocInstance: GeneratedMessage,
     ) {
-
         val encodedViaK2PB = serializer.encodeToByteArray<Kt>(ktInstance)
         val encodedViaProtocGeneratedCode = protocInstance.toByteArray()
         println("encodedViaK2PB\t\t\t\t\t ${encodedViaK2PB.joinToString(" ") { it.toHexString() }}")
@@ -54,5 +53,8 @@ abstract class BaseEncodingTest {
         assertEquals(ktInstance, decodedViaKtxSerialization)
         // Asserting that data encoded from ktx serialization and decoded via protoc generated files are equals.
         assertEquals(protocInstance, decodedViaProtocGeneratedCode)
+
+        println("Original Kt: $ktInstance")
+        println("Decoded Kt: $decodedViaKtxSerialization")
     }
 }
