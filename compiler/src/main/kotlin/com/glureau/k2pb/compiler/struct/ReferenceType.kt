@@ -4,8 +4,15 @@ import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.glureau.k2pb.compiler.sharedOptions
+import com.google.devtools.ksp.symbol.KSType
 
-data class ReferenceType(val name: String, val isNullable: Boolean) : FieldType
+data class ReferenceType(
+    val name: String,
+    val isNullable: Boolean,
+    val inlineOf: FieldType? = null,
+    val inlineName: String? = null,
+    val inlineAnnotatedSerializer: KSType? = null,
+) : FieldType
 
 fun StringBuilder.appendReferenceType(type: ReferenceType) {
     // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and

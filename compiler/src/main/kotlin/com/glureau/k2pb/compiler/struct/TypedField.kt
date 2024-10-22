@@ -34,6 +34,20 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
         is ListType -> StringBuilder().appendKotlinListDefinition(field.type) // TODO
         is MapType -> Unit // TODO
         is ReferenceType -> {
+            field.type.inlineOf?.let {
+                if (it is ScalarFieldType) {
+                    encodeTypedField(
+                        field.copy(
+                            type = it,
+                            name = (field.annotatedName ?: field.name) + "." + field.type.inlineName,
+                            annotatedSerializer = field.annotatedSerializer ?: field.type.inlineAnnotatedSerializer
+                        )
+                    )
+                    return
+                } else {
+                    TODO("Handle non scalar inlined types!")
+                }
+            }
             beginControlFlow("%M($tag) {", writeMessageExt)
             beginControlFlow("with(delegate) {")
             addStatement("encode(instance.${field.name}, ${field.type.name}::class)")
@@ -43,11 +57,12 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
 
         is ScalarFieldType -> {
             (field.annotatedSerializer?.let { s ->
+                val encodedTmpName = "${field.name.replace(".", "_")}Encoded"
                 addStatement(
-                    "val ${field.name}Encoded = %T().encode(instance.${field.name})",
+                    "val $encodedTmpName = %T().encode(instance.${field.name})",
                     s.toClassName()
                 )
-                addCode(field.type.writeMethod("${field.name}Encoded", tag))
+                addCode(field.type.writeMethod(encodedTmpName, tag))
             } ?: addCode(field.type.writeMethod("instance.${field.name}", tag)))
                 .also { addStatement("") }
         }
