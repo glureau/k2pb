@@ -123,7 +123,7 @@ public class ByteArrayInput(private var array: ByteArray, private val endIndex: 
     }
 }
 
-internal class ByteArrayOutput {
+internal class ByteArrayOutput() {
 
     private companion object {
         /*

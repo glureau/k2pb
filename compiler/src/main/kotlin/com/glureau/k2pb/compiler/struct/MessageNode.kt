@@ -98,7 +98,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                             return@apply
                         }
                         messageNode.fields.forEach {
-                            encodeFieldVariableDefinition(it)
+                            decodeFieldVariableDefinition(it)
                         }
                         addStatement("")
                         beginControlFlow("while (!eof)")

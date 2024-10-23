@@ -29,10 +29,10 @@ fun FunSpec.Builder.decodeField(field: FieldInterface) {
     }
 }
 
-fun FunSpec.Builder.encodeFieldVariableDefinition(field: FieldInterface) {
+fun FunSpec.Builder.decodeFieldVariableDefinition(field: FieldInterface) {
     when (field) {
         is TypedField -> decodeTypedFieldVariableDefinition(field)
-        is OneOfField -> encodeOneOfFieldVariableDefinition(field)
+        is OneOfField -> decodeOneOfFieldVariableDefinition(field)
     }
 }
 

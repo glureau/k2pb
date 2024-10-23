@@ -31,26 +31,39 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField, numberMa
 fun FunSpec.Builder.encodeTypedField(field: TypedField) {
     val tag = field.protoNumber
     when (field.type) {
-        is ListType -> StringBuilder().appendKotlinListDefinition(field.type) // TODO
-        is MapType -> Unit // TODO
-        is ReferenceType -> {
-            /*
-            // Inelegant approach for inlining...
-            field.type.inlineOf?.let {
-                if (it is ScalarFieldType) {
-                    encodeTypedField(
-                        field.copy(
-                            type = it,
-                            name = (field.annotatedName ?: field.name) + "." + field.type.inlineName,
-                            annotatedSerializer = field.annotatedSerializer ?: field.type.inlineAnnotatedSerializer
-                        )
-                    )
-                    return
-                } else {
-                    TODO("Handle non scalar inlined types!")
-                }
+        is ListType -> {
+            beginControlFlow("%M($tag)", writeMessageExt)
+            beginControlFlow("instance.${field.name}.forEach")
+            when (field.type.repeatedType) {
+                is ScalarFieldType -> addCode(field.type.repeatedType.writeMethodNoTag("it"))
+                    .also { addStatement("") }
+
+                else -> TODO("Not supported yet")
             }
-            */
+            endControlFlow()
+            endControlFlow()
+        }
+
+        is MapType -> {
+            beginControlFlow("instance.${field.name}.forEach")
+            beginControlFlow("%M($tag)", writeMessageExt)
+            when (field.type.keyType) {
+                is ScalarFieldType -> addCode(field.type.keyType.writeMethod("it.key", 1))
+                    .also { addStatement("") }
+
+                else -> TODO("Not supported yet")
+            }
+            when (field.type.valueType) {
+                is ScalarFieldType -> addCode(field.type.valueType.writeMethod("it.value", 2))
+                    .also { addStatement("") }
+
+                else -> TODO("Not supported yet")
+            }
+            endControlFlow() // writeMessage of the item
+            endControlFlow() // forEach
+        }
+
+        is ReferenceType -> {
             beginControlFlow("%M($tag) {", writeMessageExt)
             beginControlFlow("with(delegate) {")
             addStatement("encode(instance.${field.name}, ${field.type.name}::class)")
@@ -73,15 +86,64 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
 }
 
 fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
-    val typeName = StringBuilder().appendKotlinDefinition(field.type)
-    // TODO: var only on non-mutable fields, to support packed properly
-    addStatement("var ${field.name}: ${typeName}? = null")
+    when (field.type) {
+        is ListType -> {
+            val typeName = StringBuilder().appendKotlinDefinition(field.type)
+            addStatement("val ${field.name}: Mutable${typeName} = mutableListOf()")
+        }
+
+        is MapType -> {
+            val typeName = StringBuilder().appendKotlinDefinition(field.type)
+            addStatement("val ${field.name}: Mutable${typeName} = mutableMapOf()")
+        }
+
+        is ReferenceType,
+        is ScalarFieldType -> {
+            val typeName = StringBuilder().appendKotlinDefinition(field.type)
+            addStatement("var ${field.name}: ${typeName}? = null")
+        }
+    }
 }
 
 fun FunSpec.Builder.decodeTypedField(field: TypedField) {
     when (field.type) {
-        is ListType -> Unit
-        is MapType -> Unit
+        is ListType -> {
+            beginControlFlow("%M()", readMessageExt)
+            when (field.type.repeatedType) {
+                is ScalarFieldType -> {
+                    beginControlFlow("while (!eof)")
+                    addCode("${field.name} += ")
+                    addCode(field.type.repeatedType.readMethodNoTag())
+                    addStatement("")
+                    endControlFlow()
+                }
+
+                else -> TODO("Not supported yet")
+            }
+            endControlFlow()
+        }
+
+        is MapType -> {
+            beginControlFlow("%M()", readMessageExt)
+            addStatement("readTag()")
+            addCode("val key = ")
+            when (field.type.keyType) {
+                is ScalarFieldType -> addCode(field.type.keyType.readMethodNoTag())
+                else -> TODO()
+            }
+            addStatement("")
+
+            addStatement("readTag()")
+            addCode("val value = ")
+            when (field.type.valueType) {
+                is ScalarFieldType -> addCode(field.type.valueType.readMethodNoTag())
+                else -> TODO()
+            }
+            addStatement("")
+            addStatement("${field.name}[key] = value")
+            endControlFlow()
+        }
+
         is ReferenceType -> {
             beginControlFlow("${field.name} = %M", readMessageExt)
             beginControlFlow("with(delegate) {")

@@ -25,6 +25,6 @@ fun FunSpec.Builder.decodeOneOfField(field: OneOfField) {
     TODO()
 }
 
-fun FunSpec.Builder.encodeOneOfFieldVariableDefinition(field: OneOfField) {
+fun FunSpec.Builder.decodeOneOfFieldVariableDefinition(field: OneOfField) {
     TODO()
 }
