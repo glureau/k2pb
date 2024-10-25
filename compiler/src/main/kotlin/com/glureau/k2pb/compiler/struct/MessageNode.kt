@@ -22,6 +22,7 @@ data class MessageNode(
     override val name: String,
     val isObject: Boolean,
     val isPolymorphic: Boolean,
+    val isInlineClass: Boolean,
     val superTypes: List<ClassName>,
     val comment: String?,
     val fields: List<FieldInterface>,
@@ -78,8 +79,12 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                         if (messageNode.isObject) return@apply // Nothing to do, dummy class for simple implementation
                         addStatement("if (instance == null) return")
                         if (messageNode.isPolymorphic) return@apply // TODO: Handle polymorphic types
-                        messageNode.fields.forEach {
-                            encodeField(it)
+                        if (messageNode.isInlineClass) {
+                            addStatement("writeRawBytes(instance.${messageNode.fields.first().name}.encodeToByteArray())")
+                        } else {
+                            messageNode.fields.forEach {
+                                encodeField(it)
+                            }
                         }
                     }
                     .build()
@@ -102,8 +107,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                         }
                         addStatement("")
                         beginControlFlow("while (!eof)")
-                        addStatement("val tag = readTag()")
-                        beginControlFlow("when (tag)")
+                        beginControlFlow("when (val tag = readTag())")
                         messageNode.fields.forEach { f ->
                             beginControlFlow("${f.protoNumber} ->")
                             decodeField(f)

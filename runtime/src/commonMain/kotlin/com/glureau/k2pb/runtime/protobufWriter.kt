@@ -24,14 +24,3 @@ fun <T> ProtobufReader.readMessage(act: ProtobufReader.() -> T): T {
     val input = ByteArrayInput(data)
     return ProtobufReaderImpl(input).act()
 }
-
-/*
-TODO:
-
-          common = readMessage {
-            with(delegate) {
-              decode(com.glureau.sample.CommonClass::class)
-            }
-          }
-
- */

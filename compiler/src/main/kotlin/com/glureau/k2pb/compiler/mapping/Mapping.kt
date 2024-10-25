@@ -57,6 +57,7 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
         declaration.isInlineClass -> {
             val inlinedFieldType = declaration.getDeclaredProperties().first().type.toProtobufFieldType()
             InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
+            //recordMessageNode(declaration.dataClassToMessageNode())
         }
 
         declaration.isClass -> recordMessageNode(declaration.dataClassToMessageNode())
@@ -125,6 +126,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
                     annotatedNumber = 2
                 )
             ) else emptyList(),
+        isInlineClass = false,
         originalFile = containingFile,
     )
 }
@@ -239,6 +241,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         originalFile = containingFile,
         isPolymorphic = false,
         isObject = false, // because it's a data class
+        isInlineClass = this.isInlineClass,
         superTypes = this.superTypes.map { it.resolve().toClassName() }
             .filterNot { it.canonicalName == "kotlin.Any" }
             .toList(),
@@ -255,6 +258,7 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     originalFile = containingFile,
     isPolymorphic = false,
     isObject = true,
+    isInlineClass = false,
     superTypes = emptyList(),
 )
 
@@ -317,6 +321,8 @@ private fun mapQfnToFieldType(
                 val inlineAnnotatedSerializer = inlined.annotations
                     .firstOrNull { it.shortName.asString() == ProtoStringSerializer::class.simpleName }
                     ?.getArg<KSType?>(ProtoStringSerializer::serializer)
+
+                Logger.warn("GREG - ${type.declaration.simpleName.asString()} is inlined $inlinedFieldType / $inlineAnnotatedSerializer")
 
                 ReferenceType(
                     name = qfn,

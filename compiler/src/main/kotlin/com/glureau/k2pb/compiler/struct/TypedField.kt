@@ -64,11 +64,26 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
         }
 
         is ReferenceType -> {
-            beginControlFlow("%M($tag) {", writeMessageExt)
-            beginControlFlow("with(delegate) {")
-            addStatement("encode(instance.${field.name}, ${field.type.name}::class)")
-            endControlFlow()
-            endControlFlow()
+            field.type.inlineOf?.let { inlineOf ->
+                require(inlineOf is ScalarFieldType) // Not supporting other types for now...
+                encodeTypedField(
+                    TypedField(
+                        comment = field.comment,
+                        type = inlineOf,
+                        name = field.name + "." + field.type.inlineName,
+                        protoNumber = tag,
+                        annotatedName = field.annotatedName,
+                        annotatedNumber = field.annotatedNumber,
+                        annotatedSerializer = field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer,
+                    )
+                )
+            } ?: run {
+                beginControlFlow("%M($tag) {", writeMessageExt)
+                beginControlFlow("with(delegate) {")
+                addStatement("encode(instance.${field.name}, ${field.type.name}::class)")
+                endControlFlow()
+                endControlFlow()
+            }
         }
 
         is ScalarFieldType -> {
@@ -145,11 +160,43 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
         }
 
         is ReferenceType -> {
-            beginControlFlow("${field.name} = %M", readMessageExt)
-            beginControlFlow("with(delegate) {")
-            addStatement("decode(${field.type.name}::class)")
-            endControlFlow()
-            endControlFlow()
+            /*
+            field.type.inlineOf?.let { inlineOf ->
+                require(inlineOf is ScalarFieldType) // Not supporting other types for now...
+                encodeTypedField(
+                    TypedField(
+                        comment = field.comment,
+                        type = inlineOf,
+                        name = field.name + "." + field.type.inlineName,
+                        protoNumber = tag,
+                        annotatedName = field.annotatedName,
+                        annotatedNumber = field.annotatedNumber,
+                        annotatedSerializer = field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer,
+                    )
+                )
+            }
+             */
+            field.type.inlineOf?.let { inlineOf ->
+                require(inlineOf is ScalarFieldType) // Not supporting other types for now...
+                //addStatement("${field.name} = ${field.type.name}(${inlineOf.readMethod()})")
+
+                (field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer)?.let { s ->
+                    val encodedTmpName = "${field.name.replace(".", "_")}Encoded"
+                    addStatement(
+                        "val $encodedTmpName = %T().decode(${inlineOf.readMethod()})",
+                        s.toClassName()
+                    )
+                    addStatement("${field.name} = ${field.type.name}($encodedTmpName)")
+                } ?: addStatement("${field.name} = ${field.type.name}(${inlineOf.readMethod()})")
+
+            }
+                ?: run {
+                    beginControlFlow("${field.name} = %M", readMessageExt)
+                    beginControlFlow("with(delegate) {")
+                    addStatement("decode(${field.type.name}::class)")
+                    endControlFlow()
+                    endControlFlow()
+                }
         }
 
         is ScalarFieldType -> {

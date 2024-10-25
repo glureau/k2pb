@@ -40,10 +40,10 @@ abstract class BaseEncodingTest {
         ktInstance: Kt,
         protocInstance: GeneratedMessage,
     ) {
-        val encodedViaK2PB = serializer.encodeToByteArray<Kt>(ktInstance)
         val encodedViaProtocGeneratedCode = protocInstance.toByteArray()
-        println("encodedViaK2PB\t\t\t\t\t ${encodedViaK2PB.joinToString(" ") { it.toHexString() }}")
         println("encodedViaProtocGeneratedCode\t ${encodedViaProtocGeneratedCode.joinToString(" ") { it.toHexString() }}")
+        val encodedViaK2PB = serializer.encodeToByteArray<Kt>(ktInstance)
+        println("encodedViaK2PB\t\t\t\t\t ${encodedViaK2PB.joinToString(" ") { it.toHexString() }}")
         assertContentEquals(expected = encodedViaK2PB, actual = encodedViaProtocGeneratedCode)
 
         val decodedViaKtxSerialization = serializer.decodeFromByteArray<Kt>(encodedViaProtocGeneratedCode)
