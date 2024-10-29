@@ -1,12 +1,26 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.ProtoPolymorphism
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
+import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.OneOfField
+import com.glureau.k2pb.compiler.struct.ReferenceType
+import com.glureau.k2pb.compiler.struct.TypedField
 import com.google.devtools.ksp.common.impl.KSNameImpl
-import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.containingFile
+import com.google.devtools.ksp.processing.KSPLogger
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
+import java.util.Locale
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
@@ -33,6 +47,61 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             if (it is KSClassDeclaration) {
                 protobufAggregator.recordKSClassDeclaration(it)
             }
+        }
+
+        resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
+            symbol.annotations
+                .filter { it.shortName.asString() == ProtoPolymorphism::class.simpleName }
+                //.filterIsInstance<ProtoPolymorphism>()
+                .forEach { annotation ->
+                    //val polymorphism = annotation
+                    val parentKClass = annotation.getArg<KSType>(ProtoPolymorphism::parent)
+                    Logger.warn("parentKClass : $parentKClass")
+                    val parent = parentKClass.toClassName()
+                    Logger.warn("parent.ClassName : $parent")
+                    val oneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::oneOf)
+                    val oneOf = oneOfAnnotations.map {
+                        val className = it.getArg<KSType>(ProtoPolymorphism.Pair::kClass).toClassName()
+                        val number = it.getArg<Int>(ProtoPolymorphism.Pair::number)
+                        className to number
+                    }
+
+                    protobufAggregator.recordMessageNode(
+                        MessageNode(
+                            packageName = parent.packageName,
+                            qualifiedName = parent.canonicalName,
+                            name = parent.simpleName,
+                            isObject = false,
+                            isPolymorphic = true,
+                            isInlineClass = false,
+                            superTypes = emptyList(),
+                            comment = null,
+                            fields =
+                            listOf(
+                                OneOfField(
+                                    comment = null,
+                                    name = parent.simpleName.replaceFirstChar { it.lowercase(Locale.US) },
+                                    protoNumber = 1,
+                                    fields = oneOf.map { (childClassName, number) ->
+                                        TypedField(
+                                            comment = null,
+                                            type = ReferenceType(
+                                                name = childClassName.canonicalName,
+                                                isNullable = false
+                                            ),
+                                            name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
+                                            protoNumber = number,
+                                            annotatedName = null,
+                                            annotatedNumber = null,
+                                            annotatedSerializer = null
+                                        )
+                                    }
+                                )
+                            ),
+                            originalFile = symbol.containingFile
+                        )
+                    )
+                }
         }
 
         resolveDependencies(resolver)

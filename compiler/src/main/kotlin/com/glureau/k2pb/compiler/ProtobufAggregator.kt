@@ -1,7 +1,12 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
-import com.glureau.k2pb.compiler.struct.*
+import com.glureau.k2pb.compiler.struct.EnumNode
+import com.glureau.k2pb.compiler.struct.FieldType
+import com.glureau.k2pb.compiler.struct.ListType
+import com.glureau.k2pb.compiler.struct.MapType
+import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.ReferenceType
 
 class ProtobufAggregator {
     internal val messages = mutableListOf<MessageNode>()

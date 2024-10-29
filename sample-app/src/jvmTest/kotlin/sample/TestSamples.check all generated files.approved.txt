@@ -107,18 +107,6 @@ message BigDecimalHolder {
   string bd = 1;
 }
 
-File: k2pb/AbstractClass.proto
-syntax = "proto3";
-
-// Polymorphism structure for 'AbstractClass'
-message AbstractClass {
-  // Serial name of the class implementing the interface/sealed class.
-  // (subclasses cannot be listed automatically)
-  string type = 1;
-  // Data to be deserialized based on the field 'type'
-  bytes value = 2;
-}
-
 File: k2pb/CommonClass.proto
 syntax = "proto3";
 
@@ -170,15 +158,11 @@ message CollectionTypeEvent {
 File: k2pb/Vehicle.proto
 syntax = "proto3";
 
-// Polymorphism structure for 'Vehicle'
 message Vehicle {
-  // Serial name of the class implementing the interface/sealed class.
-  // Possible values are:
-  // - 'Vehicle.Bike'
-  // - 'Vehicle.Car'
-  string type = 1;
-  // Data to be deserialized based on the field 'type'
-  bytes value = 2;
+  oneof vehicle {
+    Vehicle.Car car = 1;
+    Vehicle.Bike bike = 2;
+  }
   message Bike {
     string brand = 1;
   }

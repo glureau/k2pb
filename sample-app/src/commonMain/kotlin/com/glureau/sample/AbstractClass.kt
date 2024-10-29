@@ -2,7 +2,7 @@ package com.glureau.sample
 
 import com.glureau.k2pb.annotation.ProtoMessage
 
-@ProtoMessage
+//@ProtoMessage
 abstract class AbstractClass {
     abstract val foo: Int
 }

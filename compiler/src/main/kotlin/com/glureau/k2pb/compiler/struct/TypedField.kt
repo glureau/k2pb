@@ -160,25 +160,8 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
         }
 
         is ReferenceType -> {
-            /*
             field.type.inlineOf?.let { inlineOf ->
                 require(inlineOf is ScalarFieldType) // Not supporting other types for now...
-                encodeTypedField(
-                    TypedField(
-                        comment = field.comment,
-                        type = inlineOf,
-                        name = field.name + "." + field.type.inlineName,
-                        protoNumber = tag,
-                        annotatedName = field.annotatedName,
-                        annotatedNumber = field.annotatedNumber,
-                        annotatedSerializer = field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer,
-                    )
-                )
-            }
-             */
-            field.type.inlineOf?.let { inlineOf ->
-                require(inlineOf is ScalarFieldType) // Not supporting other types for now...
-                //addStatement("${field.name} = ${field.type.name}(${inlineOf.readMethod()})")
 
                 (field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer)?.let { s ->
                     val encodedTmpName = "${field.name.replace(".", "_")}Encoded"

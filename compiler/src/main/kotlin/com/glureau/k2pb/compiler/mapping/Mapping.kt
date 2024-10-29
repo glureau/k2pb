@@ -16,6 +16,7 @@ import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.NumberManager
+import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
@@ -89,6 +90,7 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
 }
 
 private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
+    Logger.warn("Recording of abstract class is not supported yet: ${qualifiedName!!.asString()}")
     val subclasses = getSealedSubclasses().toList()
     val possibleValuesText = if (subclasses.isNotEmpty()) {
         "Possible values are:\n" +
@@ -107,23 +109,11 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         superTypes = emptyList(),
         fields = if (sharedOptions.useKspPolymorphism)
             listOf(
-                TypedField(
-                    comment =
-                    "Serial name of the class implementing the interface/sealed class.\n" +
-                            possibleValuesText,
-                    type = ScalarFieldType.String,
-                    name = "type",
-                    annotatedName = "type",
+                OneOfField(
+                    comment = "NOT SUPPORTED YET!",
+                    name = protobufName().replaceFirstChar { it.lowercase(Locale.US) },
                     protoNumber = 1,
-                    annotatedNumber = 1,
-                ),
-                TypedField(
-                    comment = "Data to be deserialized based on the field 'type'",
-                    type = ScalarFieldType.ByteArray,
-                    name = "value",
-                    annotatedName = "value",
-                    protoNumber = 2,
-                    annotatedNumber = 2
+                    fields = emptyList()
                 )
             ) else emptyList(),
         isInlineClass = false,

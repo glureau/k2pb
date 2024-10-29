@@ -18,7 +18,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":runtime"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
             }
         }
         val jvmTest by getting {

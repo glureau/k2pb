@@ -1,3 +1,5 @@
+import javax.script.ScriptEngineManager
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -13,6 +15,8 @@ repositories {
 
 ksp {
     arg("k2pb:replacement", "BigDecimal=kotlin.String;java.math.BigDecimal=kotlin.String;AnotherCustomType=kotlin.Int")
+    //ScriptEngineManager().getEngineByName("").eval("")
+    val a = "com.glureau.sample.Vehicle"
 }
 
 kotlin {
@@ -29,7 +33,6 @@ kotlin {
                 implementation(project(":annotations"))
                 implementation(project(":runtime"))
                 implementation(project(":sample-lib"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
             }
         }
         val jvmTest by getting {

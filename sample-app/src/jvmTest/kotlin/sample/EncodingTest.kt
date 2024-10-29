@@ -3,6 +3,7 @@ package sample
 import AbstractClassOuterClass
 import AbstractSubClassOuterClass
 import BarEventOuterClass
+import BigDecimalHolderOuterClass
 import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
@@ -10,6 +11,7 @@ import FooEventOuterClass
 import NativeTypeEventOuterClass
 import ObjectClassOuterClass
 import StandardClassOuterClass
+import TransientFieldOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
@@ -148,10 +150,9 @@ class EncodingTest : BaseEncodingTest() {
             protocInstance = user {
                 name = "Tony"
                 vehicle = vehicle {
-                    type = "Vehicle.Car"
-                    value = car {
+                    car = car {
                         brand = "Tesla"
-                    }.toByteString()
+                    }
                 }
             }
         )
@@ -161,10 +162,9 @@ class EncodingTest : BaseEncodingTest() {
             protocInstance = user {
                 name = "Francis"
                 vehicle = vehicle {
-                    type = "Vehicle.Bike"
-                    value = bike {
+                    bike = bike {
                         brand = "Peugeot"
-                    }.toByteString()
+                    }
                 }
             }
         )
