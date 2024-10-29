@@ -49,6 +49,25 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             }
         }
 
+        resolvePolymorphism(resolver)
+
+        resolveDependencies(resolver)
+
+        val moduleName = moduleName(resolver)
+        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
+            environment.writeProtobufFile(
+                protobufFile.toProtoString().toByteArray(),
+                fileName = protobufFile.path,
+                dependencies = protobufFile.dependencies
+            )
+        }
+        ProtobufSerializerProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
+            protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
+        }
+        return emptyList()
+    }
+
+    private fun resolvePolymorphism(resolver: Resolver) {
         resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
             symbol.annotations
                 .filter { it.shortName.asString() == ProtoPolymorphism::class.simpleName }
@@ -103,21 +122,6 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                     )
                 }
         }
-
-        resolveDependencies(resolver)
-
-        val moduleName = moduleName(resolver)
-        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
-            environment.writeProtobufFile(
-                protobufFile.toProtoString().toByteArray(),
-                fileName = protobufFile.path,
-                dependencies = protobufFile.dependencies
-            )
-        }
-        ProtobufSerializerProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
-            protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
-        }
-        return emptyList()
     }
 
     private fun resolveDependencies(resolver: Resolver) {
