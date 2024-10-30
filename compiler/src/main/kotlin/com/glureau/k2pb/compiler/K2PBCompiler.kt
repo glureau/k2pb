@@ -71,13 +71,9 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
             symbol.annotations
                 .filter { it.shortName.asString() == ProtoPolymorphism::class.simpleName }
-                //.filterIsInstance<ProtoPolymorphism>()
                 .forEach { annotation ->
-                    //val polymorphism = annotation
                     val parentKClass = annotation.getArg<KSType>(ProtoPolymorphism::parent)
-                    Logger.warn("parentKClass : $parentKClass")
                     val parent = parentKClass.toClassName()
-                    Logger.warn("parent.ClassName : $parent")
                     val oneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::oneOf)
                     val oneOf = oneOfAnnotations.map {
                         val className = it.getArg<KSType>(ProtoPolymorphism.Pair::kClass).toClassName()

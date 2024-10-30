@@ -1,6 +1,5 @@
 package sample
 
-import AbstractClassOuterClass
 import AbstractSubClassOuterClass
 import BarEventOuterClass
 import BigDecimalHolderOuterClass
@@ -15,6 +14,8 @@ import TransientFieldOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
+import abstractClass
+import abstractSubClass
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.glureau.sample.BarEvent
@@ -223,17 +224,13 @@ class EncodingTest : BaseEncodingTest() {
     fun checkAbstractClassPolymorphism() {
         // de/serialization is done via AbstractClass polymorphism
         assertCompatibleSerialization<AbstractClass>(
-            ktInstance = AbstractSubClass(foo = 2, bar = "asc"),
-            protocInstance = AbstractClassOuterClass.AbstractClass.newBuilder()
-                /*.setType("AbstractSubClass")
-                .setValue(
-                    AbstractSubClassOuterClass.AbstractSubClass.newBuilder()
-                        .setFoo(2)
-                        .setBar("asc")
-                        .build()
-                        .toByteString()
-                )*/
-                .build(),
+            ktInstance = AbstractSubClass(foo = 2, bar = "asc") as AbstractClass,
+            protocInstance = abstractClass {
+                abstractSubClass = abstractSubClass {
+                    foo = 2
+                    bar = "asc"
+                }
+            }
         )
     }
 

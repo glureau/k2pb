@@ -107,6 +107,17 @@ message BigDecimalHolder {
   string bd = 1;
 }
 
+File: k2pb/AbstractClass.proto
+syntax = "proto3";
+
+import "AbstractSubClass.proto";
+
+message AbstractClass {
+  oneof abstractClass {
+    AbstractSubClass abstractSubClass = 1;
+  }
+}
+
 File: k2pb/CommonClass.proto
 syntax = "proto3";
 

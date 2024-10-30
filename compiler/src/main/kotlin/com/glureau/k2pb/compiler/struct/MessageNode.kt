@@ -78,12 +78,17 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                     .apply {
                         if (messageNode.isObject) return@apply // Nothing to do, dummy class for simple implementation
                         addStatement("if (instance == null) return")
-                        if (messageNode.isPolymorphic) return@apply // TODO: Handle polymorphic types
-                        if (messageNode.isInlineClass) {
-                            addStatement("writeRawBytes(instance.${messageNode.fields.first().name}.encodeToByteArray())")
-                        } else {
+                        if (messageNode.isPolymorphic) {
                             messageNode.fields.forEach {
                                 encodeField(it)
+                            }
+                        } else {
+                            if (messageNode.isInlineClass) {
+                                addStatement("writeRawBytes(instance.${messageNode.fields.first().name}.encodeToByteArray())")
+                            } else {
+                                messageNode.fields.forEach {
+                                    encodeField(it)
+                                }
                             }
                         }
                     }
@@ -102,10 +107,17 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                             addStatement("return %T", className)
                             return@apply
                         }
+                        if (messageNode.isPolymorphic) {
+                            messageNode.fields.forEach { f ->
+                                decodeField(f)
+                            }
+                            return@apply
+                        }
                         messageNode.fields.forEach {
                             decodeFieldVariableDefinition(it)
                         }
                         addStatement("")
+// FROM THERE
                         beginControlFlow("while (!eof)")
                         beginControlFlow("when (val tag = readTag())")
                         messageNode.fields.forEach { f ->
@@ -123,12 +135,16 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                         endControlFlow() // when (tag)
                         endControlFlow() // while (!eof)
 
+                        if (messageNode.isPolymorphic) {
+                            addStatement("return null")
+                            return@apply
+                        }
 
                         addStatement("return %T(", className)
                         messageNode.fields.forEach {
                             when (it) {
                                 is OneOfField -> {
-                                    TODO()
+                                    // TODO()
                                 }
 
                                 is TypedField -> {
@@ -163,6 +179,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                             }
                         }
                         addStatement(")")
+// TO THERE, TO REFACTOR
                     }
                     .build()
             )

@@ -82,6 +82,7 @@ class K2PBConfig internal constructor() {
 internal class ConfiguredProtoSerializer(private val config: K2PBConfig) : DelegateProtoSerializer {
     @Suppress("UNCHECKED_CAST")
     override fun ProtobufWriter.encode(instance: Any?, instanceClass: KClass<*>) {
+        println("ConfiguredProtoSerializer - encode - $instanceClass")
         config.serializers[instanceClass]?.let {
             with(it as ProtoSerializer<Any>) {
                 encode(instance, this@ConfiguredProtoSerializer)
@@ -100,9 +101,8 @@ internal class ConfiguredProtoSerializer(private val config: K2PBConfig) : Deleg
 }
 
 
-@Suppress("UNCHECKED_CAST")
 public inline fun <reified T : Any> K2PB.encodeToByteArray(value: T): ByteArray =
-    encodeToByteArray(value, value::class as KClass<T>)
+    encodeToByteArray(value, T::class)
 
 public inline fun <reified T : Any> K2PB.decodeFromByteArray(data: ByteArray): T? =
     decodeFromByteArray(data, T::class)
