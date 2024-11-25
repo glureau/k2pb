@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.mapping
 
-import com.glureau.k2pb.CustomStringSerializer
+import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoName
 import com.glureau.k2pb.annotation.ProtoNumber
@@ -61,7 +61,9 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
             //recordMessageNode(declaration.dataClassToMessageNode())
         }
 
-        declaration.isClass -> recordMessageNode(declaration.dataClassToMessageNode())
+        declaration.isClass -> {
+            recordMessageNode(declaration.dataClassToMessageNode())
+        }
 
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
     }
@@ -123,105 +125,109 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     var currentProtoNumber = 1
-    val fields = primaryConstructor!!.parameters.mapNotNull { param ->
-        val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
-
-        //val fields = getDeclaredProperties().mapNotNull { prop ->
-        if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
-            Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
-            return@mapNotNull null
-        }
-        if (!prop.hasBackingField) {
-            Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
-            return@mapNotNull null
-        }
-        val resolvedType = prop.type.resolve()
-        val resolvedDeclaration = resolvedType.declaration
-        if (resolvedDeclaration is KSClassDeclaration &&
-            (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(Modifier.VALUE))
-        ) {
-            val type = resolvedDeclaration.getDeclaredProperties().first().type
-            val inlinedFieldType = type.toProtobufFieldType()
-            InlinedTypeRecorder.recordInlinedType(resolvedDeclaration.qualifiedName!!.asString(), inlinedFieldType)
-        }
-
-        val replacement = sharedOptions.replace(prop.type.toString())
-        // TODO: Handle all serializers... eventually remove the replacement via options
-        val annotatedSerializer = prop.annotations
-            .firstOrNull { it.shortName.asString() == ProtoStringSerializer::class.simpleName }
-            ?.getArg<KSType?>(ProtoStringSerializer::serializer)
-        val annotatedDerivedType = when (annotatedSerializer) {
-            is CustomStringSerializer<*> -> ScalarFieldType.String
-            else -> null
-        }
-        val annotatedNumber = prop.protoNumberInternal
-        if (annotatedNumber != null && currentProtoNumber < annotatedNumber) {
-            Logger.warn(
-                "Proto number is not sequential on ${(qualifiedName ?: simpleName).asString()}: " +
-                        "${prop.serialName} ($currentProtoNumber -> $annotatedNumber)"
-            )
-            currentProtoNumber = annotatedNumber
-        }
-        when {
-            replacement != null -> {
-                TypedField(
-                    name = prop.simpleName.asString(),
-                    annotatedName = prop.serialName,
-                    type = annotatedDerivedType ?: mapQfnToFieldType(replacement)
-                        .also { Logger.warn("GREG - A - ${prop.modifiers}") },
-                    comment = prop.docString,
-                    annotatedNumber = annotatedNumber,
-                    annotatedSerializer = annotatedSerializer,
-                    protoNumber = currentProtoNumber++,
-                )
-            }
-
-            resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
-                TypedField(
-                    name = prop.simpleName.asString(),
-                    annotatedName = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
-                    type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
-                    comment = prop.docString,
-                    annotatedNumber = annotatedNumber,
-                    annotatedSerializer = annotatedSerializer,
-                    protoNumber = currentProtoNumber++,
-                )
-            }
-
-            resolvedType.isError -> {
-                Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
-                Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")
-                Logger.warn("options.replacementMap = ${sharedOptions.replacementMap}")
-                TypedField(
-                    name = prop.simpleName.asString(),
-                    annotatedName = prop.serialName,
-                    type = annotatedDerivedType ?: ReferenceType(
-                        prop.type.toString(),
-                        prop.type.resolve().isMarkedNullable,
-                    ).also {
-                        Logger.warn("GREG - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
-                    },
-                    comment = prop.docString,
-                    annotatedNumber = annotatedNumber,
-                    annotatedSerializer = annotatedSerializer,
-                    protoNumber = currentProtoNumber++,
-                )
-                    .also { Logger.warn("resolvedType.isError -> $it") }
-            }
-
-            else -> {
-                TypedField(
-                    name = prop.simpleName.asString(),
-                    annotatedName = prop.serialName,
-                    type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
-                    comment = prop.docString,
-                    annotatedNumber = annotatedNumber,
-                    annotatedSerializer = annotatedSerializer,
-                    protoNumber = currentProtoNumber++,
-                )
-            }
-        }
+    val fields = requireNotNull(primaryConstructor) {
+        "${this.simpleName.asString()} should have a primary constructor"
     }
+        .parameters.mapNotNull { param ->
+            val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
+
+            //val fields = getDeclaredProperties().mapNotNull { prop ->
+            if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
+                Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+                return@mapNotNull null
+            }
+            if (!prop.hasBackingField) {
+                Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+                return@mapNotNull null
+            }
+            val resolvedType = prop.type.resolve()
+            val resolvedDeclaration = resolvedType.declaration
+            if (resolvedDeclaration is KSClassDeclaration &&
+                (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(
+                    Modifier.VALUE
+                ))
+            ) {
+                val type = resolvedDeclaration.getDeclaredProperties().first().type
+                val inlinedFieldType = type.toProtobufFieldType()
+                InlinedTypeRecorder.recordInlinedType(resolvedDeclaration.qualifiedName!!.asString(), inlinedFieldType)
+            }
+
+            val replacement = sharedOptions.replace(prop.type.toString())
+            // TODO: Handle all serializers... eventually remove the replacement via options
+            val annotatedSerializer = prop.annotations
+                .firstOrNull { it.shortName.asString() == ProtoStringSerializer::class.simpleName }
+                ?.getArg<KSType?>(ProtoStringSerializer::serializer)
+            val annotatedDerivedType = when (annotatedSerializer) {
+                is CustomStringConverter<*> -> ScalarFieldType.String
+                else -> null
+            }
+            val annotatedNumber = prop.protoNumberInternal
+            if (annotatedNumber != null && currentProtoNumber < annotatedNumber) {
+                Logger.warn(
+                    "Proto number is not sequential on ${(qualifiedName ?: simpleName).asString()}: " +
+                            "${prop.serialName} ($currentProtoNumber -> $annotatedNumber)"
+                )
+                currentProtoNumber = annotatedNumber
+            }
+            when {
+                replacement != null -> {
+                    TypedField(
+                        name = prop.simpleName.asString(),
+                        annotatedName = prop.serialName,
+                        type = annotatedDerivedType ?: mapQfnToFieldType(replacement),
+                        comment = prop.docString,
+                        annotatedNumber = annotatedNumber,
+                        annotatedSerializer = annotatedSerializer,
+                        protoNumber = currentProtoNumber++,
+                    )
+                }
+
+                resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
+                    TypedField(
+                        name = prop.simpleName.asString(),
+                        annotatedName = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                        type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
+                        comment = prop.docString,
+                        annotatedNumber = annotatedNumber,
+                        annotatedSerializer = annotatedSerializer,
+                        protoNumber = currentProtoNumber++,
+                    )
+                }
+
+                resolvedType.isError -> {
+                    Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
+                    Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")
+                    Logger.warn("options.replacementMap = ${sharedOptions.replacementMap}")
+                    TypedField(
+                        name = prop.simpleName.asString(),
+                        annotatedName = prop.serialName,
+                        type = annotatedDerivedType ?: ReferenceType(
+                            prop.type.toString(),
+                            prop.type.resolve().isMarkedNullable,
+                        ).also {
+                            Logger.warn("GREG - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
+                        },
+                        comment = prop.docString,
+                        annotatedNumber = annotatedNumber,
+                        annotatedSerializer = annotatedSerializer,
+                        protoNumber = currentProtoNumber++,
+                    )
+                        .also { Logger.warn("resolvedType.isError -> $it") }
+                }
+
+                else -> {
+                    TypedField(
+                        name = prop.simpleName.asString(),
+                        annotatedName = prop.serialName,
+                        type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
+                        comment = prop.docString,
+                        annotatedNumber = annotatedNumber,
+                        annotatedSerializer = annotatedSerializer,
+                        protoNumber = currentProtoNumber++,
+                    )
+                }
+            }
+        }
     return MessageNode(
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
@@ -300,8 +306,6 @@ private fun mapQfnToFieldType(
                 valueType = type.arguments[1].type!!.toProtobufFieldType(),
             )
         }
-
-        "kotlinx.datetime.Instant" -> ScalarFieldType.Instant
 
         // TODO: Consider nullability for the scalar types too!!
         else -> {

@@ -134,6 +134,13 @@ enum EnumClass {
   C = 2;
 }
 
+File: k2pb/KtxClasses.proto
+syntax = "proto3";
+
+message KtxClasses {
+  string instant = 1;
+}
+
 File: k2pb/FooEvent.proto
 syntax = "proto3";
 

@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace = "com.glureau.k2pb.annotations"
     compileSdk = 33
     buildToolsVersion = "33.0.0"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -21,6 +22,8 @@ android {
 }
 
 kotlin {
+    explicitApi()
+
     js(IR) {
         browser()
         nodejs()

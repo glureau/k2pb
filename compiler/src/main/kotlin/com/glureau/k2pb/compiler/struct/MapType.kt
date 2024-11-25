@@ -4,9 +4,9 @@ data class MapType(val keyType: FieldType, val valueType: FieldType) : FieldType
 
 fun StringBuilder.appendMapType(type: MapType) {
     append("map<")
-    appendFieldType(type.keyType)
+    appendFieldType(type.keyType, null)
     append(", ")
-    appendFieldType(type.valueType)
+    appendFieldType(type.valueType, null)
     append(">")
 }
 

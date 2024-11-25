@@ -7,6 +7,7 @@ import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.ReferenceType
+import com.glureau.k2pb.compiler.struct.TypedField
 
 class ProtobufAggregator {
     internal val messages = mutableListOf<MessageNode>()
@@ -31,8 +32,13 @@ class ProtobufAggregator {
     }
 
     fun unknownReferences(): Set<String> {
-        val fieldTypeList: List<FieldType> = messages.flatMap { it.fields }.flatMap { it.allFieldTypes() }
-        val stdRefs = fieldTypeList.filterIsInstance<ReferenceType>().map { it.name }
+        val fieldTypeList: List<FieldType> = messages
+            .flatMap { it.fields }
+            .filter { (it as? TypedField)?.annotatedSerializer == null }
+            .flatMap { it.allFieldTypes() }
+        val stdRefs = fieldTypeList.filterIsInstance<ReferenceType>()
+            .also { it.forEach { Logger.warn("GREG : UNKNOWN REF $it ") } }
+            .map { it.name }
         // TODO: recursivity + TU for List&Map
         val listRefs = fieldTypeList.filterIsInstance<ListType>()
             .mapNotNull { if (it.repeatedType is ReferenceType) it.repeatedType.name else null }

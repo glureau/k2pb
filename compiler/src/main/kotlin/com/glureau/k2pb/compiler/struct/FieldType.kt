@@ -1,12 +1,27 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.CustomStringConverter
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.ksp.toClassName
+
 sealed interface FieldType
 
-fun StringBuilder.appendFieldType(type: FieldType) {
+fun StringBuilder.appendFieldType(type: FieldType, annotatedSerializer: KSType?) {
+    if (annotatedSerializer != null && annotatedSerializer.declaration is KSClassDeclaration) {
+        val annotatedSerializerDecl = annotatedSerializer.declaration as KSClassDeclaration
+        val parents = annotatedSerializerDecl.superTypes.map { it.resolve().toClassName() }
+        if (parents.contains(CustomStringConverter::class.asClassName())) {
+            append("string")
+            return
+        }
+        error("Annotated custom serializer not supported yet: $annotatedSerializer")
+    }
     when (type) {
         is ScalarFieldType -> appendScalarType(type)
         is ReferenceType -> appendReferenceType(type)
-        is ListType -> appendListType(type)
+        is ListType -> appendListType(type, annotatedSerializer)
         is MapType -> appendMapType(type)
     }
 }

@@ -20,7 +20,7 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField, numberMa
     appendComment(indentLevel, field.comment)
 
     append(indentation(indentLevel))
-    appendFieldType(field.type)
+    appendFieldType(field.type, field.annotatedSerializer)
     append(" ")
     append(field.annotatedName ?: field.name)
     append(" = ")

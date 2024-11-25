@@ -26,7 +26,7 @@ plugins {
 
 allprojects {
     group = "com.glureau.k2pb"
-    version = "0.5.1"
+    version = "1.0.0-SNAPSHOT1"
 
     repositories {
         mavenLocal()

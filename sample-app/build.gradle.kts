@@ -31,8 +31,10 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":annotations"))
-                implementation(project(":runtime"))
+                implementation(project(":k2pb-runtime"))
+                implementation(project(":k2pb-serializers-datetime"))
                 implementation(project(":sample-lib"))
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
             }
         }
         val jvmTest by getting {

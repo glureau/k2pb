@@ -1,10 +1,12 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.google.devtools.ksp.symbol.KSType
+
 data class ListType(val repeatedType: FieldType) : FieldType
 
-fun StringBuilder.appendListType(type: ListType) {
+fun StringBuilder.appendListType(type: ListType, annotatedSerializer: KSType?) {
     append("repeated ")
-    appendFieldType(type.repeatedType)
+    appendFieldType(type.repeatedType, annotatedSerializer)
 }
 
 fun StringBuilder.appendKotlinListDefinition(type: ListType) = apply {

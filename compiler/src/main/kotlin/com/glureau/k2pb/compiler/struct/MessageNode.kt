@@ -168,10 +168,13 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                                         }
                                     }
                                     if (it.annotatedSerializer != null) {
-                                        addStatement(
-                                            "  ${it.name} = %T().decode(${protoDefaultValue(it.name)})",
-                                            it.annotatedSerializer.toClassName()
-                                        )
+                                        val str = if ((it.type is ReferenceType) && it.type.isNullable) {
+                                            "  ${it.name} = %T().decode(${protoDefaultValue(it.name)})"
+                                        } else {
+                                            "  ${it.name} = TODO()"
+                                            //"  ${it.name} = requireNotNull(%T().decode(${protoDefaultValue(it.name)}))"
+                                        }
+                                        addStatement(str, it.annotatedSerializer.toClassName())
                                     } else {
                                         addStatement("  ${it.name} = ${protoDefaultValue(it.name)},")
                                     }

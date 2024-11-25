@@ -24,7 +24,7 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
     }
 
     InlinedTypeRecorder.getInlinedType(type.name)?.let { inlinedType: FieldType ->
-        appendFieldType(inlinedType)
+        appendFieldType(inlinedType, type.inlineAnnotatedSerializer)
         return
     }
 

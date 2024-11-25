@@ -22,11 +22,13 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                 builder.addMessageNote(it)
                 CodeFile(builder.build(), false)
             }
+        if (fileSpecs.isEmpty()) {
+            return emptyList()
+        }
+
         val packages = protobufAggregator.messages.map { it.packageName }
         // Find the common package
-        val commonPackage =
-            //if (packages.isEmpty()) ""
-            packages.reduce { acc, s -> acc.commonPrefixWith(s) }
+        val commonPackage = packages.reduce { acc, s -> acc.commonPrefixWith(s) }
 
         // sample-lib => SampleLib
         val cleanModuleName = moduleName
@@ -35,7 +37,8 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
 
         val moduleCodeFile = CodeFile(
             FileSpec.builder(commonPackage, "${cleanModuleName}Serializers")
-                .addFunction(FunSpec.builder("register${cleanModuleName}Serializers")
+                .addFunction(
+                    FunSpec.builder("register${cleanModuleName}Serializers")
                     .receiver(ClassName("com.glureau.k2pb.runtime", "K2PBConfig"))
                     .apply {
                         protobufAggregator.messages.forEach {

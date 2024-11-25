@@ -1,12 +1,12 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.CustomStringSerializer
+import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoStringSerializer
 import java.math.BigDecimal
 
 
-class BigDecimalSerializer : CustomStringSerializer<BigDecimal> {
+class BigDecimalConverter : CustomStringConverter<BigDecimal> {
     override fun encode(value: BigDecimal): String = value.toPlainString() ?: "0.0"
 
     override fun decode(data: String): BigDecimal = data.takeIf { it.isNotBlank() }?.toBigDecimal()!!
@@ -17,11 +17,11 @@ class BigDecimalSerializer : CustomStringSerializer<BigDecimal> {
 // (note that the @Contextual annotation could also be used and the mapping define multiple times  in other modules
 //  with different serializer and different type used, so we cannot extract just 1 proto file in theory)
 @ProtoMessage
-data class BigDecimalHolder(@ProtoStringSerializer(BigDecimalSerializer::class) val bd: BigDecimal)
+data class BigDecimalHolder(@ProtoStringSerializer(BigDecimalConverter::class) val bd: BigDecimal)
 
 @JvmInline
 @ProtoMessage
-value class BigDecimalValueClass(@ProtoStringSerializer(BigDecimalSerializer::class) val bd: BigDecimal)
+value class BigDecimalValueClass(@ProtoStringSerializer(BigDecimalConverter::class) val bd: BigDecimal)
 
 @ProtoMessage
 data class BigDecimalValueClassHolder(val bdValue: BigDecimalValueClass)

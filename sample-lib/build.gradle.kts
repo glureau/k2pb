@@ -17,7 +17,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":runtime"))
+                implementation(project(":k2pb-runtime"))
             }
         }
         val jvmTest by getting {
@@ -33,7 +33,6 @@ kotlin {
             }
             kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
         }
-
     }
 }
 

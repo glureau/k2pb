@@ -1,3 +1,0 @@
-package com.glureau.sample
-
-// TODO: Support Proto annotations: ProtoType, ProtoNumber, ProtoPacked, ...

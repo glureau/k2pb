@@ -15,7 +15,7 @@ data class ScalarFieldType(
 ) : FieldType {
     companion object {
         val String = ScalarFieldType(
-            kotlinClass = String::class.asClassName(),
+            kotlinClass = kotlin.String::class.asClassName(),
             protoType = ScalarType.string,
             writeMethod = { f, t -> CodeBlock.of("writeString($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeString($f)") },
@@ -23,7 +23,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readStringNoTag()") },
         )
         val Int = ScalarFieldType(
-            kotlinClass = Int::class.asClassName(),
+            kotlinClass = kotlin.Int::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
@@ -33,7 +33,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readInt32NoTag()") },
         )
         val Char = ScalarFieldType(
-            kotlinClass = Char::class.asClassName(),
+            kotlinClass = kotlin.Char::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
@@ -43,7 +43,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toChar()") },
         )
         val Short = ScalarFieldType(
-            kotlinClass = Short::class.asClassName(),
+            kotlinClass = kotlin.Short::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
@@ -53,7 +53,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toShort()") },
         )
         val Byte = ScalarFieldType(
-            kotlinClass = Byte::class.asClassName(),
+            kotlinClass = kotlin.Byte::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
@@ -63,7 +63,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toByte()") },
         )
         val Long = ScalarFieldType(
-            kotlinClass = Long::class.asClassName(),
+            kotlinClass = kotlin.Long::class.asClassName(),
             protoType = ScalarType.int64,
             writeMethod = { f, t ->
                 CodeBlock.of("writeLong($f, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
@@ -73,7 +73,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readLongNoTag()") },
         )
         val Float = ScalarFieldType(
-            kotlinClass = Float::class.asClassName(),
+            kotlinClass = kotlin.Float::class.asClassName(),
             protoType = ScalarType.float,
             writeMethod = { f, t -> CodeBlock.of("writeFloat($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeFloat($f)") },
@@ -81,7 +81,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readFloatNoTag()") },
         )
         val Double = ScalarFieldType(
-            kotlinClass = Double::class.asClassName(),
+            kotlinClass = kotlin.Double::class.asClassName(),
             protoType = ScalarType.double,
             writeMethod = { f, t -> CodeBlock.of("writeDouble($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeDouble($f)") },
@@ -89,7 +89,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readDoubleNoTag()") },
         )
         val Boolean = ScalarFieldType(
-            kotlinClass = Boolean::class.asClassName(),
+            kotlinClass = kotlin.Boolean::class.asClassName(),
             protoType = ScalarType.bool,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
@@ -99,7 +99,7 @@ data class ScalarFieldType(
             readMethodNoTag = { CodeBlock.of("readIntNoTag() == 1") },
         )
         val ByteArray = ScalarFieldType(
-            kotlinClass = ByteArray::class.asClassName(),
+            kotlinClass = kotlin.ByteArray::class.asClassName(),
             protoType = ScalarType.bytes,
             writeMethod = { f, t ->
                 CodeBlock.of("writeBytes($f, $t)")
@@ -108,10 +108,6 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readByteArray()") },
             readMethodNoTag = { CodeBlock.of("readByteArrayNoTag()") },
         )
-
-        // To avoid the dependency on kotlinx-datetime
-        private val instantClassName = ClassName("kotlinx.datetime", "Instant")
-        val Instant = ScalarFieldType(kotlinClass = instantClassName, protoType = ScalarType.string)
     }
 }
 
