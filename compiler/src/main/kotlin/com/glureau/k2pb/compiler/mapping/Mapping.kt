@@ -4,7 +4,7 @@ import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoName
 import com.glureau.k2pb.annotation.ProtoNumber
-import com.glureau.k2pb.annotation.ProtoStringSerializer
+import com.glureau.k2pb.annotation.ProtoStringConverter
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.getArg
@@ -152,12 +152,12 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 InlinedTypeRecorder.recordInlinedType(resolvedDeclaration.qualifiedName!!.asString(), inlinedFieldType)
             }
 
-            val replacement = sharedOptions.replace(prop.type.toString())
+            //val replacement = sharedOptions.replace(prop.type.toString())
             // TODO: Handle all serializers... eventually remove the replacement via options
-            val annotatedSerializer = prop.annotations
-                .firstOrNull { it.shortName.asString() == ProtoStringSerializer::class.simpleName }
-                ?.getArg<KSType?>(ProtoStringSerializer::serializer)
-            val annotatedDerivedType = when (annotatedSerializer) {
+            val annotatedConverter = prop.annotations
+                .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
+                ?.getArg<KSType?>(ProtoStringConverter::converter)
+            val annotatedDerivedType = when (annotatedConverter) {
                 is CustomStringConverter<*> -> ScalarFieldType.String
                 else -> null
             }
@@ -170,18 +170,6 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 currentProtoNumber = annotatedNumber
             }
             when {
-                replacement != null -> {
-                    TypedField(
-                        name = prop.simpleName.asString(),
-                        annotatedName = prop.serialName,
-                        type = annotatedDerivedType ?: mapQfnToFieldType(replacement),
-                        comment = prop.docString,
-                        annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedSerializer,
-                        protoNumber = currentProtoNumber++,
-                    )
-                }
-
                 resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                     TypedField(
                         name = prop.simpleName.asString(),
@@ -189,15 +177,14 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                         comment = prop.docString,
                         annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedSerializer,
+                        annotatedSerializer = annotatedConverter,
                         protoNumber = currentProtoNumber++,
                     )
                 }
 
                 resolvedType.isError -> {
                     Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
-                    Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")
-                    Logger.warn("options.replacementMap = ${sharedOptions.replacementMap}")
+                    Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")// TODO doc
                     TypedField(
                         name = prop.simpleName.asString(),
                         annotatedName = prop.serialName,
@@ -209,7 +196,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         },
                         comment = prop.docString,
                         annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedSerializer,
+                        annotatedSerializer = annotatedConverter,
                         protoNumber = currentProtoNumber++,
                     )
                         .also { Logger.warn("resolvedType.isError -> $it") }
@@ -222,7 +209,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                         comment = prop.docString,
                         annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedSerializer,
+                        annotatedSerializer = annotatedConverter,
                         protoNumber = currentProtoNumber++,
                     )
                 }
@@ -261,16 +248,7 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
 private fun KSTypeReference.toProtobufFieldType(): FieldType {
     val declaration = this.resolve().declaration
     val qualifiedName = declaration.qualifiedName?.asString()
-    val resolvedQualifiedName = sharedOptions.replace(this.toString()) ?: qualifiedName
-    if (resolvedQualifiedName == null) {
-        // TODO: TU for that case
-        Logger.warn("Cannot resolve declaration for $qualifiedName from ${declaration.containingFile} ($this)")
-        Logger.exception(IllegalStateException("resolution issue: $declaration"))
-        return ReferenceType(declaration.simpleName.asString(), this.resolve().isMarkedNullable)
-            .also { Logger.warn("GREG - ${declaration.simpleName} - ${declaration.modifiers}") }
-    }
-
-    return mapQfnToFieldType(resolvedQualifiedName, this.resolve())
+    return mapQfnToFieldType(qualifiedName!!, this.resolve())
         .also { Logger.warn("GREG - B - ${this.resolve().declaration.modifiers}") }
 }
 
@@ -283,7 +261,8 @@ private fun mapQfnToFieldType(
             (type?.declaration as? KSClassDeclaration)?.getDeclaredProperties()?.toList()
         }"
     )
-    return when (qfn) {
+
+    when (qfn) {
         "kotlin.String" -> ScalarFieldType.String
         "kotlin.Int" -> ScalarFieldType.Int
         "kotlin.Char" -> ScalarFieldType.Char
@@ -294,9 +273,20 @@ private fun mapQfnToFieldType(
         "kotlin.Double" -> ScalarFieldType.Double
         "kotlin.Boolean" -> ScalarFieldType.Boolean
         "kotlin.ByteArray" -> ScalarFieldType.ByteArray
+         else -> null
+    }?.let {
+        if (type?.isMarkedNullable == true) {
+            return it.copy(isNullable = true)
+        } else {
+            return it
+        }
+    }
+
+    return when (qfn) {
         "kotlin.collections.List" -> {
             ListType(
-                repeatedType = type!!.arguments[0].type!!.toProtobufFieldType() // TODO: List<List<Int>> is not supported
+                repeatedType = type!!.arguments[0].type!!.toProtobufFieldType(), // TODO: List<List<Int>> is not supported
+                isNullable = type.isMarkedNullable
             )
         }
 
@@ -304,6 +294,7 @@ private fun mapQfnToFieldType(
             MapType(
                 keyType = type!!.arguments[0].type!!.toProtobufFieldType(), // TODO: Map<Map<X, X>, X> is not supported
                 valueType = type.arguments[1].type!!.toProtobufFieldType(),
+                isNullable = type.isMarkedNullable
             )
         }
 
@@ -313,20 +304,20 @@ private fun mapQfnToFieldType(
                 val inlined = (type.declaration as KSClassDeclaration).getDeclaredProperties().first()
                 val inlinedFieldType = inlined.type.toProtobufFieldType()
                 val inlineAnnotatedSerializer = inlined.annotations
-                    .firstOrNull { it.shortName.asString() == ProtoStringSerializer::class.simpleName }
-                    ?.getArg<KSType?>(ProtoStringSerializer::serializer)
+                    .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
+                    ?.getArg<KSType?>(ProtoStringConverter::converter)
 
                 Logger.warn("GREG - ${type.declaration.simpleName.asString()} is inlined $inlinedFieldType / $inlineAnnotatedSerializer")
 
                 ReferenceType(
                     name = qfn,
-                    isNullable = false,
+                    isNullable = inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
                     inlineName = inlined.simpleName.asString(),
                     inlineAnnotatedSerializer = inlineAnnotatedSerializer
                 )
             } else {
-                ReferenceType(qfn, false, null)
+                ReferenceType(qfn, type?.isMarkedNullable == true, null)
             }
         }
     }

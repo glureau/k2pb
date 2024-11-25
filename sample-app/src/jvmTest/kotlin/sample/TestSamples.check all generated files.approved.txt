@@ -173,6 +173,13 @@ message CollectionTypeEvent {
   map<string, int32> mapStringInt = 2;
 }
 
+File: k2pb/NullableBigDecimalHolder.proto
+syntax = "proto3";
+
+message NullableBigDecimalHolder {
+  string bd = 1;
+}
+
 File: k2pb/Vehicle.proto
 syntax = "proto3";
 

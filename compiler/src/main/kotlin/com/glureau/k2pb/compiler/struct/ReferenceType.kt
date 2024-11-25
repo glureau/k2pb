@@ -3,12 +3,11 @@ package com.glureau.k2pb.compiler.struct
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
-import com.glureau.k2pb.compiler.sharedOptions
 import com.google.devtools.ksp.symbol.KSType
 
 data class ReferenceType(
     val name: String,
-    val isNullable: Boolean,
+    override val isNullable: Boolean,
     val inlineOf: FieldType? = null,
     val inlineName: String? = null,
     val inlineAnnotatedSerializer: KSType? = null,
@@ -25,11 +24,6 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
 
     InlinedTypeRecorder.getInlinedType(type.name)?.let { inlinedType: FieldType ->
         appendFieldType(inlinedType, type.inlineAnnotatedSerializer)
-        return
-    }
-
-    sharedOptions.replace(type.name)?.let { replacement: String ->
-        append(replacement)
         return
     }
 

@@ -1,8 +1,11 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.compiler.mapping.appendComment
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
 data class TypedField(
@@ -64,19 +67,26 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
         }
 
         is ReferenceType -> {
-            field.type.inlineOf?.let { inlineOf ->
-                require(inlineOf is ScalarFieldType) // Not supporting other types for now...
-                encodeTypedField(
-                    TypedField(
-                        comment = field.comment,
-                        type = inlineOf,
-                        name = field.name + "." + field.type.inlineName,
-                        protoNumber = tag,
-                        annotatedName = field.annotatedName,
-                        annotatedNumber = field.annotatedNumber,
-                        annotatedSerializer = field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer,
-                    )
-                )
+            (field.annotatedSerializer ?: field.type.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
+                val fieldAccess = "instance.${field.name}" + (field.type.inlineName?.let { ".$it" } ?: "")
+
+                if (field.type.isNullable|| (field.type.inlineOf as? ReferenceType)?.isNullable == true ) {
+                    beginControlFlow("if ($fieldAccess != null)")
+                }
+                val encodedTmpName = "${field.name.replace(".", "_")}Encoded"
+                addStatement("val $encodedTmpName = %T().encode($fieldAccess)", annotatedSerializer.toClassName())
+                val parents = (annotatedSerializer.declaration as KSClassDeclaration)
+                    .superTypes
+                    .map { it.resolve().toClassName() }
+                if (parents.contains(CustomStringConverter::class.asClassName())) {
+                    addCode(ScalarFieldType.String.writeMethod(encodedTmpName, tag))
+                    addStatement("")
+                } else {
+                    error("Not supported yet")
+                }
+                if (field.type.isNullable) {
+                    endControlFlow()
+                }
             } ?: run {
                 beginControlFlow("%M($tag) {", writeMessageExt)
                 beginControlFlow("with(delegate) {")
@@ -94,6 +104,7 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
                     s.toClassName()
                 )
                 addCode(field.type.writeMethod(encodedTmpName, tag))
+                addStatement(" // scalar")
             } ?: addCode(field.type.writeMethod("instance.${field.name}", tag)))
                 .also { addStatement("") }
         }
@@ -115,7 +126,19 @@ fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
         is ReferenceType,
         is ScalarFieldType -> {
             val typeName = StringBuilder().appendKotlinDefinition(field.type)
-            addStatement("var ${field.name}: ${typeName}? = null")
+            field.annotatedSerializer?.let { type ->
+                val parents = (type.declaration as KSClassDeclaration)
+                    .superTypes
+                    .map { it.resolve().toClassName() }
+                if (parents.contains(CustomStringConverter::class.asClassName())) {
+                    addStatement("var ${field.name}: String? = null")
+                } else {
+                    error("Not supported yet")
+                }
+            } ?: run {
+                addStatement("var ${field.name}: ${typeName}? = null")
+            }
+
         }
     }
 }
@@ -160,26 +183,34 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
         }
 
         is ReferenceType -> {
-            field.type.inlineOf?.let { inlineOf ->
-                require(inlineOf is ScalarFieldType) // Not supporting other types for now...
-
-                (field.type.inlineAnnotatedSerializer ?: field.annotatedSerializer)?.let { s ->
-                    val encodedTmpName = "${field.name.replace(".", "_")}Encoded"
-                    addStatement(
-                        "val $encodedTmpName = %T().decode(${inlineOf.readMethod()})",
-                        s.toClassName()
-                    )
-                    addStatement("${field.name} = ${field.type.name}($encodedTmpName)")
-                } ?: addStatement("${field.name} = ${field.type.name}(${inlineOf.readMethod()})")
-
-            }
-                ?: run {
-                    beginControlFlow("${field.name} = %M", readMessageExt)
-                    beginControlFlow("with(delegate) {")
-                    addStatement("decode(${field.type.name}::class)")
-                    endControlFlow()
-                    endControlFlow()
+            (field.annotatedSerializer ?: field.type.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
+                val parents = (annotatedSerializer.declaration as KSClassDeclaration)
+                    .superTypes
+                    .map { it.resolve().toClassName() }
+                if (parents.contains(CustomStringConverter::class.asClassName())) {
+                    if (field.type.inlineOf != null) {
+                        val decodedTmpName = "${field.name.replace(".", "_")}Decoded"
+                        addStatement(
+                            "val $decodedTmpName = %T().decode(${ScalarFieldType.String.readMethod()})",
+                            annotatedSerializer.toClassName()
+                        )
+                        //addStatement("${field.name} = ${ScalarFieldType.String.readMethod()}")
+                    } else {
+                        addStatement(
+                            "${field.name} = ${ScalarFieldType.String.readMethod()}",
+                            annotatedSerializer.toClassName()
+                        )
+                    }
+                } else {
+                    error("Not supported yet")
                 }
+            } ?: run {
+                beginControlFlow("${field.name} = %M", readMessageExt)
+                beginControlFlow("with(delegate) {")
+                addStatement("decode(${field.type.name}::class)")
+                endControlFlow()
+                endControlFlow()
+            }
         }
 
         is ScalarFieldType -> {

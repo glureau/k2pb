@@ -12,6 +12,7 @@ data class ScalarFieldType(
     val writeMethodNoTag: (fieldName: String) -> CodeBlock = { f -> CodeBlock.of("") },
     val readMethod: () -> CodeBlock = { CodeBlock.of("") },
     val readMethodNoTag: () -> CodeBlock = { CodeBlock.of("") },
+    override val isNullable: Boolean = false,
 ) : FieldType {
     companion object {
         val String = ScalarFieldType(

@@ -151,7 +151,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                                     val protoDefaultValue: (name: String) -> String = when (it.type) {
                                         is ListType -> { n -> "$n ?: emptyList()" }
                                         is MapType -> { n -> "$n ?: emptyMap()" }
-                                        is ReferenceType -> { n -> if (it.type.isNullable) "$n ?: null" else "$n!!" }
+                                        is ReferenceType -> { n -> if (it.type.isNullable) n else "$n!!" }
                                         ScalarFieldType.Double -> { n -> "$n ?: 0.0" }
                                         ScalarFieldType.Float -> { n -> "$n ?: 0.0f" }
                                         ScalarFieldType.Int -> { n -> "$n ?: 0" }
@@ -168,11 +168,10 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                                         }
                                     }
                                     if (it.annotatedSerializer != null) {
-                                        val str = if ((it.type is ReferenceType) && it.type.isNullable) {
-                                            "  ${it.name} = %T().decode(${protoDefaultValue(it.name)})"
+                                        val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
+                                            "  ${it.name} = requireNotNull(%T().decode(${protoDefaultValue(it.name)}))"
                                         } else {
-                                            "  ${it.name} = TODO()"
-                                            //"  ${it.name} = requireNotNull(%T().decode(${protoDefaultValue(it.name)}))"
+                                            "  ${it.name} = (${protoDefaultValue(it.name)})?.let { %T().decode(it) }"
                                         }
                                         addStatement(str, it.annotatedSerializer.toClassName())
                                     } else {

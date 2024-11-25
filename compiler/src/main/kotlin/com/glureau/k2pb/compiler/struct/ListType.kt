@@ -2,7 +2,7 @@ package com.glureau.k2pb.compiler.struct
 
 import com.google.devtools.ksp.symbol.KSType
 
-data class ListType(val repeatedType: FieldType) : FieldType
+data class ListType(val repeatedType: FieldType, override val isNullable: Boolean) : FieldType
 
 fun StringBuilder.appendListType(type: ListType, annotatedSerializer: KSType?) {
     append("repeated ")
@@ -10,5 +10,5 @@ fun StringBuilder.appendListType(type: ListType, annotatedSerializer: KSType?) {
 }
 
 fun StringBuilder.appendKotlinListDefinition(type: ListType) = apply {
-    append("List<${appendKotlinDefinition(type.repeatedType)}>")
+    append("List<${appendKotlinDefinition(type.repeatedType)}>" + if (type.isNullable) "?" else "")
 }

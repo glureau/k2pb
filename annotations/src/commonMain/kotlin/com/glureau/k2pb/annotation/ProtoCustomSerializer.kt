@@ -5,13 +5,13 @@ import com.glureau.k2pb.CustomStringConverter
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.PROPERTY)
-public annotation class ProtoStringSerializer(
-    val serializer: KClass<out CustomStringConverter<*>>,
+public annotation class ProtoStringConverter(
+    val converter: KClass<out CustomStringConverter<*>>,
 )
 
 @Target(AnnotationTarget.PROPERTY)
 public annotation class ProtoCustomSerializer(
-    val serializer: KClass<out CustomConverter<*, *>>,
+    val converter: KClass<out CustomConverter<*, *>>,
 )
 
 public enum class FormatType { // https://protobuf.dev/programming-guides/proto3/#scalar

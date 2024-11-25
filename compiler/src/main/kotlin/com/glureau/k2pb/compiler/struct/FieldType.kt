@@ -6,7 +6,9 @@ import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
-sealed interface FieldType
+sealed interface FieldType {
+    val isNullable: Boolean
+}
 
 fun StringBuilder.appendFieldType(type: FieldType, annotatedSerializer: KSType?) {
     if (annotatedSerializer != null && annotatedSerializer.declaration is KSClassDeclaration) {
