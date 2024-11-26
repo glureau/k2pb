@@ -311,7 +311,7 @@ private fun mapQfnToFieldType(
 
                 ReferenceType(
                     name = qfn,
-                    isNullable = inlinedFieldType.isNullable,
+                    isNullable = type.isMarkedNullable == true,// inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
                     inlineName = inlined.simpleName.asString(),
                     inlineAnnotatedSerializer = inlineAnnotatedSerializer

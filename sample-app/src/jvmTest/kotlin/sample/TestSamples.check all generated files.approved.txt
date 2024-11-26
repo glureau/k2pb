@@ -1,3 +1,10 @@
+File: k2pb/NullableBigDecimalValueClassHolder.proto
+syntax = "proto3";
+
+message NullableBigDecimalValueClassHolder {
+  string nullableBdValue = 1;
+}
+
 File: k2pb/AnnotatedClass.proto
 syntax = "proto3";
 

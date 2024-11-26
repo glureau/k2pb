@@ -9,7 +9,7 @@ import java.math.BigDecimal
 class BigDecimalConverter : CustomStringConverter<BigDecimal> {
     override fun encode(value: BigDecimal): String = value.toPlainString() ?: "0.0"
 
-    override fun decode(data: String): BigDecimal = data.takeIf { it.isNotBlank() }?.toBigDecimal()!!
+    override fun decode(data: String): BigDecimal? = data.takeIf { it.isNotBlank() }?.toBigDecimal()
 }
 
 // Here the compiler cannot infer the replacement type (KSP only give access to signatures, not runtime information)
@@ -25,9 +25,12 @@ data class NullableBigDecimalHolder(@ProtoStringConverter(BigDecimalConverter::c
 @ProtoMessage
 value class BigDecimalValueClass(@ProtoStringConverter(BigDecimalConverter::class) val bd: BigDecimal)
 
+@ProtoMessage
+data class BigDecimalValueClassHolder(val bdValue: BigDecimalValueClass)
+
 @JvmInline
 @ProtoMessage
 value class NullableBigDecimalValueClass(@ProtoStringConverter(BigDecimalConverter::class) val bd: BigDecimal?)
 
 @ProtoMessage
-data class BigDecimalValueClassHolder(val bdValue: BigDecimalValueClass)
+data class NullableBigDecimalValueClassHolder(val nullableBdValue: NullableBigDecimalValueClass)

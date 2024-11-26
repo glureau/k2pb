@@ -20,12 +20,17 @@ import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.glureau.sample.BarEvent
 import com.glureau.sample.BigDecimalHolder
+import com.glureau.sample.BigDecimalValueClass
+import com.glureau.sample.BigDecimalValueClassHolder
 import com.glureau.sample.CollectionTypeEvent
 import com.glureau.sample.CommentedClass
 import com.glureau.sample.CommonClass
 import com.glureau.sample.FooEvent
 import com.glureau.sample.MultiModule
 import com.glureau.sample.NativeTypeEvent
+import com.glureau.sample.NullableBigDecimalHolder
+import com.glureau.sample.NullableBigDecimalValueClass
+import com.glureau.sample.NullableBigDecimalValueClassHolder
 import com.glureau.sample.ObjectClass
 import com.glureau.sample.StandardClass
 import com.glureau.sample.TransientField
@@ -191,6 +196,39 @@ class EncodingTest : BaseEncodingTest() {
             ktInstance = BigDecimalHolder(BigDecimal("42.42")),
             protocInstance = BigDecimalHolderOuterClass.BigDecimalHolder.newBuilder()
                 .setBd("42.42")
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableBigDecimalHolder(BigDecimal("42.42")),
+            protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
+                .setBd("42.42")
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableBigDecimalHolder(null),
+            protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
+                //.setBd(null) // <- NPE
+                .build()
+        )
+    }
+    @Test
+    fun checkInlineCustomSerializer() {
+        assertCompatibleSerialization(
+            ktInstance = BigDecimalValueClassHolder(BigDecimalValueClass(BigDecimal("42.42"))),
+            protocInstance = BigDecimalValueClassHolderOuterClass.BigDecimalValueClassHolder.newBuilder()
+                .setBdValue("42.42")
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(BigDecimal("42.42"))),
+            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+                .setNullableBdValue("42.42")
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(null)),
+            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+                //.setNullableBdValue(null) // <- NPE
                 .build()
         )
     }

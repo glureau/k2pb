@@ -70,7 +70,9 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
             (field.annotatedSerializer ?: field.type.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
                 val fieldAccess = "instance.${field.name}" + (field.type.inlineName?.let { ".$it" } ?: "")
 
-                if (field.type.isNullable|| (field.type.inlineOf as? ReferenceType)?.isNullable == true ) {
+                val checkNullability =
+                    field.type.isNullable || (field.type.inlineOf as? ReferenceType)?.isNullable == true
+                if (checkNullability) {
                     beginControlFlow("if ($fieldAccess != null)")
                 }
                 val encodedTmpName = "${field.name.replace(".", "_")}Encoded"
@@ -84,7 +86,7 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
                 } else {
                     error("Not supported yet")
                 }
-                if (field.type.isNullable) {
+                if (checkNullability) {
                     endControlFlow()
                 }
             } ?: run {
@@ -194,7 +196,11 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
                             "val $decodedTmpName = %T().decode(${ScalarFieldType.String.readMethod()})",
                             annotatedSerializer.toClassName()
                         )
-                        //addStatement("${field.name} = ${ScalarFieldType.String.readMethod()}")
+                        if (field.type.isNullable) {
+                            addStatement("${field.name} = ${field.type.name}($decodedTmpName)")
+                        } else {
+                            addStatement("${field.name} = $decodedTmpName?.let { ${field.type.name}($decodedTmpName) }")
+                        }
                     } else {
                         addStatement(
                             "${field.name} = ${ScalarFieldType.String.readMethod()}",

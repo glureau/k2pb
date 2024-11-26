@@ -175,7 +175,12 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                                         }
                                         addStatement(str, it.annotatedSerializer.toClassName())
                                     } else {
-                                        addStatement("  ${it.name} = ${protoDefaultValue(it.name)},")
+                                        val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
+                                            "  ${it.name} = requireNotNull(${protoDefaultValue(it.name)}), /* ${it.type} */"
+                                        } else {
+                                            "  ${it.name} = ${protoDefaultValue(it.name)},/* --- ${it.type}*/"
+                                        }
+                                        addStatement(str)
                                     }
                                 }
                             }
