@@ -151,7 +151,7 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                                     val protoDefaultValue: (name: String) -> String = when (it.type) {
                                         is ListType -> { n -> "$n ?: emptyList()" }
                                         is MapType -> { n -> "$n ?: emptyMap()" }
-                                        is ReferenceType -> { n -> if (it.type.isNullable) n else "$n!!" }
+                                        is ReferenceType -> { n -> if (it.type.isNullable) n else "requireNotNull($n)" }
                                         ScalarFieldType.Double -> { n -> "$n ?: 0.0" }
                                         ScalarFieldType.Float -> { n -> "$n ?: 0.0f" }
                                         ScalarFieldType.Int -> { n -> "$n ?: 0" }
@@ -176,9 +176,13 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                                         addStatement(str, it.annotatedSerializer.toClassName())
                                     } else {
                                         val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
-                                            "  ${it.name} = requireNotNull(${protoDefaultValue(it.name)}), /* ${it.type} */"
+                                            if ((it.type as ReferenceType).inlineOf?.isNullable == true) {
+                                                "  ${it.name} = ${it.name} ?: ${it.type.name}(null),"
+                                            } else {
+                                                "  ${it.name} = requireNotNull(${it.name}),"
+                                            }
                                         } else {
-                                            "  ${it.name} = ${protoDefaultValue(it.name)},/* --- ${it.type}*/"
+                                            "  ${it.name} = ${protoDefaultValue(it.name)},"
                                         }
                                         addStatement(str)
                                     }

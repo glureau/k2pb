@@ -89,9 +89,22 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
                 if (checkNullability) {
                     endControlFlow()
                 }
+            } ?: (field.type.inlineOf)?.let { inlinedType: FieldType ->
+                val fieldAccess = field.name + (field.type.inlineName?.let { ".$it" } ?: "")
+                encodeTypedField(
+                    TypedField(
+                        comment = field.comment,
+                        type = inlinedType,
+                        name = fieldAccess,
+                        protoNumber = tag,
+                        annotatedName = field.annotatedName,
+                        annotatedNumber = field.annotatedNumber,
+                        annotatedSerializer = null, // TODO
+                    )
+                )
             } ?: run {
-                beginControlFlow("%M($tag) {", writeMessageExt)
-                beginControlFlow("with(delegate) {")
+                beginControlFlow("%M($tag)", writeMessageExt)
+                beginControlFlow("with(delegate)")
                 addStatement("encode(instance.${field.name}, ${field.type.name}::class)")
                 endControlFlow()
                 endControlFlow()
@@ -190,13 +203,16 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
                     .superTypes
                     .map { it.resolve().toClassName() }
                 if (parents.contains(CustomStringConverter::class.asClassName())) {
+                    val checkNullability =
+                        field.type.isNullable || (field.type.inlineOf as? ReferenceType)?.isNullable == true
+
                     if (field.type.inlineOf != null) {
                         val decodedTmpName = "${field.name.replace(".", "_")}Decoded"
                         addStatement(
                             "val $decodedTmpName = %T().decode(${ScalarFieldType.String.readMethod()})",
                             annotatedSerializer.toClassName()
                         )
-                        if (field.type.isNullable) {
+                        if (field.type.inlineOf.isNullable == true) {
                             addStatement("${field.name} = ${field.type.name}($decodedTmpName)")
                         } else {
                             addStatement("${field.name} = $decodedTmpName?.let { ${field.type.name}($decodedTmpName) }")
