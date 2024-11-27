@@ -50,7 +50,7 @@ class ProtobufAggregator {
                 list
             }
         val references: Set<String> = (stdRefs + listRefs + mapRefs).toSet()
-        return references - (qualifiedNameSet + InlinedTypeRecorder.getAllInlinedTypes().keys)
+        return references - (qualifiedNameSet + InlinedTypeRecorder.getAllInlinedNodes().keys)
     }
 }
 

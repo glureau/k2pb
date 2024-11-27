@@ -91,17 +91,10 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
                 }
             } ?: (field.type.inlineOf)?.let { inlinedType: FieldType ->
                 val fieldAccess = field.name + (field.type.inlineName?.let { ".$it" } ?: "")
-                encodeTypedField(
-                    TypedField(
-                        comment = field.comment,
-                        type = inlinedType,
-                        name = fieldAccess,
-                        protoNumber = tag,
-                        annotatedName = field.annotatedName,
-                        annotatedNumber = field.annotatedNumber,
-                        annotatedSerializer = null, // TODO
-                    )
-                )
+                addStatement("writeInt($tag)")
+                beginControlFlow("with(delegate)")
+                addStatement("encode(instance.${fieldAccess}, ${field.type.name}::class)")
+                endControlFlow()
             } ?: run {
                 beginControlFlow("%M($tag)", writeMessageExt)
                 beginControlFlow("with(delegate)")

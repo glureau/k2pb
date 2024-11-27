@@ -56,9 +56,17 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
         declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
-            val inlinedFieldType = declaration.getDeclaredProperties().first().type.toProtobufFieldType()
-            InlinedTypeRecorder.recordInlinedType(declaration.qualifiedName!!.asString(), inlinedFieldType)
-            //recordMessageNode(declaration.dataClassToMessageNode())
+            /*
+            val inlineProperty = declaration.getDeclaredProperties().first()
+            val inlinedFieldType = inlineProperty.type.toProtobufFieldType()
+            InlinedTypeRecorder.recordInlinedType(
+                InlinedTypeRecorder.InlineNode(
+                    qualifiedName = declaration.qualifiedName!!.asString(),
+                    inlinedFieldType = inlinedFieldType,
+                    inlineName = inlineProperty.simpleName.asString(),
+                )
+            )*/
+            recordMessageNode(declaration.dataClassToMessageNode())
         }
 
         declaration.isClass -> {
@@ -147,9 +155,21 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     Modifier.VALUE
                 ))
             ) {
-                val type = resolvedDeclaration.getDeclaredProperties().first().type
+                val inlineProperty = resolvedDeclaration.getDeclaredProperties().first()
+                val type = inlineProperty.type
+                if (type is KSClassDeclaration) {
+                    TODO("HERE?")
+                }
+                /*
                 val inlinedFieldType = type.toProtobufFieldType()
-                InlinedTypeRecorder.recordInlinedType(resolvedDeclaration.qualifiedName!!.asString(), inlinedFieldType)
+                InlinedTypeRecorder.recordInlinedType(
+                    InlinedTypeRecorder.InlineNode(
+                        resolvedDeclaration.qualifiedName!!.asString(),
+                        inlinedFieldType,
+                        inlineProperty.simpleName.asString(),
+                    )
+                )
+                */
             }
 
             //val replacement = sharedOptions.replace(prop.type.toString())
@@ -273,7 +293,7 @@ private fun mapQfnToFieldType(
         "kotlin.Double" -> ScalarFieldType.Double
         "kotlin.Boolean" -> ScalarFieldType.Boolean
         "kotlin.ByteArray" -> ScalarFieldType.ByteArray
-         else -> null
+        else -> null
     }?.let {
         if (type?.isMarkedNullable == true) {
             return it.copy(isNullable = true)

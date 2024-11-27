@@ -62,7 +62,7 @@ fun MessageNode.serializerClassName(): ClassName = ClassName(packageName, "${nam
 val writeMessageExt = MemberName("com.glureau.k2pb.runtime", "writeMessage")
 val readMessageExt = MemberName("com.glureau.k2pb.runtime", "readMessage")
 
-fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
+fun FileSpec.Builder.addMessageNode(messageNode: MessageNode) {
     addFileComment("Generated from ${messageNode.originalFile?.filePath}")
     val className = messageNode.asClassName()
     addType(
@@ -84,7 +84,12 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                             }
                         } else {
                             if (messageNode.isInlineClass) {
-                                addStatement("writeRawBytes(instance.${messageNode.fields.first().name}.encodeToByteArray())")
+                                val inlinedField = messageNode.fields.first()
+                                if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
+                                    addCode(inlinedField.type.writeMethodNoTag("instance.${inlinedField.name}"))
+                                } else {
+                                    addStatement("writeBytes(instance.${inlinedField.name}.encodeToByteArray()) /* $inlinedField */")
+                                }
                             } else {
                                 messageNode.fields.forEach {
                                     encodeField(it)
@@ -113,10 +118,23 @@ fun FileSpec.Builder.addMessageNote(messageNode: MessageNode) {
                             }
                             return@apply
                         }
+                        if (messageNode.isInlineClass) {
+                            addCode("return %T(", className)
+                            val inlinedField = messageNode.fields.first()
+                            if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
+                                addCode("${inlinedField.name} = ${inlinedField.type.readMethodNoTag()}")
+                            } else {
+                                addCode("${inlinedField.name} = readByteArrayNoTag()")
+                            }
+                            addCode(")")
+                            return@apply
+                        }
+
                         messageNode.fields.forEach {
                             decodeFieldVariableDefinition(it)
                         }
                         addStatement("")
+
 // FROM THERE
                         beginControlFlow("while (!eof)")
                         beginControlFlow("when (val tag = readTag())")
