@@ -14,40 +14,41 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
         // TODO: warning, import computation is slightly correlated to this split logic (1 class by file)
         val updatedMessages = updateMessageForNesting(aggregator.messages, aggregator.enums)
         return sequence {
-            updatedMessages.forEach { messageNode ->
-                if (messageNode.originalFile == null) {
-                    Logger.info(
-                        "No original file for ${messageNode.name} " +
-                                "(possibly coming from another module/library), skipping generation..."
-                    )
-                    return@forEach
-                }
-                // TODO: this could be an option instead of default behavior,
-                //  also it may be useless given originalFile should be null for classes coming from other libs...
-                if (!messageNode.originalFile.filePath.contains(moduleName)) {
-                    Logger.warn(
-                        "Skipping message from other module (current module = $moduleName): " +
-                                "${messageNode.name} // ${messageNode.originalFile.filePath}"
-                    )
-                    return@forEach
-                }
+            updatedMessages.filter { !it.isInlineClass }
+                .forEach { messageNode ->
+                    if (messageNode.originalFile == null) {
+                        Logger.info(
+                            "No original file for ${messageNode.name} " +
+                                    "(possibly coming from another module/library), skipping generation..."
+                        )
+                        return@forEach
+                    }
+                    // TODO: this could be an option instead of default behavior,
+                    //  also it may be useless given originalFile should be null for classes coming from other libs...
+                    if (!messageNode.originalFile.filePath.contains(moduleName)) {
+                        Logger.warn(
+                            "Skipping message from other module (current module = $moduleName): " +
+                                    "${messageNode.name} // ${messageNode.originalFile.filePath}"
+                        )
+                        return@forEach
+                    }
 
-                yield(
-                    ProtobufFile(
-                        path = "k2pb/${messageNode.name}",
-                        packageName = null,
-                        syntax = ProtoSyntax.v3,
-                        messages = listOf(messageNode),
-                        enums = emptyList(),
-                        imports = computeImports(
-                            messageNodes = listOf(messageNode),
-                            enumNodes = listOf(),
-                            locallyDeclaredReferences = messageNode.declaredReferences,
-                            importResolver = importResolver
+                    yield(
+                        ProtobufFile(
+                            path = "k2pb/${messageNode.name}",
+                            packageName = null,
+                            syntax = ProtoSyntax.v3,
+                            messages = listOf(messageNode),
+                            enums = emptyList(),
+                            imports = computeImports(
+                                messageNodes = listOf(messageNode),
+                                enumNodes = listOf(),
+                                locallyDeclaredReferences = messageNode.declaredReferences,
+                                importResolver = importResolver
+                            )
                         )
                     )
-                )
-            }
+                }
             aggregator.enums.forEach { enumNode ->
                 if (enumNode.originalFile == null) {
                     Logger.info(

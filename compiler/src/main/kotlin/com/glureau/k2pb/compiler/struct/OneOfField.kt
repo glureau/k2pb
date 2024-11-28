@@ -37,7 +37,7 @@ fun FunSpec.Builder.encodeOneOfField(oneOfField: OneOfField) {
         subclass.type as ReferenceType
         beginControlFlow("is ${subclass.type.name} ->")
         beginControlFlow("%M(%L)", writeMessageExt, subclass.protoNumber)
-        beginControlFlow("with(delegate)")
+        beginControlFlow("with(protoSerializer)")
         addStatement("encode(instance, %L::class)", subclass.type.name)
         endControlFlow()
         endControlFlow()
@@ -53,7 +53,7 @@ fun FunSpec.Builder.decodeOneOfFieldVariableDefinition(oneOfField: OneOfField) {
 fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
     addStatement("val oneOfTag = readTag()")
     beginControlFlow("return %M", readMessageExt)
-    beginControlFlow("with(delegate)")
+    beginControlFlow("with(protoSerializer)")
     beginControlFlow("when (oneOfTag)")
 
     oneOfField.fields.forEach { subclass ->

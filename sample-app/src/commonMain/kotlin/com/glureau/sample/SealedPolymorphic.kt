@@ -13,7 +13,7 @@ import com.glureau.k2pb.annotation.ProtoMessage
         Pair(Vehicle.Bike::class, 2),
     ]
 )
-//@ProtoMessage("Vehicle")
+// @ProtoMessage("Vehicle")
 sealed class Vehicle {
     @ProtoMessage("Vehicle.Car")
     data class Car(val brand: String) : Vehicle()

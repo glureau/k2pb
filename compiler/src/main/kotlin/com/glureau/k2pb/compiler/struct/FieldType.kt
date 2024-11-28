@@ -3,6 +3,7 @@ package com.glureau.k2pb.compiler.struct
 import com.glureau.k2pb.CustomStringConverter
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
@@ -36,3 +37,15 @@ fun StringBuilder.appendKotlinDefinition(type: FieldType): String {
         is MapType -> appendKotlinMapDefinition(type).toString()
     }
 }
+
+fun FieldType.readNoTag(): CodeBlock =
+    when (this) {
+        is ScalarFieldType -> readMethodNoTag()
+        else -> TODO()
+    }
+
+fun FieldType.write(name: String, tag: Int): CodeBlock =
+    when (this) {
+        is ScalarFieldType -> writeMethod(name, tag)
+        else -> TODO()
+    }

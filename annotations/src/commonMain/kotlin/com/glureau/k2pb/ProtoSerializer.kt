@@ -3,8 +3,8 @@ package com.glureau.k2pb
 import kotlin.reflect.KClass
 
 public interface ProtoSerializer<T> {
-    public fun ProtobufWriter.encode(instance: T?, delegate: DelegateProtoSerializer)
-    public fun ProtobufReader.decode(delegate: DelegateProtoSerializer): T?
+    public fun ProtobufWriter.encode(instance: T?, protoSerializer: DelegateProtoSerializer)
+    public fun ProtobufReader.decode(protoSerializer: DelegateProtoSerializer): T?
 }
 
 public interface DelegateProtoSerializer {

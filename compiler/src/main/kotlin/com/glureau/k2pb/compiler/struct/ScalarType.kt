@@ -1,9 +1,14 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.ProtoIntegerType
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ScalarFieldType(
     val kotlinClass: ClassName,
@@ -132,4 +137,47 @@ enum class ScalarType { // https://protobuf.dev/programming-guides/proto3/#scala
 
 fun StringBuilder.appendScalarType(type: ScalarFieldType) {
     append(type.protoType.name)
+}
+
+
+fun FunSpec.Builder.encodeScalarFieldType(
+    fieldName: String,
+    fieldType: ScalarFieldType,
+    tag: Int,
+    annotatedSerializer: KSType?
+) {
+    (annotatedSerializer?.let { s ->
+        val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
+        addStatement(
+            "val $encodedTmpName = %T().encode(instance.${fieldName})",
+            s.toClassName()
+        )
+        addCode(fieldType.writeMethod(encodedTmpName, tag))
+    } ?: addCode(fieldType.writeMethod("instance.${fieldName}", tag)))
+        .also { addStatement("") }
+}
+
+fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
+    fieldName: String,
+    type: ScalarFieldType,
+    annotatedSerializer: KSType?
+) {
+    val typeName = type.kotlinClass.canonicalName
+    annotatedSerializer?.let { annSerializer ->
+        val parents = (annSerializer.declaration as KSClassDeclaration)
+            .superTypes
+            .map { it.resolve().toClassName() }
+        if (parents.contains(CustomStringConverter::class.asClassName())) {
+            addStatement("var $fieldName: String? = null")
+        } else {
+            TODO("Not supported yet")
+        }
+    } ?: run {
+        addStatement("var $fieldName: $typeName? = null")
+    }
+}
+
+fun FunSpec.Builder.decodeScalarType(fieldName: String, type: ScalarFieldType, annotatedSerializer: KSType?) {
+    if (annotatedSerializer != null) TODO("Not supported yet")
+    addStatement("${fieldName} = ${type.readMethod()}")
 }

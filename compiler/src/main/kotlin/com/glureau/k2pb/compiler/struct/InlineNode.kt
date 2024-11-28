@@ -14,6 +14,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 
 fun FileSpec.Builder.addInlineNode(className: ClassName, inlineNode: InlinedTypeRecorder.InlineNode) {
+    TODO()
     addFileComment("Generated from $className")
     val serializerClassName = ClassName(className.packageName, "${className.simpleName}Serializer")
     addType(
@@ -25,7 +26,7 @@ fun FileSpec.Builder.addInlineNode(className: ClassName, inlineNode: InlinedType
                     .receiver(ProtobufWriter::class.asClassName())
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter("instance", className.copy(nullable = true))
-                    .addParameter("delegate", DelegateProtoSerializer::class.asClassName())
+                    .addParameter("protoSerializer", DelegateProtoSerializer::class.asClassName())
                     .apply {
                         if (inlineNode.inlinedFieldType is ScalarFieldType) {
                             val accessName = "instance." + inlineNode.inlineName
@@ -46,7 +47,7 @@ fun FileSpec.Builder.addInlineNode(className: ClassName, inlineNode: InlinedType
                 FunSpec.builder("decode")
                     .receiver(ProtobufReader::class.asClassName())
                     .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("delegate", DelegateProtoSerializer::class.asClassName())
+                    .addParameter("protoSerializer", DelegateProtoSerializer::class.asClassName())
                     .returns(className.copy(nullable = true))
                     .apply {
                         if (inlineNode.inlinedFieldType is ScalarFieldType) {
