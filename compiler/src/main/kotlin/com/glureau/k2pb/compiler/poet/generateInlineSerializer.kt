@@ -5,8 +5,9 @@ import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.asClassName
-import com.glureau.k2pb.compiler.struct.decodeReferenceType
+import com.glureau.k2pb.compiler.struct.decodeInLocalVar
 import com.glureau.k2pb.compiler.struct.encodeReferenceType
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 
 fun FunSpec.Builder.generateInlineSerializerEncode(
@@ -30,13 +31,41 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
     instanceName: String,
     protoSerializerName: String
 ) {
-    addCode("return %T(", messageNode.asClassName())
     val inlinedField = messageNode.fields.first()
-    if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
-        addCode("${inlinedField.name} = ${inlinedField.type.readMethodNoTag()} /* U */")
-    } else if (inlinedField is TypedField && inlinedField.type is ReferenceType) {
-        decodeReferenceType(inlinedField.name, inlinedField.type, inlinedField.annotatedSerializer)
+    var localVar: String? = null
+    if (inlinedField !is TypedField) TODO()
+
+    if (inlinedField.type is ReferenceType && inlinedField.annotatedSerializer != null) {
+        localVar = decodeInLocalVar(inlinedField.name, inlinedField.annotatedSerializer)
     }
+
+    addCode("return %T(", messageNode.asClassName())
+
+    val readCodeBlock = when (inlinedField.type) {
+        is ScalarFieldType -> inlinedField.type.readMethodNoTag()
+        is ReferenceType -> CodeBlock.of(localVar!!)
+        else -> TODO()
+    }
+    addCode("${inlinedField.name} =")
+    if (!inlinedField.type.isNullable) {
+        addCode("requireNotNull(")
+    }
+    addCode(readCodeBlock)
+    if (!inlinedField.type.isNullable) {
+        addCode(")")
+    }
+    /*
+
+    if (inlinedField.type is ScalarFieldType) {
+        if (inlinedField.type.isNullable) {
+            addCode("${inlinedField.name} = ${inlinedField.type.readMethodNoTag()} /* U1 */")
+        } else {
+            addCode("${inlinedField.name} = requireNotNull(${inlinedField.type.readMethodNoTag()}) /* U2 */")
+        }
+    } else if (inlinedField.type is ReferenceType) {
+        addCode("${inlinedField.name} = ${localVar ?: "ooo"} /* U */")
+    }
+     */
     addCode(")")
 
 }

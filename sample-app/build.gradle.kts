@@ -35,6 +35,7 @@ kotlin {
                 implementation(project(":k2pb-serializers-datetime"))
                 implementation(project(":sample-lib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
             }
         }
         val jvmTest by getting {
@@ -44,6 +45,7 @@ kotlin {
                 implementation("org.junit.jupiter:junit-jupiter:5.10.2")
                 implementation("com.approvaltests:approvaltests:18.4.0")
                 implementation("com.google.protobuf:protobuf-kotlin:4.26.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
             }
             java.sourceSets {
                 getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")

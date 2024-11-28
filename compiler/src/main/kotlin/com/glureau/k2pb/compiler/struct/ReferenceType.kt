@@ -3,9 +3,9 @@ package com.glureau.k2pb.compiler.struct
 import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
-import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -22,13 +22,13 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
     // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
     // both solutions are valid for protobuf.
 
-    TypeResolver.qualifiedNameToProtobufName[type.name]?.let { resolvedType: String ->
-        append(resolvedType)
+    type.inlineOf?.let { inlined ->
+        appendFieldType(inlined, type.inlineAnnotatedSerializer)
         return
     }
 
-    InlinedTypeRecorder.getInlinedType(type.name)?.let { node: InlinedTypeRecorder.InlineNode ->
-        appendFieldType(node.inlinedFieldType, type.inlineAnnotatedSerializer)
+    TypeResolver.qualifiedNameToProtobufName[type.name]?.let { resolvedType: String ->
+        append(resolvedType)
         return
     }
 
@@ -70,9 +70,10 @@ fun FunSpec.Builder.encodeReferenceType(
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
         val fieldAccess = fieldName + (type.inlineName?.let { ".$it" } ?: "")
-        addStatement("writeInt($tag)")
+        val pwtClass = ClassName("com.glureau.k2pb.runtime.ktx", "ProtoWireType")
+        addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", pwtClass)
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(instance.${fieldAccess}, ${type.name}::class)")
+        addStatement("encode(instance.${fieldName}, ${type.name}::class)")
         endControlFlow()
     } ?: run {
         beginControlFlow("%M($tag)", writeMessageExt)
@@ -115,44 +116,46 @@ fun FunSpec.Builder.decodeReferenceType(
             .superTypes
             .map { it.resolve().toClassName() }
         if (parents.contains(CustomStringConverter::class.asClassName())) {
-            val checkNullability =
-                fieldType.isNullable || (fieldType.inlineOf as? ReferenceType)?.isNullable == true
+            val checkNullability = fieldType.isNullable || fieldType.inlineOf?.isNullable == true
 
-            //if (fieldType.inlineOf != null) {
-            val decodedTmpName = "${fieldName.replace(".", "_")}Decoded"
-            addStatement(
-                "val $decodedTmpName = %T().decode(${ScalarFieldType.String.readMethod()})",
-                annotatedSerializer.toClassName()
-            )
             addStatement("/* lol $checkNullability ${fieldType.inlineOf} ${annotatedSerializer}*/")
+
+            val decodedTmpName = decodeInLocalVar(fieldName, annotatedSerializer)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
                     addStatement("$fieldName = ${fieldType.name}($decodedTmpName) /* P */")
                 } else {
                     addStatement("$fieldName = $decodedTmpName?.let { ${fieldType.name}($decodedTmpName) } /* O */")
-                    //addStatement("$fieldName = $decodedTmpName /* O */")
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.
-                addStatement(
-                    "$fieldName = $decodedTmpName",
-                    annotatedSerializer.toClassName()
-                )
+                addStatement("$fieldName = $decodedTmpName", annotatedSerializer.toClassName())
             }
-            /*} else {
-                addStatement(
-                    "$fieldName = ${ScalarFieldType.String.readMethod()}",
-                    annotatedSerializer.toClassName()
-                )
-            }*/
         } else {
             error("Not supported yet")
         }
     } ?: run {
-        beginControlFlow("$fieldName = %M", readMessageExt)
+        addCode("$fieldName = ")
+        if (fieldType.inlineOf == null) {
+            beginControlFlow("%M", readMessageExt)
+        }
         beginControlFlow("with(protoSerializer) {")
         addStatement("decode(${fieldType.name}::class)")
         endControlFlow()
-        endControlFlow()
+        if (fieldType.inlineOf == null) {
+            endControlFlow()
+        }
     }
+}
+
+fun FunSpec.Builder.decodeInLocalVar(
+    fieldName: String,
+    annotatedSerializer: KSType
+): String {
+    val decodedTmpName = "${fieldName.replace(".", "_")}Decoded"
+    addStatement(
+        "val $decodedTmpName = %T().decode(${ScalarFieldType.String.readMethod()})",
+        annotatedSerializer.toClassName()
+    )
+    return decodedTmpName
 }

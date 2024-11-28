@@ -1,6 +1,6 @@
 package com.glureau.k2pb.runtime.ktx;
 
-internal enum class ProtoWireType(val typeId: Int) {
+public enum class ProtoWireType(public val typeId: Int) {
     INVALID(-1),
     VARINT(0),
     i64(1),
@@ -8,13 +8,13 @@ internal enum class ProtoWireType(val typeId: Int) {
     i32(5),
     ;
 
-    companion object {
-        fun from(typeId: Int): ProtoWireType {
+    public companion object {
+        public fun from(typeId: Int): ProtoWireType {
             return ProtoWireType.entries.find { it.typeId == typeId } ?: INVALID
         }
     }
 
-    fun wireIntWithTag(tag: Int): Int {
+    public fun wireIntWithTag(tag: Int): Int {
         return ((tag shl 3) or typeId)
     }
 

@@ -64,6 +64,6 @@ fun computeImports(
 }
 
 fun FieldInterface.allFieldTypes(): List<FieldType> = when (this) {
-    is TypedField -> listOf(this.type)
+    is TypedField -> if (this.type is ReferenceType && this.type.inlineOf != null) emptyList() else listOf(this.type)
     is OneOfField -> this.fields.flatMap { it.allFieldTypes() }
 }
