@@ -7,6 +7,8 @@ import com.glureau.k2pb.annotation.ProtoNumber
 import com.glureau.k2pb.annotation.ProtoStringConverter
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
+import com.glureau.k2pb.compiler.capitalizeUS
+import com.glureau.k2pb.compiler.decapitalizeUS
 import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.sharedOptions
 import com.glureau.k2pb.compiler.struct.EnumEntry
@@ -15,6 +17,7 @@ import com.glureau.k2pb.compiler.struct.FieldType
 import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.NullabilitySubField
 import com.glureau.k2pb.compiler.struct.NumberManager
 import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
@@ -132,7 +135,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    var currentProtoNumber = 1
+    val numberManager = NumberManager(1)
     val fields = requireNotNull(primaryConstructor) {
         "${this.simpleName.asString()} should have a primary constructor"
     }
@@ -182,23 +185,18 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 else -> null
             }
             val annotatedNumber = prop.protoNumberInternal
-            if (annotatedNumber != null && currentProtoNumber < annotatedNumber) {
-                Logger.warn(
-                    "Proto number is not sequential on ${(qualifiedName ?: simpleName).asString()}: " +
-                            "${prop.serialName} ($currentProtoNumber -> $annotatedNumber)"
-                )
-                currentProtoNumber = annotatedNumber
-            }
+            val propName = prop.simpleName.asString()
             when {
                 resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                     TypedField(
-                        name = prop.simpleName.asString(),
-                        annotatedName = prop.serialName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
+                        name = propName,
+                        annotatedName = prop.serialName.decapitalizeUS(),
                         type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                         comment = prop.docString,
-                        annotatedNumber = annotatedNumber,
+                        //annotatedNumber = annotatedNumber,
                         annotatedSerializer = annotatedConverter,
-                        protoNumber = currentProtoNumber++,
+                        protoNumber = numberManager.resolve(propName, annotatedNumber),
+                        nullabilitySubField = null,
                     )
                 }
 
@@ -206,7 +204,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
                     Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")// TODO doc
                     TypedField(
-                        name = prop.simpleName.asString(),
+                        name = propName,
                         annotatedName = prop.serialName,
                         type = annotatedDerivedType ?: ReferenceType(
                             prop.type.toString(),
@@ -215,23 +213,26 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                             Logger.warn("GREG - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
                         },
                         comment = prop.docString,
-                        annotatedNumber = annotatedNumber,
+                        //annotatedNumber = annotatedNumber,
                         annotatedSerializer = annotatedConverter,
-                        protoNumber = currentProtoNumber++,
+                        protoNumber = numberManager.resolve(propName, annotatedNumber),
+                        nullabilitySubField = null, // TODO: handle nullability
                     )
                         .also { Logger.warn("resolvedType.isError -> $it") }
                 }
 
                 else -> {
+                    val type = annotatedDerivedType ?: prop.type.toProtobufFieldType()
                     TypedField(
-                        name = prop.simpleName.asString(),
+                        name = propName,
                         annotatedName = prop.serialName,
-                        type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
+                        type = type,
                         comment = prop.docString,
-                        annotatedNumber = annotatedNumber,
+                        //annotatedNumber = annotatedNumber,
                         annotatedSerializer = annotatedConverter,
-                        protoNumber = currentProtoNumber++,
-                    )
+                        protoNumber = numberManager.resolve(propName, annotatedNumber),
+                        nullabilitySubField = null,
+                    ).withNullabilitySubFieldIfNeeded(numberManager)
                 }
             }
         }
@@ -249,6 +250,21 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             .filterNot { it.canonicalName == "kotlin.Any" }
             .toList(),
     )
+}
+
+private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberManager): TypedField {
+    return if (type.isNullable) {
+        val nullFieldName = "is" + name.capitalizeUS() + "Null"
+        copy(
+            nullabilitySubField = NullabilitySubField(
+                fieldName = nullFieldName,
+                /* TODO : handle a custom number in annotation for this nullability field */
+                protoNumber = numberManager.resolve(nullFieldName, null),
+            )
+        )
+    } else {
+        this
+    }
 }
 
 private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(

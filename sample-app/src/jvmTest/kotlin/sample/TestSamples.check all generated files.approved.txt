@@ -180,6 +180,32 @@ message CollectionTypeEvent {
   map<string, int32> mapStringInt = 2;
 }
 
+File: k2pb/NullableNativeTypeEvent.proto
+syntax = "proto3";
+
+message NullableNativeTypeEvent {
+  int32 integer = 1;
+  bool isIntegerNull = 2;
+  int64 long = 3;
+  bool isLongNull = 4;
+  float float = 5;
+  bool isFloatNull = 6;
+  double double = 7;
+  bool isDoubleNull = 8;
+  string string = 9;
+  bool isStringNull = 10;
+  int32 short = 11;
+  bool isShortNull = 12;
+  int32 char = 13;
+  bool isCharNull = 14;
+  bool boolean = 15;
+  bool isBooleanNull = 16;
+  int32 byte = 17;
+  bool isByteNull = 18;
+  bytes byteArray = 19;
+  bool isByteArrayNull = 20;
+}
+
 File: k2pb/NullableBigDecimalHolder.proto
 syntax = "proto3";
 

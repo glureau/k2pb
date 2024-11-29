@@ -31,7 +31,8 @@ fun FileSpec.Builder.addInlineNode(className: ClassName, inlineNode: InlinedType
                         if (inlineNode.inlinedFieldType is ScalarFieldType) {
                             val accessName = "instance." + inlineNode.inlineName
                             beginControlFlow("if (instance != null)")
-                            addCode(inlineNode.inlinedFieldType.writeMethodNoTag(accessName))
+                            // TODO: nullability of the field could require an additional field
+                            addCode(inlineNode.inlinedFieldType.safeWriteMethodNoTag(accessName, null))
                             addStatement("")
                             endControlFlow()
                             return@apply

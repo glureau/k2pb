@@ -3,14 +3,15 @@ package com.glureau.k2pb.compiler.poet
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
+import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.decodeField
 import com.glureau.k2pb.compiler.struct.decodeFieldVariableDefinition
+import com.glureau.k2pb.compiler.struct.decodeScalarType
 import com.glureau.k2pb.compiler.struct.encodeField
 import com.glureau.k2pb.compiler.struct.nameOrDefault
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.ksp.toClassName
 
 fun FunSpec.Builder.generateDataClassSerializerEncode(
     messageNode: MessageNode,
@@ -39,6 +40,11 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
         beginControlFlow("${f.protoNumber} ->")
         decodeField(f)
         endControlFlow()
+        if (f is TypedField && f.nullabilitySubField != null && f.annotatedSerializer == null) {
+            beginControlFlow("${f.nullabilitySubField.protoNumber} ->")
+            decodeScalarType(f.nullabilitySubField.fieldName, ScalarFieldType.Boolean, null)
+            endControlFlow()
+        }
     }
     beginControlFlow("else -> ")
     //addStatement("pushBackTag()") // ???
@@ -66,16 +72,20 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                     }
                     addStatement(str, it.annotatedSerializer.toClassName())
                 } else {*/
-                    val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
-                        if (it.type.inlineOf?.isNullable == true) {
-                            "  ${it.name} = ${it.name} ?: ${it.type.name}(null), /* C */"
-                        } else {
-                            "  ${it.name} = requireNotNull(${it.name}), /* D */"
-                        }
+                val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
+                    if (it.type.inlineOf?.isNullable == true) {
+                        "  ${it.name} = ${it.name} ?: ${it.type.name}(null), /* C */"
+                    } else {
+                        "  ${it.name} = requireNotNull(${it.name}), /* D */"
+                    }
+                } else {
+                    if (it.nullabilitySubField != null && it.annotatedSerializer == null) {
+                        "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else ${it.name}, /* K */"
                     } else {
                         "  ${it.name} = ${it.nameOrDefault()}, /* E */"
                     }
-                    addStatement(str)
+                }
+                addStatement(str)
                 //}
             }
         }

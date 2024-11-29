@@ -4,16 +4,26 @@ fun TypedField.nameOrDefault(): String {
         is ListType -> "$name ?: emptyList()"
         is MapType -> "$name ?: emptyMap()"
         is ReferenceType -> if (type.isNullable) name else "requireNotNull($name)"
-        ScalarFieldType.Double -> "$name ?: 0.0"
-        ScalarFieldType.Float -> "$name ?: 0.0f"
-        ScalarFieldType.Int -> "$name ?: 0"
-        ScalarFieldType.Short -> "$name ?: 0"
-        ScalarFieldType.Char -> "$name ?: 0.toChar()"
-        ScalarFieldType.Long -> "$name ?: 0"
-        ScalarFieldType.Byte -> "$name ?: 0"
-        ScalarFieldType.Boolean -> "$name ?: false"
-        ScalarFieldType.String -> "$name ?: \"\""
-        ScalarFieldType.ByteArray -> "$name ?: byteArrayOf()"
+        ScalarFieldType.Double,
+        ScalarFieldType.DoubleNullable -> "$name ?: 0.0"
+        ScalarFieldType.Float,
+        ScalarFieldType.FloatNullable -> "$name ?: 0.0f"
+        ScalarFieldType.Int,
+        ScalarFieldType.IntNullable -> "$name ?: 0"
+        ScalarFieldType.Short,
+        ScalarFieldType.ShortNullable -> "$name ?: 0"
+        ScalarFieldType.Char,
+        ScalarFieldType.CharNullable -> "$name ?: 0.toChar()"
+        ScalarFieldType.Long,
+        ScalarFieldType.LongNullable -> "$name ?: 0"
+        ScalarFieldType.Byte,
+        ScalarFieldType.ByteNullable -> "$name ?: 0"
+        ScalarFieldType.Boolean,
+        ScalarFieldType.BooleanNullable -> "$name ?: false"
+        ScalarFieldType.String,
+        ScalarFieldType.StringNullable -> "$name ?: \"\""
+        ScalarFieldType.ByteArray,
+        ScalarFieldType.ByteArrayNullable -> "$name ?: byteArrayOf()"
 
         is ScalarFieldType -> {
             error("ScalarType not handled for protobuf serialization: $type")

@@ -44,7 +44,7 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
         // sample-lib => SampleLib
         val cleanModuleName = moduleName
             .split("-")
-            .joinToString("") { it.capitalize(Locale.US) }
+            .joinToString("") { it.capitalizeUS() }
 
         val moduleCodeFile = CodeFile(
             FileSpec.builder(commonPackage, "${cleanModuleName}Serializers")

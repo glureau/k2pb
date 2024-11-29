@@ -13,12 +13,31 @@ import com.squareup.kotlinpoet.ksp.toClassName
 data class ScalarFieldType(
     val kotlinClass: ClassName,
     val protoType: ScalarType,
-    val writeMethod: (fieldName: String, tag: Int) -> CodeBlock = { f, t -> CodeBlock.of("") },
-    val writeMethodNoTag: (fieldName: String) -> CodeBlock = { f -> CodeBlock.of("") },
-    val readMethod: () -> CodeBlock = { CodeBlock.of("") },
-    val readMethodNoTag: () -> CodeBlock = { CodeBlock.of("") },
+    private val writeMethod: (fieldName: String, tag: Int) -> CodeBlock,
+    private val writeMethodNoTag: (fieldName: String) -> CodeBlock,
+    val readMethod: () -> CodeBlock,
+    val readMethodNoTag: () -> CodeBlock,
     override val isNullable: Boolean = false,
 ) : FieldType {
+    val safeWriteMethod: (fieldName: String, tag: Int, nullableTag: Int?) -> CodeBlock =
+        { f, t, nt -> safeWrite(f, nt) { writeMethod(f, t) } }
+    val safeWriteMethodNoTag: (fieldName: String, nullableTag: Int?) -> CodeBlock =
+        { f, nt -> safeWrite(f, nt) { writeMethodNoTag(f) } }
+
+    private fun safeWrite(fieldName: String, nullableTag: Int?, method: () -> CodeBlock) =
+        if (isNullable) {
+            CodeBlock.of(
+                "if ($fieldName != null) %L" +
+                        if (nullableTag != null) {
+                            "\nelse writeInt(value = 1, tag = $nullableTag, format = %T.DEFAULT)"
+                        } else "",
+                method(),
+                ProtoIntegerType::class.asClassName(),
+            )
+        } else {
+            method()
+        }
+
     companion object {
         val String = ScalarFieldType(
             kotlinClass = kotlin.String::class.asClassName(),
@@ -28,6 +47,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readString()") },
             readMethodNoTag = { CodeBlock.of("readStringNoTag()") },
         )
+        val StringNullable = String.copy(isNullable = true)
         val Int = ScalarFieldType(
             kotlinClass = kotlin.Int::class.asClassName(),
             protoType = ScalarType.int32,
@@ -38,16 +58,18 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readInt(%T.DEFAULT)", ProtoIntegerType::class.asClassName()) },
             readMethodNoTag = { CodeBlock.of("readInt32NoTag()") },
         )
+        val IntNullable = Int.copy(isNullable = true)
         val Char = ScalarFieldType(
             kotlinClass = kotlin.Char::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt($f.toInt(), $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeInt($f.code, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
             },
-            writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.toInt())") },
+            writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.code)") },
             readMethod = { CodeBlock.of("readInt(%T.DEFAULT).toChar()", ProtoIntegerType::class.asClassName()) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toChar()") },
         )
+        val CharNullable = Char.copy(isNullable = true)
         val Short = ScalarFieldType(
             kotlinClass = kotlin.Short::class.asClassName(),
             protoType = ScalarType.int32,
@@ -58,6 +80,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readInt(%T.DEFAULT).toShort()", ProtoIntegerType::class.asClassName()) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toShort()") },
         )
+        val ShortNullable = Short.copy(isNullable = true)
         val Byte = ScalarFieldType(
             kotlinClass = kotlin.Byte::class.asClassName(),
             protoType = ScalarType.int32,
@@ -68,6 +91,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readInt(%T.DEFAULT).toByte()", ProtoIntegerType::class.asClassName()) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toByte()") },
         )
+        val ByteNullable = Byte.copy(isNullable = true)
         val Long = ScalarFieldType(
             kotlinClass = kotlin.Long::class.asClassName(),
             protoType = ScalarType.int64,
@@ -78,6 +102,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readLong(%T.DEFAULT)", ProtoIntegerType::class.asClassName()) },
             readMethodNoTag = { CodeBlock.of("readLongNoTag()") },
         )
+        val LongNullable = Long.copy(isNullable = true)
         val Float = ScalarFieldType(
             kotlinClass = kotlin.Float::class.asClassName(),
             protoType = ScalarType.float,
@@ -86,6 +111,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readFloat()") },
             readMethodNoTag = { CodeBlock.of("readFloatNoTag()") },
         )
+        val FloatNullable = Float.copy(isNullable = true)
         val Double = ScalarFieldType(
             kotlinClass = kotlin.Double::class.asClassName(),
             protoType = ScalarType.double,
@@ -94,6 +120,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readDouble()") },
             readMethodNoTag = { CodeBlock.of("readDoubleNoTag()") },
         )
+        val DoubleNullable = Double.copy(isNullable = true)
         val Boolean = ScalarFieldType(
             kotlinClass = kotlin.Boolean::class.asClassName(),
             protoType = ScalarType.bool,
@@ -104,6 +131,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readInt(%T.DEFAULT) == 1", ProtoIntegerType::class.asClassName()) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag() == 1") },
         )
+        val BooleanNullable = Boolean.copy(isNullable = true)
         val ByteArray = ScalarFieldType(
             kotlinClass = kotlin.ByteArray::class.asClassName(),
             protoType = ScalarType.bytes,
@@ -114,6 +142,7 @@ data class ScalarFieldType(
             readMethod = { CodeBlock.of("readByteArray()") },
             readMethodNoTag = { CodeBlock.of("readByteArrayNoTag()") },
         )
+        val ByteArrayNullable = ByteArray.copy(isNullable = true)
     }
 }
 
@@ -144,7 +173,8 @@ fun FunSpec.Builder.encodeScalarFieldType(
     fieldName: String,
     fieldType: ScalarFieldType,
     tag: Int,
-    annotatedSerializer: KSType?
+    annotatedSerializer: KSType?,
+    nullabilitySubField: NullabilitySubField?
 ) {
     (annotatedSerializer?.let { s ->
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
@@ -152,15 +182,16 @@ fun FunSpec.Builder.encodeScalarFieldType(
             "val $encodedTmpName = %T().encode(instance.${fieldName})",
             s.toClassName()
         )
-        addCode(fieldType.writeMethod(encodedTmpName, tag))
-    } ?: addCode(fieldType.writeMethod("instance.${fieldName}", tag)))
+        addCode(fieldType.safeWriteMethod(encodedTmpName, tag, nullabilitySubField?.protoNumber))
+    } ?: addCode(fieldType.safeWriteMethod("instance.${fieldName}", tag, nullabilitySubField?.protoNumber)))
         .also { addStatement("") }
 }
 
 fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     fieldName: String,
     type: ScalarFieldType,
-    annotatedSerializer: KSType?
+    annotatedSerializer: KSType?,
+    nullabilitySubField: NullabilitySubField?
 ) {
     val typeName = type.kotlinClass.canonicalName
     annotatedSerializer?.let { annSerializer ->
@@ -172,8 +203,13 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
         } else {
             TODO("Not supported yet")
         }
+        // TODO: Support nullability subfield with annotated serializer
+
     } ?: run {
         addStatement("var $fieldName: $typeName? = null")
+        if (nullabilitySubField != null) {
+            addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+        }
     }
 }
 

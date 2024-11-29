@@ -19,7 +19,7 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
 
     val inlinedField = messageNode.fields.first()
     if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
-        addCode(inlinedField.type.writeMethodNoTag("instance.${inlinedField.name} /* M */"))
+        addCode(inlinedField.type.safeWriteMethodNoTag("instance.${inlinedField.name} /* M */", null))
         addStatement("")
     } else if (inlinedField is TypedField && inlinedField.type is ReferenceType) {
         encodeReferenceType(inlinedField.name, inlinedField.type, tag = null, inlinedField.annotatedSerializer)

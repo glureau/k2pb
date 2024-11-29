@@ -107,8 +107,9 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                                             name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
                                             protoNumber = number,
                                             annotatedName = null,
-                                            annotatedNumber = null,
-                                            annotatedSerializer = null
+                                            //annotatedNumber = null,
+                                            annotatedSerializer = null,
+                                            nullabilitySubField = null,
                                         )
                                     }
                                 )

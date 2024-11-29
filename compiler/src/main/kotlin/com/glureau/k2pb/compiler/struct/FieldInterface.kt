@@ -10,7 +10,7 @@ sealed interface FieldInterface {
 
 fun StringBuilder.appendField(indentLevel: Int, field: FieldInterface, numberManager: NumberManager) {
     when (field) {
-        is TypedField -> appendTypedField(indentLevel, field, numberManager)
+        is TypedField -> appendTypedField(indentLevel, field)
         is OneOfField -> appendOneOfField(indentLevel, field, numberManager)
     }
 }

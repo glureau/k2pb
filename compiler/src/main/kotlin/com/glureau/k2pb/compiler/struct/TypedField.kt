@@ -4,27 +4,42 @@ import com.glureau.k2pb.compiler.mapping.appendComment
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
 
+data class NullabilitySubField(
+    val fieldName: String,
+    val protoNumber: Int,
+)
+
 data class TypedField(
     override val comment: String?,
     val type: FieldType,
     override val name: String,
     override val protoNumber: Int,
-    val annotatedName: String?,
-    val annotatedNumber: Int?,
+    private val annotatedName: String?,
     val annotatedSerializer: KSType? = null,
-) : FieldInterface
+    val nullabilitySubField: NullabilitySubField?,
+) : FieldInterface {
+    val resolvedName = annotatedName ?: name
+}
 
-// TODO: NumberManager should be used at parsing time and not here
-fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField, numberManager: NumberManager) {
+fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     appendComment(indentLevel, field.comment)
 
     append(indentation(indentLevel))
     appendFieldType(field.type, field.annotatedSerializer)
     append(" ")
-    append(field.annotatedName ?: field.name)
+    append(field.resolvedName)
     append(" = ")
-    append(numberManager.resolve(field.name, field.annotatedNumber))
+    append(field.protoNumber)
     appendLine(";")
+    if (field.nullabilitySubField != null && field.annotatedSerializer == null) {
+        append(indentation(indentLevel))
+        appendFieldType(ScalarFieldType.Boolean, null)
+        append(" ")
+        append(field.nullabilitySubField.fieldName)
+        append(" = ")
+        append(field.nullabilitySubField.protoNumber)
+        appendLine(";")
+    }
 }
 
 fun FunSpec.Builder.encodeTypedField(field: TypedField) {
@@ -33,7 +48,13 @@ fun FunSpec.Builder.encodeTypedField(field: TypedField) {
         is ListType -> encodeListType(field.name, field.type, tag)
         is MapType -> encodeMapType(field.name, field.type, tag)
         is ReferenceType -> encodeReferenceType(field.name, field.type, tag, field.annotatedSerializer)
-        is ScalarFieldType -> encodeScalarFieldType(field.name, field.type, tag, field.annotatedSerializer)
+        is ScalarFieldType -> encodeScalarFieldType(
+            field.name,
+            field.type,
+            tag,
+            field.annotatedSerializer,
+            field.nullabilitySubField
+        )
     }
 }
 
@@ -42,7 +63,12 @@ fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
         is ListType -> decodeListTypeVariableDefinition(field.name, field.type)
         is MapType -> decodeMapTypeVariableDefinition(field.name, field.type)
         is ReferenceType -> decodeReferenceTypeVariableDefinition(field.name, field.type, field.annotatedSerializer)
-        is ScalarFieldType -> decodeScalarTypeVariableDefinition(field.name, field.type, field.annotatedSerializer)
+        is ScalarFieldType -> decodeScalarTypeVariableDefinition(
+            field.name,
+            field.type,
+            field.annotatedSerializer,
+            field.nullabilitySubField
+        )
     }
 }
 

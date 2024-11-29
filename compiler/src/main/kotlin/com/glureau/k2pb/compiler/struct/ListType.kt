@@ -18,7 +18,7 @@ fun FunSpec.Builder.encodeListType(fieldName: String, listType: ListType, tag: I
     beginControlFlow("%M($tag)", writeMessageExt)
     beginControlFlow("instance.$fieldName.forEach")
     when (listType.repeatedType) {
-        is ScalarFieldType -> addCode(listType.repeatedType.writeMethodNoTag("it"))
+        is ScalarFieldType -> addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
             .also { addStatement("") }
 
         else -> TODO("Not supported yet")

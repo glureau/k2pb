@@ -57,9 +57,10 @@ fun FunSpec.Builder.encodeReferenceType(
             .map { it.resolve().toClassName() }
         if (parents.contains(CustomStringConverter::class.asClassName())) {
             if (tag != null) {
-                addCode(ScalarFieldType.String.writeMethod(encodedTmpName, tag))
+                /* TODO: custom string converter nullability */
+                addCode(ScalarFieldType.String.safeWriteMethod(encodedTmpName, tag, null))
             } else {
-                addCode(ScalarFieldType.String.writeMethodNoTag(encodedTmpName))
+                addCode(ScalarFieldType.String.safeWriteMethodNoTag(encodedTmpName, null))
             }
             addStatement("")
         } else {
