@@ -12,7 +12,7 @@ fun FunSpec.Builder.generatePolymorphicSerializerEncode(
 ) {
     addStatement("if (instance == null) return")
     messageNode.fields.forEach {
-        encodeField(it)
+        encodeField(instanceName, it)
     }
 }
 

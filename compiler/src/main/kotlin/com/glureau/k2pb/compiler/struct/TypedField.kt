@@ -1,12 +1,8 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.compiler.mapping.appendComment
-import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.ksp.toClassName
 
 data class NullabilitySubField(
     val fieldName: String,
@@ -46,12 +42,12 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     }
 }
 
-fun FunSpec.Builder.encodeTypedField(field: TypedField) {
+fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
     val tag = field.protoNumber
     when (field.type) {
-        is ListType -> encodeListType(field.name, field.type, tag)
+        is ListType -> encodeListType(instanceName, field.name, field.type, tag)
         is MapType -> encodeMapType(field.name, field.type, tag)
-        is ReferenceType -> encodeReferenceType(field.name, field.type, tag, field.annotatedSerializer)
+        is ReferenceType -> encodeReferenceType("$instanceName.${field.name}", field.type, tag, field.annotatedSerializer)
         is ScalarFieldType -> encodeScalarFieldType(
             field.name,
             field.type,
@@ -81,7 +77,12 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
         is ListType -> decodeListType(field.name, field.type)
         is MapType -> decodeMapType(field.name, field.type)
 
-        is ReferenceType -> decodeReferenceType(field.name, field.type, field.annotatedSerializer)
+        is ReferenceType -> {
+            decodeReferenceType(field.name, field.type, field.annotatedSerializer)
+            beginControlFlow("?.let")
+            addStatement("${field.name} = it")
+            endControlFlow()
+        }
         is ScalarFieldType -> decodeScalarType(field.name, field.type, field.annotatedSerializer)
     }
 }

@@ -30,7 +30,7 @@ fun StringBuilder.appendOneOfField(indentLevel: Int, field: OneOfField, numberMa
     appendLineWithIndent(indentLevel, "}")
 }
 
-fun FunSpec.Builder.encodeOneOfField(oneOfField: OneOfField) {
+fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfField) {
     beginControlFlow("when (instance)")
     oneOfField.fields.forEach { subclass ->
         subclass as TypedField

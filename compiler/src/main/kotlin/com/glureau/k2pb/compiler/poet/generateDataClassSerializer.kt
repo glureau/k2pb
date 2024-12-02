@@ -18,9 +18,9 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
     instanceName: String,
     protoSerializerName: String
 ) {
-    addStatement("if (instance == null) return")
+    addStatement("if ($instanceName == null) return")
     messageNode.fields.forEach {
-        encodeField(it)
+        encodeField(instanceName, it)
     }
 }
 

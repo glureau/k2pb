@@ -15,10 +15,10 @@ fun StringBuilder.appendField(indentLevel: Int, field: FieldInterface, numberMan
     }
 }
 
-fun FunSpec.Builder.encodeField(field: FieldInterface) {
+fun FunSpec.Builder.encodeField(instanceName: String, field: FieldInterface) {
     when (field) {
-        is TypedField -> encodeTypedField(field)
-        is OneOfField -> encodeOneOfField(field)
+        is TypedField -> encodeTypedField(instanceName, field)
+        is OneOfField -> encodeOneOfField(instanceName, field)
     }
 }
 

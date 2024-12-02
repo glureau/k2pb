@@ -1,7 +1,10 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 
 data class ListType(val repeatedType: FieldType, override val isNullable: Boolean) : FieldType
 
@@ -14,20 +17,27 @@ fun StringBuilder.appendKotlinListDefinition(type: ListType) = apply {
     append("List<${appendKotlinDefinition(type.repeatedType)}>" + if (type.isNullable) "?" else "")
 }
 
-fun FunSpec.Builder.encodeListType(fieldName: String, listType: ListType, tag: Int) {
-    beginControlFlow("%M($tag)", writeMessageExt)
-    beginControlFlow("instance.$fieldName.forEach")
+fun FunSpec.Builder.encodeListType(instanceName: String, fieldName: String, listType: ListType, tag: Int) {
     when (listType.repeatedType) {
-        is ScalarFieldType -> addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
-            .also { addStatement("") }
+        is ScalarFieldType -> {
+            beginControlFlow("%M($tag)", writeMessageExt)
+            beginControlFlow("$instanceName.$fieldName.forEach")
+            addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
+            addStatement("")
+            endControlFlow() // forEach
+            endControlFlow() // writeMessage {}
+        }
 
+        is ReferenceType -> {
+            beginControlFlow("$instanceName.$fieldName.forEach")
+            addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", ProtoWireTypeClassName)
+            encodeReferenceType("it", listType.repeatedType, null, null)
+            endControlFlow()
+        }
         else -> {
             addStatement("/* ${listType.repeatedType} */")
-            //encodeField(listType.repeatedType)
         }
     }
-    endControlFlow()
-    endControlFlow()
 }
 
 fun FunSpec.Builder.decodeListTypeVariableDefinition(fieldName: String, listType: ListType) {
@@ -36,13 +46,21 @@ fun FunSpec.Builder.decodeListTypeVariableDefinition(fieldName: String, listType
 }
 
 fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {
-    beginControlFlow("%M()", readMessageExt)
     when (listType.repeatedType) {
         is ScalarFieldType -> {
+            beginControlFlow("%M()", readMessageExt)
             beginControlFlow("while (!eof)")
             addCode("$fieldName += ")
             addCode(listType.repeatedType.readMethodNoTag())
             addStatement("")
+            endControlFlow() // while (!eof)
+            endControlFlow() // readMessage {}
+        }
+
+        is ReferenceType -> {
+            decodeReferenceType(fieldName, listType.repeatedType, null)
+            beginControlFlow("?.let")
+            addStatement("$fieldName += it")
             endControlFlow()
         }
 
@@ -51,5 +69,4 @@ fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {
             //TODO("Not supported yet")
         }
     }
-    endControlFlow()
 }

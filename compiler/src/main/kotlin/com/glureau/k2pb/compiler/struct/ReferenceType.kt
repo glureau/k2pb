@@ -3,6 +3,8 @@ package com.glureau.k2pb.compiler.struct
 import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
+import com.glureau.k2pb.compiler.mapping.customSerializerType
+import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
@@ -43,7 +45,7 @@ fun FunSpec.Builder.encodeReferenceType(
     annotatedSerializer: KSType?
 ) {
     (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
-        val fieldAccess = "instance.${fieldName}" + (type.inlineName?.let { ".$it" } ?: "")
+        val fieldAccess = fieldName + (type.inlineName?.let { ".$it" } ?: "")
 
         val checkNullability =
             type.isNullable || (type.inlineOf as? ReferenceType)?.isNullable == true
@@ -52,34 +54,33 @@ fun FunSpec.Builder.encodeReferenceType(
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
         addStatement("val $encodedTmpName = %T().encode($fieldAccess)", annSerializer.toClassName())
-        val parents = (annSerializer.declaration as KSClassDeclaration)
-            .superTypes
-            .map { it.resolve().toClassName() }
-        if (parents.contains(CustomStringConverter::class.asClassName())) {
+        annSerializer.customSerializerType()?.let { customType ->
             if (tag != null) {
                 /* TODO: custom string converter nullability */
-                addCode(ScalarFieldType.String.safeWriteMethod(encodedTmpName, tag, null))
+                addCode(customType.safeWriteMethod(encodedTmpName, tag, null))
             } else {
-                addCode(ScalarFieldType.String.safeWriteMethodNoTag(encodedTmpName, null))
+                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null))
             }
             addStatement("")
-        } else {
-            error("Not supported yet")
         }
+            ?: error("Not supported yet")
+
         if (checkNullability) {
             endControlFlow()
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
-        val fieldAccess = fieldName + (type.inlineName?.let { ".$it" } ?: "")
-        val pwtClass = ClassName("com.glureau.k2pb.runtime.ktx", "ProtoWireType")
-        addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", pwtClass)
+        //require(tag != null) { "Tag is mandatory for inlined type" }
+        if (tag != null) {
+            addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", ProtoWireTypeClassName)
+        }
+
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(instance.${fieldName}, ${type.name}::class)")
+        addStatement("encode(${fieldName}, ${type.name}::class)")
         endControlFlow()
     } ?: run {
         beginControlFlow("%M($tag)", writeMessageExt)
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(instance.${fieldName}, ${type.name}::class)")
+        addStatement("encode(${fieldName}, ${type.name}::class)")
         endControlFlow()
         endControlFlow()
     }
@@ -110,33 +111,28 @@ fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
 fun FunSpec.Builder.decodeReferenceType(
     fieldName: String,
     fieldType: ReferenceType,
-    fieldAnnotatedSerializer: KSType?
+    fieldAnnotatedSerializer: KSType?,
 ) {
     (fieldAnnotatedSerializer ?: fieldType.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
         val parents = (annotatedSerializer.declaration as KSClassDeclaration)
             .superTypes
             .map { it.resolve().toClassName() }
         if (parents.contains(CustomStringConverter::class.asClassName())) {
-            val checkNullability = fieldType.isNullable || fieldType.inlineOf?.isNullable == true
-
-            addStatement("/* lol $checkNullability ${fieldType.inlineOf} ${annotatedSerializer}*/")
-
             val decodedTmpName = decodeInLocalVar(fieldName, annotatedSerializer)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
-                    addStatement("$fieldName = ${fieldType.name}($decodedTmpName) /* P */")
+                    addStatement("${fieldType.name}($decodedTmpName) /* P */")
                 } else {
-                    addStatement("$fieldName = $decodedTmpName?.let { ${fieldType.name}($decodedTmpName) } /* O */")
+                    addStatement("$decodedTmpName?.let { ${fieldType.name}($decodedTmpName) } /* O */")
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.
-                addStatement("$fieldName = $decodedTmpName", annotatedSerializer.toClassName())
+                addCode(decodedTmpName, annotatedSerializer.toClassName()) // TODO unused 2nd param?
             }
         } else {
             error("Not supported yet")
         }
     } ?: run {
-        addCode("$fieldName = ")
         if (fieldType.inlineOf == null) {
             beginControlFlow("%M", readMessageExt)
         }
