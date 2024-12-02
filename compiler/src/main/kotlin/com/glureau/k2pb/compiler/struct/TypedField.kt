@@ -1,8 +1,12 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.compiler.mapping.appendComment
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.ksp.toClassName
 
 data class NullabilitySubField(
     val fieldName: String,

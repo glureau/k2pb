@@ -6,4 +6,5 @@ sealed class Node {
     abstract val qualifiedName: String
     abstract val name: String
     abstract val originalFile: KSFile?
+    abstract val generatesNow: Boolean
 }

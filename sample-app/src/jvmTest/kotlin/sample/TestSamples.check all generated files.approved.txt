@@ -229,6 +229,13 @@ message Vehicle {
   }
 }
 
+File: k2pb/ValueClassList.proto
+syntax = "proto3";
+
+message ValueClassList {
+  repeated string valueClassFromLibs = 1;
+}
+
 File: k2pb/CommentedClass.proto
 syntax = "proto3";
 

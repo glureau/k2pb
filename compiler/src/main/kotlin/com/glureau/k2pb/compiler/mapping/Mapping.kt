@@ -119,6 +119,8 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'" else "",
         isObject = false,
         isPolymorphic = true,
+        isSealed = modifiers.contains(Modifier.SEALED),
+        explicitGenerationRequested = false,
         superTypes = emptyList(),
         fields = if (sharedOptions.useKspPolymorphism)
             listOf(
@@ -140,7 +142,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         "${this.simpleName.asString()} should have a primary constructor"
     }
         .parameters.mapNotNull { param ->
-            val prop = this.getDeclaredProperties().first { it.simpleName == param.name }
+            val prop = this.getDeclaredProperties().firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
 
             //val fields = getDeclaredProperties().mapNotNull { prop ->
             if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
@@ -244,6 +246,8 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         fields = fields.toList(),
         originalFile = containingFile,
         isPolymorphic = false,
+        isSealed = false,
+        explicitGenerationRequested = false,
         isObject = false, // because it's a data class
         isInlineClass = this.isInlineClass,
         superTypes = this.superTypes.map { it.resolve().toClassName() }
@@ -278,6 +282,8 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     isPolymorphic = false,
     isObject = true,
     isInlineClass = false,
+    isSealed = false,
+    explicitGenerationRequested = false,
     superTypes = emptyList(),
 )
 

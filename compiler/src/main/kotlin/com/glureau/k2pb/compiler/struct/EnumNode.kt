@@ -9,7 +9,9 @@ data class EnumNode(
     val comment: String?,
     val entries: List<EnumEntry>,
     override val originalFile: KSFile?,
-) : Node()
+) : Node() {
+    override val generatesNow: Boolean get() = true
+}
 
 fun StringBuilder.appendEnumNode(indentLevel: Int, enumNode: EnumNode) {
     appendComment(indentLevel, enumNode.comment)

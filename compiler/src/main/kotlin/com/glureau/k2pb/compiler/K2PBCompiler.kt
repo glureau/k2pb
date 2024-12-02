@@ -91,6 +91,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                             isInlineClass = false,
                             superTypes = emptyList(),
                             comment = null,
+                            explicitGenerationRequested = true,
+                            isSealed = false, // TODO: Should we just remove that variable?
                             fields =
                             listOf(
                                 OneOfField(
@@ -125,8 +127,11 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         val lastSignatures = mutableSetOf<String>()
         do {
             var done = true
+            Logger.warn("--- UNKNOWN REFERENCES ---")
             val unknownReferences = protobufAggregator.unknownReferences()
+            Logger.warn("--- UNKNOWN REFERENCES --- DONE")
             unknownReferences.forEach {
+                Logger.warn("RESOLVING: $it")
                 val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
                 protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false

@@ -21,7 +21,10 @@ fun FunSpec.Builder.encodeListType(fieldName: String, listType: ListType, tag: I
         is ScalarFieldType -> addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
             .also { addStatement("") }
 
-        else -> TODO("Not supported yet")
+        else -> {
+            addStatement("/* ${listType.repeatedType} */")
+            //encodeField(listType.repeatedType)
+        }
     }
     endControlFlow()
     endControlFlow()
@@ -43,7 +46,10 @@ fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {
             endControlFlow()
         }
 
-        else -> TODO("Not supported yet")
+        else -> {
+            addStatement("/* ${listType.repeatedType} */")
+            //TODO("Not supported yet")
+        }
     }
     endControlFlow()
 }

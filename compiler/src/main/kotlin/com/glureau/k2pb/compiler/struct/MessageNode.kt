@@ -29,6 +29,11 @@ data class MessageNode(
     override val name: String,
     val isObject: Boolean,
     val isPolymorphic: Boolean,
+    // if not sealed, the generation is done in final module
+    // if sealed, the generation is done in the current module
+    // see [explicitGenerationRequested]
+    val isSealed: Boolean,
+    val explicitGenerationRequested: Boolean,
     val isInlineClass: Boolean,
     val superTypes: List<ClassName>,
     val comment: String?,
@@ -36,6 +41,14 @@ data class MessageNode(
     override val originalFile: KSFile?,
 ) : Node() {
     val numberManager = NumberManager()
+
+    // If the generation is not explicitly requested, polymorphic unsealed classes are skipped,
+    // as they are generated in the final module (via an explicit annotation).
+    override val generatesNow: Boolean
+        get() = explicitGenerationRequested ||
+                !isPolymorphic ||
+                isSealed
+
     val dependencies: List<KSFile>
         get() {
             val result = mutableListOf<KSFile>()
@@ -55,12 +68,14 @@ fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) 
     messageNode.fields.forEach {
         appendField(indentLevel + 1, it, messageNode.numberManager)
     }
-    messageNode.nestedNodes.forEach {
-        when (it) {
-            is MessageNode -> appendMessageNode(indentLevel + 1, it)
-            is EnumNode -> appendEnumNode(indentLevel + 1, it)
+    messageNode.nestedNodes
+        .filter { it.generatesNow }
+        .forEach {
+            when (it) {
+                is MessageNode -> appendMessageNode(indentLevel + 1, it)
+                is EnumNode -> appendEnumNode(indentLevel + 1, it)
+            }
         }
-    }
     appendLineWithIndent(indentLevel, "}")
 }
 

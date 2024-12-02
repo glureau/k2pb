@@ -43,7 +43,10 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                             imports = computeImports(
                                 messageNodes = listOf(messageNode),
                                 enumNodes = listOf(),
-                                locallyDeclaredReferences = messageNode.declaredReferences,
+                                locallyDeclaredReferences = messageNode.declaredReferences.also {
+                                    Logger.warn("Declared references for ${messageNode}: $it")
+                                    Logger.warn("TypeResolver.qualifiedNameToProtobufName ${TypeResolver.qualifiedNameToProtobufName}")
+                                },
                                 importResolver = importResolver
                             )
                         )

@@ -3,11 +3,15 @@ package sample
 import AbstractSubClassOuterClass
 import BarEventOuterClass
 import BigDecimalHolderOuterClass
+import BigDecimalValueClassHolderOuterClass
 import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
 import FooEventOuterClass
 import NativeTypeEventOuterClass
+import NullableBigDecimalHolderOuterClass
+import NullableBigDecimalValueClassHolderOuterClass
+import NullableNativeTypeEventOuterClass
 import ObjectClassOuterClass
 import StandardClassOuterClass
 import TransientFieldOuterClass
@@ -40,12 +44,14 @@ import com.glureau.sample.Vehicle
 import com.glureau.sample.WithNestClassA
 import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.ValueClassFromLib
+import com.glureau.sample.lib.ValueClassList
 import com.google.protobuf.kotlin.toByteString
 import com.google.protobuf.kotlin.toByteStringUtf8
 import dataClassFromLib
 import multiModule
 import org.junit.Test
 import user
+import valueClassList
 import vehicle
 import java.math.BigDecimal
 
@@ -295,6 +301,7 @@ class EncodingTest : BaseEncodingTest() {
                 .build()
         )
     }
+
     @Test
     fun checkInlineCustomSerializer() {
         assertCompatibleSerialization(
@@ -365,6 +372,17 @@ class EncodingTest : BaseEncodingTest() {
                 .setBytes("helloworld".toByteArray().toByteString())
                 //.setFoo("hello")
                 .build()
+        )
+    }
+
+    @Test
+    fun listOfValueClass() {
+        assertCompatibleSerialization(
+            ktInstance = ValueClassList(listOf(ValueClassFromLib("42"), ValueClassFromLib("43"))),
+            protocInstance = valueClassList {
+                valueClassFromLibs += "42"
+                valueClassFromLibs += "43"
+            }
         )
     }
 }

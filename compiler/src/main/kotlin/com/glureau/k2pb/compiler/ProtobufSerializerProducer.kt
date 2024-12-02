@@ -1,14 +1,11 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.mapping.InlinedTypeRecorder
-import com.glureau.k2pb.compiler.struct.addInlineNode
 import com.glureau.k2pb.compiler.struct.addMessageNode
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.serializerClassName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import java.util.Locale
 
 class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggregator) {
     data class CodeFile(
@@ -25,15 +22,7 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                 CodeFile(builder.build(), false)
             }
 
-        val inlineSpecs = InlinedTypeRecorder.getAllInlinedNodes()
-            .map { (key, inlineNode) ->
-                val className = ClassName.bestGuess(key)
-                val builder = FileSpec.builder(className)
-                builder.addInlineNode(className, inlineNode)
-                CodeFile(builder.build(), false)
-            }
-
-        if (fileSpecs.isEmpty() && inlineSpecs.isEmpty()) {
+        if (fileSpecs.isEmpty()) {
             return emptyList()
         }
 
@@ -85,6 +74,6 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                 .build(),
             true
         )
-        return fileSpecs + inlineSpecs + moduleCodeFile
+        return fileSpecs + moduleCodeFile
     }
 }
