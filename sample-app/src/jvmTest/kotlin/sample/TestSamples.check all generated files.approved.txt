@@ -175,9 +175,12 @@ message BarEvent {
 File: k2pb/CollectionTypeEvent.proto
 syntax = "proto3";
 
+import "DataClassFromLib.proto";
+
 message CollectionTypeEvent {
   repeated int32 integerList = 1;
   map<string, int32> mapStringInt = 2;
+  repeated DataClassFromLib dataClassList = 3;
 }
 
 File: k2pb/NullableNativeTypeEvent.proto

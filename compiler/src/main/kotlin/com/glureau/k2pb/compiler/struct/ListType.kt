@@ -1,10 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.asClassName
 
 data class ListType(val repeatedType: FieldType, override val isNullable: Boolean) : FieldType
 
@@ -30,10 +27,10 @@ fun FunSpec.Builder.encodeListType(instanceName: String, fieldName: String, list
 
         is ReferenceType -> {
             beginControlFlow("$instanceName.$fieldName.forEach")
-            addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", ProtoWireTypeClassName)
-            encodeReferenceType("it", listType.repeatedType, null, null)
+            encodeReferenceType("it", listType.repeatedType, tag, null)
             endControlFlow()
         }
+
         else -> {
             addStatement("/* ${listType.repeatedType} */")
         }

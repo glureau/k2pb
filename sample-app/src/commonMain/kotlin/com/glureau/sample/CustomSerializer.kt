@@ -7,7 +7,7 @@ import java.math.BigDecimal
 
 
 class BigDecimalConverter : CustomStringConverter<BigDecimal> {
-    override fun encode(value: BigDecimal): String = value.toPlainString() ?: "0.0"
+    override fun encode(value: BigDecimal): String = value.toPlainString()
 
     override fun decode(data: String): BigDecimal? = data.takeIf { it.isNotBlank() }?.toBigDecimal()
 }

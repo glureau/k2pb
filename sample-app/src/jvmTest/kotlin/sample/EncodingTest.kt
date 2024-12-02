@@ -203,9 +203,15 @@ class EncodingTest : BaseEncodingTest() {
                     "a" to 2,
                     "b" to 4,
                 ),
+                dataClassList = listOf(DataClassFromLib(42)),
             ),
             protocInstance = CollectionTypeEventOuterClass.CollectionTypeEvent.newBuilder()
                 .addIntegerList(1)
+                .addDataClassList(
+                    dataClassFromLib {
+                        myInt = 42
+                    }
+                )
                 .addIntegerList(3)
                 .putMapStringInt("a", 2)
                 .addIntegerList(5)

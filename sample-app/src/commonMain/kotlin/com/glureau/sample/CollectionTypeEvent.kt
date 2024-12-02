@@ -1,6 +1,7 @@
 package com.glureau.sample
 
 import com.glureau.k2pb.annotation.ProtoMessage
+import com.glureau.sample.lib.DataClassFromLib
 
 @ProtoMessage
 data class CollectionTypeEvent(
@@ -9,4 +10,5 @@ data class CollectionTypeEvent(
         "a" to 1,
         "b" to 2,
     ),
+    val dataClassList: List<DataClassFromLib>,
 ) : EventInterface
