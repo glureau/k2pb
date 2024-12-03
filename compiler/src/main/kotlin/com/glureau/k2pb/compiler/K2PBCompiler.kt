@@ -2,11 +2,9 @@ package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.ProtoPolymorphism
 import com.glureau.k2pb.annotation.ProtoMessage
+import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.glureau.k2pb.compiler.struct.MessageNode
-import com.glureau.k2pb.compiler.struct.OneOfField
-import com.glureau.k2pb.compiler.struct.ReferenceType
-import com.glureau.k2pb.compiler.struct.TypedField
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.KSPLogger
@@ -20,7 +18,6 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
-import java.util.Locale
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
@@ -88,35 +85,17 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                             name = parent.simpleName,
                             isObject = false,
                             isPolymorphic = true,
+                            isSealed = false,
+                            explicitGenerationRequested = true,
                             isInlineClass = false,
                             superTypes = emptyList(),
-                            comment = null,
-                            explicitGenerationRequested = true,
-                            isSealed = false, // TODO: Should we just remove that variable?
-                            fields =
-                            listOf(
-                                OneOfField(
-                                    comment = null,
-                                    name = parent.simpleName.replaceFirstChar { it.lowercase(Locale.US) },
-                                    protoNumber = 1,
-                                    fields = oneOf.map { (childClassName, number) ->
-                                        TypedField(
-                                            comment = null,
-                                            type = ReferenceType(
-                                                name = childClassName.canonicalName,
-                                                isNullable = false
-                                            ),
-                                            name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
-                                            protoNumber = number,
-                                            annotatedName = null,
-                                            //annotatedNumber = null,
-                                            annotatedSerializer = null,
-                                            nullabilitySubField = null,
-                                        )
-                                    }
-                                )
+                            comment = null, // TODO: Should we just remove that variable?
+                            fields = classNamesToOneOfField(
+                                fieldName = parent.simpleName,
+                                subclassesWithProtoNumber = oneOf.toMap()
                             ),
-                            originalFile = symbol.containingFile
+                            originalFile = symbol.containingFile,
+                            sealedSubClasses = emptyList(),
                         )
                     )
                 }

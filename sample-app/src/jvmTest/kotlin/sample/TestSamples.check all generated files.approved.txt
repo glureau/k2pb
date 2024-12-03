@@ -219,10 +219,14 @@ message NullableBigDecimalHolder {
 File: k2pb/Vehicle.proto
 syntax = "proto3";
 
+// Polymorphism structure for 'Vehicle'
+// Possible values are:
+// - 'Vehicle.Bike'
+// - 'Vehicle.Car'
 message Vehicle {
   oneof vehicle {
-    Vehicle.Car car = 1;
-    Vehicle.Bike bike = 2;
+    Vehicle.Bike bike = 1;
+    Vehicle.Car car = 2;
   }
   message Bike {
     string brand = 1;

@@ -19,7 +19,6 @@ import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.NullabilitySubField
 import com.glureau.k2pb.compiler.struct.NumberManager
-import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
@@ -32,8 +31,8 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ksp.toClassName
-import java.util.Locale
 
 
 val KSClassDeclaration.isClass: Boolean
@@ -111,26 +110,28 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
     } else {
         "(subclasses cannot be listed automatically)"
     }
+    val sealedSubclassWithIndex: Map<ClassName, Int> =
+        // TODO : Handle proto-numbers for sealed subclasses!
+        subclasses.mapIndexed { i, c -> c.toClassName() to i + 1 }
+            .toMap()
 
     return MessageNode(
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'" else "",
+        comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText" else "",
         isObject = false,
         isPolymorphic = true,
         isSealed = modifiers.contains(Modifier.SEALED),
+        sealedSubClasses = subclasses.map { it.toClassName() },
         explicitGenerationRequested = false,
         superTypes = emptyList(),
         fields = if (sharedOptions.useKspPolymorphism)
-            listOf(
-                OneOfField(
-                    comment = "NOT SUPPORTED YET!",
-                    name = protobufName().replaceFirstChar { it.lowercase(Locale.US) },
-                    protoNumber = 1,
-                    fields = emptyList()
-                )
-            ) else emptyList(),
+            classNamesToOneOfField(
+                fieldName = protobufName(),
+                subclassesWithProtoNumber = sealedSubclassWithIndex
+            )
+        else emptyList(),
         isInlineClass = false,
         originalFile = containingFile,
     )
@@ -142,7 +143,8 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         "${this.simpleName.asString()} should have a primary constructor"
     }
         .parameters.mapNotNull { param ->
-            val prop = this.getDeclaredProperties().firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
+            val prop =
+                this.getDeclaredProperties().firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
 
             //val fields = getDeclaredProperties().mapNotNull { prop ->
             if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
@@ -242,17 +244,18 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        comment = docString,
-        fields = fields.toList(),
-        originalFile = containingFile,
+        isObject = false,
         isPolymorphic = false,
         isSealed = false,
         explicitGenerationRequested = false,
-        isObject = false, // because it's a data class
         isInlineClass = this.isInlineClass,
         superTypes = this.superTypes.map { it.resolve().toClassName() }
             .filterNot { it.canonicalName == "kotlin.Any" }
             .toList(),
+        comment = docString, // because it's a data class
+        fields = fields.toList(),
+        originalFile = containingFile,
+        sealedSubClasses = emptyList(),
     )
 }
 
@@ -275,16 +278,17 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     packageName = this.packageName.asString(),
     qualifiedName = qualifiedName!!.asString(),
     name = protobufName(),
-    comment = docString,
-    // `object` can be serialized, also as the data is static, fields are not serialized
-    fields = emptyList(),
-    originalFile = containingFile,
-    isPolymorphic = false,
     isObject = true,
-    isInlineClass = false,
+    // `object` can be serialized, also as the data is static, fields are not serialized
+    isPolymorphic = false,
     isSealed = false,
     explicitGenerationRequested = false,
+    isInlineClass = false,
     superTypes = emptyList(),
+    comment = docString,
+    fields = emptyList(),
+    originalFile = containingFile,
+    sealedSubClasses = emptyList(),
 )
 
 private fun KSTypeReference.toProtobufFieldType(): FieldType {

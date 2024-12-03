@@ -43,7 +43,7 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
 
     val readCodeBlock = when (inlinedField.type) {
         is ScalarFieldType -> inlinedField.type.readMethodNoTag()
-        is ReferenceType -> CodeBlock.of(localVar!!)
+        is ReferenceType -> CodeBlock.of(localVar ?: "ooo")
         else -> TODO()
     }
     addCode("${inlinedField.name} =")

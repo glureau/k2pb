@@ -39,6 +39,7 @@ data class MessageNode(
     val comment: String?,
     val fields: List<FieldInterface>,
     override val originalFile: KSFile?,
+    val sealedSubClasses: List<ClassName>,
 ) : Node() {
     val numberManager = NumberManager()
 
