@@ -103,19 +103,17 @@ fun FunSpec.Builder.encodeReferenceType(
             endControlFlow() // else
         }
     } ?: run {
-        /*
+
         if (type.isEnum) {
             addStatement("// Enum should not be encoded if it's the default value")
-            addStatement("if ($fieldName == %T) return", type.enumFirstEntry!!)
-            addStatement("")
-        }*/
+            beginControlFlow("if ($fieldName != ${type.enumFirstEntry})")
+            //addStatement("if ($fieldName == %T) return", type.enumFirstEntry!!)
+            //addStatement("")
+        }
 
         if (!type.isEnum) {
             beginControlFlow("%M($tag) /* TTT */ ", writeMessageExt)
         } else if (tag != null) {
-            // TODO: enum class in ValueClassOfEnumSerializer should be in inlineOf and not this block...
-            addStatement("//Shaggy mama")
-            addStatement("/* $type */")
             addStatement("writeInt(%T.VARINT.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
 
@@ -125,6 +123,8 @@ fun FunSpec.Builder.encodeReferenceType(
 
         if (!type.isEnum) {
             endControlFlow() // writeMessage
+        } else {
+            endControlFlow() // if (enum)
         }
     }
 }
