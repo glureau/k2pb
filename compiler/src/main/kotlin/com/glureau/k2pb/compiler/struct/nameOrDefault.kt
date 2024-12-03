@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 fun TypedField.nameOrDefault(): String {
     return when (type) {
-        is ListType -> "$name ?: emptyList()"
+        is ListType -> name // default value will be the aggregating mutable list (empty)
         is MapType -> "$name ?: emptyMap()"
         is ReferenceType -> if (type.isNullable) name else "requireNotNull($name)"
         ScalarFieldType.Double,
