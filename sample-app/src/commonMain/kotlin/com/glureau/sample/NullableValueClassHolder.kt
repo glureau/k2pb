@@ -4,6 +4,6 @@ import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.sample.lib.ValueClassFromLib
 
 @ProtoMessage
-data class NullableValueClass(
+data class NullableValueClassHolder(
     val valueClassFromLib: ValueClassFromLib?,
 )

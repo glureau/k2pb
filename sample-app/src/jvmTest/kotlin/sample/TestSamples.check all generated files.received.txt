@@ -69,6 +69,15 @@ message WithNestedEnum {
   }
 }
 
+File: k2pb/ValueClassOfEnumHolder.proto
+syntax = "proto3";
+
+import "AnEnum.proto";
+
+message ValueClassOfEnumHolder {
+  AnEnum value = 1;
+}
+
 File: k2pb/TransientField.proto
 syntax = "proto3";
 

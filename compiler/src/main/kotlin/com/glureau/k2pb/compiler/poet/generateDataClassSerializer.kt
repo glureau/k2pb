@@ -19,9 +19,13 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
     instanceName: String,
     protoSerializerName: String
 ) {
+    addStatement("// If $instanceName is null, nothing to encode")
     addStatement("if ($instanceName == null) return")
+
     messageNode.fields.forEach {
         Logger.warn("data class encode: ${messageNode.name} / ${it.name} => ${(it as? TypedField)?.nullabilitySubField}")
+        addStatement("")
+        addStatement("// Encode ${it.name}")
         encodeField(instanceName, it)
     }
 }
@@ -35,6 +39,11 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
         decodeFieldVariableDefinition(it)
     }
     addStatement("")
+
+    addStatement("/* MessageNode: $messageNode */")
+    if (messageNode.isInlineClass) {
+        return
+    }
 
     beginControlFlow("while (!eof)")
     beginControlFlow("when (val tag = readTag())")
@@ -78,7 +87,15 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                     if (it.type.inlineOf?.isNullable == true) {
                         "  ${it.name} = ${it.name} ?: ${it.type.name}(null), /* C */"
                     } else {
-                        "  ${it.name} = requireNotNull(${it.name}), /* D */"
+                        if (it.type.isEnum) {
+                            "  ${it.name} = ${it.name} ?: ${it.type.enumFirstEntry}, /* EE */"
+                        } else {
+                            if ((it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum) {
+                                "  ${it.name} = ${it.name} ?: ${it.type.name}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
+                            } else {
+                                "  ${it.name} = requireNotNull(${it.name}), /* D */"
+                            }
+                        }
                     }
                 } else {
                     if (it.nullabilitySubField != null && it.annotatedSerializer == null) {

@@ -93,6 +93,7 @@ private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
             )
         }
     return EnumNode(
+        packageName = this.packageName.asString(),
         qualifiedName = qualifiedName!!.asString(),
         name = protobufName(),
         comment = docString,
@@ -213,8 +214,9 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         type = annotatedDerivedType ?: ReferenceType(
                             prop.type.toString(),
                             prop.type.resolve().isMarkedNullable,
+                            isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
                         ).also {
-                            Logger.warn("GREG - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
+                            Logger.warn("GREG 33 - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
                         },
                         comment = prop.docString,
                         //annotatedNumber = annotatedNumber,
@@ -295,19 +297,12 @@ private fun KSTypeReference.toProtobufFieldType(): FieldType {
     val declaration = this.resolve().declaration
     val qualifiedName = declaration.qualifiedName?.asString()
     return mapQfnToFieldType(qualifiedName!!, this.resolve())
-        .also { Logger.warn("GREG - B - ${this.resolve().declaration.modifiers}") }
 }
 
 private fun mapQfnToFieldType(
     qfn: String,
     type: KSType? = null,
 ): FieldType {
-    Logger.warn(
-        "GREG - mapQfnToFieldType - $qfn - $type - ${type?.declaration?.modifiers} - ${
-            (type?.declaration as? KSClassDeclaration)?.getDeclaredProperties()?.toList()
-        }"
-    )
-
     when (qfn) {
         "kotlin.String" -> ScalarFieldType.String
         "kotlin.Int" -> ScalarFieldType.Int
@@ -353,17 +348,32 @@ private fun mapQfnToFieldType(
                     .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
                     ?.getArg<KSType?>(ProtoStringConverter::converter)
 
-                Logger.warn("GREG - ${type.declaration.simpleName.asString()} is inlined $inlinedFieldType / $inlineAnnotatedSerializer")
+                Logger.warn("GREG 22 - ${type.declaration.simpleName.asString()} is inlined $inlinedFieldType / $inlineAnnotatedSerializer")
 
                 ReferenceType(
                     name = qfn,
                     isNullable = type.isMarkedNullable == true,// inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
                     inlineName = inlined.simpleName.asString(),
-                    inlineAnnotatedSerializer = inlineAnnotatedSerializer
+                    inlineAnnotatedSerializer = inlineAnnotatedSerializer,
+                    isEnum = inlined.modifiers.contains(Modifier.ENUM),
                 )
             } else {
-                ReferenceType(qfn, type?.isMarkedNullable == true, null)
+                val typeDecl = (type?.declaration as? KSClassDeclaration)
+                val isEnum = typeDecl?.isEnum == true
+                ReferenceType(
+                    name = qfn,
+                    isNullable = type?.isMarkedNullable == true,
+                    isEnum = isEnum,
+                    enumFirstEntry = if (isEnum) {
+                        typeDecl?.declarations
+                            ?.filterIsInstance<KSClassDeclaration>()
+                            ?.firstOrNull()
+                            ?.toClassName()
+                    } else {
+                        null
+                    }
+                )
             }
         }
     }

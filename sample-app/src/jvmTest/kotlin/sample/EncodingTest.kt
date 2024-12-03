@@ -1,20 +1,24 @@
 package sample
 
 import AbstractSubClassOuterClass
+import AnEnumOuterClass
 import BarEventOuterClass
 import BigDecimalHolderOuterClass
 import BigDecimalValueClassHolderOuterClass
 import CollectionTypeEventOuterClass
 import CommentedClassOuterClass
 import CommonClassOuterClass
+import EnumHolderOuterClass
 import FooEventOuterClass
 import NativeTypeEventOuterClass
 import NullableBigDecimalHolderOuterClass
 import NullableBigDecimalValueClassHolderOuterClass
 import NullableNativeTypeEventOuterClass
+import NullableValueClassOuterClass
 import ObjectClassOuterClass
 import StandardClassOuterClass
 import TransientFieldOuterClass
+import ValueClassOfEnumHolderOuterClass
 import VehicleKt.bike
 import VehicleKt.car
 import WithNestClassAOuterClass
@@ -36,16 +40,20 @@ import com.glureau.sample.NullableBigDecimalHolder
 import com.glureau.sample.NullableBigDecimalValueClass
 import com.glureau.sample.NullableBigDecimalValueClassHolder
 import com.glureau.sample.NullableNativeTypeEvent
-import com.glureau.sample.NullableValueClass
+import com.glureau.sample.NullableValueClassHolder
 import com.glureau.sample.ObjectClass
 import com.glureau.sample.StandardClass
 import com.glureau.sample.TransientField
 import com.glureau.sample.User
 import com.glureau.sample.Vehicle
 import com.glureau.sample.WithNestClassA
+import com.glureau.sample.lib.AnEnum
 import com.glureau.sample.lib.DataClassFromLib
+import com.glureau.sample.lib.EnumHolder
 import com.glureau.sample.lib.ValueClassFromLib
 import com.glureau.sample.lib.ValueClassList
+import com.glureau.sample.lib.ValueClassOfEnum
+import com.glureau.sample.lib.ValueClassOfEnumHolder
 import com.google.protobuf.kotlin.toByteString
 import com.google.protobuf.kotlin.toByteStringUtf8
 import dataClassFromLib
@@ -396,25 +404,57 @@ class EncodingTest : BaseEncodingTest() {
     @Test
     fun nullableValueClass() {
         assertCompatibleSerialization(
-            ktInstance = NullableValueClass(ValueClassFromLib("42")),
-            protocInstance = NullableValueClassOuterClass.NullableValueClass.newBuilder()
+            ktInstance = NullableValueClassHolder(ValueClassFromLib("42")),
+            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("42")
                 .build()
         )
         assertCompatibleSerialization(
-            ktInstance = NullableValueClass(null),
-            protocInstance = NullableValueClassOuterClass.NullableValueClass.newBuilder()
+            ktInstance = NullableValueClassHolder(null),
+            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("")
                 .setIsValueClassFromLibNull(true)
                 .build()
         )
         /*
         assertCompatibleSerialization(
-            ktInstance = NullableValueClass(ValueClassFromLib("")),
-            protocInstance = NullableValueClassOuterClass.NullableValueClass.newBuilder()
+            ktInstance = NullableValueClassHolder(ValueClassFromLib("")),
+            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("")
                 .setIsValueClassFromLibNull(false)
                 .build()
         )*/ // Default value are still serialized on K2PB today
+    }
+
+    @Test
+    fun enumHolder() {
+        assertCompatibleSerialization(
+            ktInstance = EnumHolder(AnEnum.AnEnum_A), // Default value, not encoded
+            protocInstance = EnumHolderOuterClass.EnumHolder.newBuilder()
+                .setValue(AnEnumOuterClass.AnEnum.AnEnum_A)
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = EnumHolder(AnEnum.AnEnum_B),
+            protocInstance = EnumHolderOuterClass.EnumHolder.newBuilder()
+                .setValue(AnEnumOuterClass.AnEnum.AnEnum_B)
+                .build()
+        )
+    }
+
+    @Test
+    fun valueClassOfEnum() {
+        assertCompatibleSerialization(
+            ktInstance = ValueClassOfEnumHolder(ValueClassOfEnum(AnEnum.AnEnum_A)), // Default value, not encoded
+            protocInstance = ValueClassOfEnumHolderOuterClass.ValueClassOfEnumHolder.newBuilder()
+                .setValue(AnEnumOuterClass.AnEnum.AnEnum_A)
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = ValueClassOfEnumHolder(ValueClassOfEnum(AnEnum.AnEnum_B)),
+            protocInstance = ValueClassOfEnumHolderOuterClass.ValueClassOfEnumHolder.newBuilder()
+                .setValue(AnEnumOuterClass.AnEnum.AnEnum_B)
+                .build()
+        )
     }
 }

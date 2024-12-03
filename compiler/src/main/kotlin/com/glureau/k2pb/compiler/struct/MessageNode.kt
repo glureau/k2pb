@@ -14,6 +14,7 @@ import com.glureau.k2pb.compiler.poet.generateObjectSerializerEncode
 import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerDecode
 import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerEncode
 import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.impl.synthetic.KSErrorTypeClassDeclaration.packageName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -24,7 +25,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 
 data class MessageNode(
-    val packageName: String,
+    override val packageName: String,
     override val qualifiedName: String,
     override val name: String,
     val isObject: Boolean,
@@ -80,8 +81,8 @@ fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) 
     appendLineWithIndent(indentLevel, "}")
 }
 
-fun MessageNode.asClassName(): ClassName = ClassName(packageName, name)
-fun MessageNode.serializerClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Serializer")
+fun Node.asClassName(): ClassName = ClassName(packageName, name)
+fun Node.serializerClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Serializer")
 val writeMessageExt = MemberName("com.glureau.k2pb.runtime", "writeMessage")
 val readMessageExt = MemberName("com.glureau.k2pb.runtime", "readMessage")
 

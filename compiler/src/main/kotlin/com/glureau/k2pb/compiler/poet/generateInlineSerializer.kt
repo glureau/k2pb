@@ -6,6 +6,7 @@ import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.decodeInLocalVar
+import com.glureau.k2pb.compiler.struct.decodeReferenceType
 import com.glureau.k2pb.compiler.struct.encodeReferenceType
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
@@ -15,11 +16,11 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
     instanceName: String,
     protoSerializerName: String
 ) {
-    addStatement("if (instance == null) return")
+    addStatement("if ($instanceName == null) return")
 
     val inlinedField = messageNode.fields.first()
     if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
-        addCode(inlinedField.type.safeWriteMethodNoTag("instance.${inlinedField.name} /* M */", null))
+        addCode(inlinedField.type.safeWriteMethodNoTag("$instanceName.${inlinedField.name} /* M */", null))
         addStatement("")
     } else if (inlinedField is TypedField && inlinedField.type is ReferenceType) {
         encodeReferenceType(
@@ -49,14 +50,18 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
 
     val readCodeBlock = when (inlinedField.type) {
         is ScalarFieldType -> inlinedField.type.readMethodNoTag()
-        is ReferenceType -> CodeBlock.of(localVar ?: "ooo")
+        is ReferenceType -> localVar?.let { CodeBlock.of(it) }
         else -> TODO()
     }
-    addCode("${inlinedField.name} =")
+    addCode("${inlinedField.name} = ")
     if (!inlinedField.type.isNullable) {
         addCode("requireNotNull(")
     }
-    addCode(readCodeBlock)
+    if (readCodeBlock != null) {
+        addCode(readCodeBlock)
+    } else {
+        decodeReferenceType("oot", inlinedField.type as ReferenceType, inlinedField.annotatedSerializer)
+    }
     if (!inlinedField.type.isNullable) {
         addCode(")")
     }

@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.compiler.struct.addEnumNode
 import com.glureau.k2pb.compiler.struct.addMessageNode
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.serializerClassName
@@ -20,13 +21,19 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                 val builder = FileSpec.builder(it.serializerClassName())
                 builder.addMessageNode(it)
                 CodeFile(builder.build(), false)
+            } + protobufAggregator.enums
+            .map {
+                val builder = FileSpec.builder(it.serializerClassName())
+                builder.addEnumNode(it)
+                CodeFile(builder.build(), false)
             }
 
         if (fileSpecs.isEmpty()) {
             return emptyList()
         }
 
-        val packages = protobufAggregator.messages.map { it.packageName }
+        val packages = protobufAggregator.messages.map { it.packageName } +
+                protobufAggregator.enums.map { it.packageName }
         // Find the common package
         val commonPackage = packages.reduce { acc, s -> acc.commonPrefixWith(s) }
 
@@ -68,6 +75,13 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                                         it.asClassName()
                                     )
                                 }
+                            }
+                            protobufAggregator.enums.forEach { enum ->
+                                addStatement(
+                                    "registerSerializer(%T::class, %T())",
+                                    enum.asClassName(),
+                                    enum.serializerClassName()
+                                )
                             }
                         }
                         .build())

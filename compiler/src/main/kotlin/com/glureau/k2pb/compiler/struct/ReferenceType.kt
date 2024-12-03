@@ -8,7 +8,7 @@ import com.glureau.k2pb.compiler.mapping.customSerializerType
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -16,6 +16,8 @@ import com.squareup.kotlinpoet.ksp.toClassName
 data class ReferenceType(
     val name: String,
     override val isNullable: Boolean,
+    val isEnum: Boolean,
+    val enumFirstEntry: ClassName? = null,
     val inlineOf: FieldType? = null,
     val inlineName: String? = null,
     val inlineAnnotatedSerializer: KSType? = null,
@@ -71,33 +73,59 @@ fun FunSpec.Builder.encodeReferenceType(
             endControlFlow()
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
-        //require(tag != null) { "Tag is mandatory for inlined type" }
-        if (nullabilitySubField != null) {
-            beginControlFlow("if ($fieldName != null)")
+        val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
+        val condition = mutableListOf<String>()
+        if (nullabilitySubField != null) condition += "$fieldName != null"
+        if (isInlineEnum) condition += "$fieldName != ${type.name}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
+
+        if (condition.isNotEmpty()) {
+            beginControlFlow("if (${condition.joinToString(" && ")})")
         }
 
         if (tag != null) {
-            addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", ProtoWireTypeClassName)
+            val wireType = if (isInlineEnum) "VARINT" else "SIZE_DELIMITED"
+            addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoSerializer)")
         addStatement("encode(${fieldName}, ${type.name}::class) /* FF */")
         endControlFlow()
+
+        if (condition.isNotEmpty()) {
+            endControlFlow() // if (condition)
+        }
+
         if (nullabilitySubField != null) {
-            endControlFlow()
             beginControlFlow("else")
             addStatement(
-                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
+                "writeInt(value = 1, tag = ${nullabilitySubField?.protoNumber}, format = %T.DEFAULT)",
                 ProtoIntegerType::class.asClassName()
             )
-
-            endControlFlow()
+            endControlFlow() // else
         }
     } ?: run {
-        beginControlFlow("%M($tag)", writeMessageExt)
+        /*
+        if (type.isEnum) {
+            addStatement("// Enum should not be encoded if it's the default value")
+            addStatement("if ($fieldName == %T) return", type.enumFirstEntry!!)
+            addStatement("")
+        }*/
+
+        if (!type.isEnum) {
+            beginControlFlow("%M($tag) /* TTT */ ", writeMessageExt)
+        } else if (tag != null) {
+            // TODO: enum class in ValueClassOfEnumSerializer should be in inlineOf and not this block...
+            addStatement("//Shaggy mama")
+            addStatement("/* $type */")
+            addStatement("writeInt(%T.VARINT.wireIntWithTag($tag))", ProtoWireTypeClassName)
+        }
+
         beginControlFlow("with(protoSerializer)")
         addStatement("encode(${fieldName}, ${type.name}::class)")
-        endControlFlow()
-        endControlFlow()
+        endControlFlow() // with
+
+        if (!type.isEnum) {
+            endControlFlow() // writeMessage
+        }
     }
 }
 
@@ -134,6 +162,7 @@ fun FunSpec.Builder.decodeReferenceType(
     fieldAnnotatedSerializer: KSType?,
 ) {
     (fieldAnnotatedSerializer ?: fieldType.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
+        // TODO use the CustomStringConverter extension
         val parents = (annotatedSerializer.declaration as KSClassDeclaration)
             .superTypes
             .map { it.resolve().toClassName() }
@@ -153,13 +182,14 @@ fun FunSpec.Builder.decodeReferenceType(
             error("Not supported yet")
         }
     } ?: run {
-        if (fieldType.inlineOf == null) {
+        val useReadMessage = fieldType.inlineOf == null && fieldType.isEnum == false
+        if (useReadMessage) {
             beginControlFlow("%M", readMessageExt)
         }
         beginControlFlow("with(protoSerializer) {")
         addStatement("decode(${fieldType.name}::class)")
         endControlFlow()
-        if (fieldType.inlineOf == null) {
+        if (useReadMessage) {
             endControlFlow()
         }
     }

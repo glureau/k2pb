@@ -17,7 +17,8 @@ fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: Map<Cla
                 comment = null,
                 type = ReferenceType(
                     name = childClassName.canonicalName,
-                    isNullable = false
+                    isNullable = false,
+                    isEnum = false,
                 ),
                 name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
                 protoNumber = number,
