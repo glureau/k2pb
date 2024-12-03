@@ -144,26 +144,32 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         "${this.simpleName.asString()} should have a primary constructor"
     }
         .parameters.mapNotNull { param ->
-            val prop =
-                this.getDeclaredProperties().firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
+            val prop = this.getDeclaredProperties()
+                    .firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
 
             //val fields = getDeclaredProperties().mapNotNull { prop ->
             if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
                 Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
                 return@mapNotNull null
             }
-            if (!prop.hasBackingField) {
-                Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
-                return@mapNotNull null
-            }
             val resolvedType = prop.type.resolve()
             val resolvedDeclaration = resolvedType.declaration
-            if (resolvedDeclaration is KSClassDeclaration &&
-                (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(
-                    Modifier.VALUE
-                ))
-            ) {
-                val inlineProperty = resolvedDeclaration.getDeclaredProperties().first()
+            val isInlineClass = resolvedDeclaration is KSClassDeclaration &&
+                    (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(
+                        Modifier.VALUE
+                    ))
+
+            // For some reason, KSP doesn't always see the backing field in other modules... (1.9.25-1.0.20)
+            /*
+            if (!prop.hasBackingField) {
+                Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+                return@mapNotNull error("no backing field? $isInlineClass ${prop.simpleName.asString()} // ALL PROP = ${getAllProperties().joinToString { " ** " + it.simpleName.asString() + " / " + it.hasBackingField + " / " + it.type }}")
+            }
+            */
+
+
+            if (isInlineClass) {
+                val inlineProperty = (resolvedDeclaration as KSClassDeclaration).getDeclaredProperties().first()
                 val type = inlineProperty.type
                 if (type is KSClassDeclaration) {
                     TODO("HERE?")
@@ -242,6 +248,13 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 }
             }
         }
+    if (this.isInlineClass) {
+        require(fields.size == 1) {
+            "One and only one field is allowed in an inline class: " +
+                    "${this.qualifiedName!!.asString()}.\n" +
+                    "Fields: $fields"
+        }
+    }
     return MessageNode(
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
