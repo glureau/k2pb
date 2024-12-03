@@ -36,6 +36,7 @@ import com.glureau.sample.NullableBigDecimalHolder
 import com.glureau.sample.NullableBigDecimalValueClass
 import com.glureau.sample.NullableBigDecimalValueClassHolder
 import com.glureau.sample.NullableNativeTypeEvent
+import com.glureau.sample.NullableValueClass
 import com.glureau.sample.ObjectClass
 import com.glureau.sample.StandardClass
 import com.glureau.sample.TransientField
@@ -390,5 +391,30 @@ class EncodingTest : BaseEncodingTest() {
                 valueClassFromLibs += "43"
             }
         )
+    }
+
+    @Test
+    fun nullableValueClass() {
+        assertCompatibleSerialization(
+            ktInstance = NullableValueClass(ValueClassFromLib("42")),
+            protocInstance = NullableValueClassOuterClass.NullableValueClass.newBuilder()
+                .setValueClassFromLib("42")
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableValueClass(null),
+            protocInstance = NullableValueClassOuterClass.NullableValueClass.newBuilder()
+                .setValueClassFromLib("")
+                .setIsValueClassFromLibNull(true)
+                .build()
+        )
+        /*
+        assertCompatibleSerialization(
+            ktInstance = NullableValueClass(ValueClassFromLib("")),
+            protocInstance = NullableValueClassOuterClass.NullableValueClass.newBuilder()
+                .setValueClassFromLib("")
+                .setIsValueClassFromLibNull(false)
+                .build()
+        )*/ // Default value are still serialized on K2PB today
     }
 }

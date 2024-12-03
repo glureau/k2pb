@@ -226,7 +226,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 }
 
                 else -> {
-                    val type = annotatedDerivedType ?: prop.type.toProtobufFieldType()
+                    val type = annotatedDerivedType ?: prop.type.toProtobufFieldType() // TODO: Common to 3 branches?
                     TypedField(
                         name = propName,
                         annotatedName = prop.serialName,

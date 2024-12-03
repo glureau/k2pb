@@ -1,13 +1,14 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.CustomStringConverter
+import com.glureau.k2pb.ProtoIntegerType
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.customSerializerType
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -42,7 +43,8 @@ fun FunSpec.Builder.encodeReferenceType(
     fieldName: String,
     type: ReferenceType,
     tag: Int?,
-    annotatedSerializer: KSType?
+    annotatedSerializer: KSType?,
+    nullabilitySubField: NullabilitySubField?
 ) {
     (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
         val fieldAccess = fieldName + (type.inlineName?.let { ".$it" } ?: "")
@@ -70,13 +72,26 @@ fun FunSpec.Builder.encodeReferenceType(
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
         //require(tag != null) { "Tag is mandatory for inlined type" }
+        if (nullabilitySubField != null) {
+            beginControlFlow("if ($fieldName != null)")
+        }
+
         if (tag != null) {
             addStatement("writeInt(%T.SIZE_DELIMITED.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
-
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(${fieldName}, ${type.name}::class)")
+        addStatement("encode(${fieldName}, ${type.name}::class) /* FF */")
         endControlFlow()
+        if (nullabilitySubField != null) {
+            endControlFlow()
+            beginControlFlow("else")
+            addStatement(
+                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
+                ProtoIntegerType::class.asClassName()
+            )
+
+            endControlFlow()
+        }
     } ?: run {
         beginControlFlow("%M($tag)", writeMessageExt)
         beginControlFlow("with(protoSerializer)")
@@ -89,7 +104,8 @@ fun FunSpec.Builder.encodeReferenceType(
 fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
     fieldName: String,
     type: ReferenceType,
-    annotatedSerializer: KSType?
+    annotatedSerializer: KSType?,
+    nullabilitySubField: NullabilitySubField?
 ) {
     /*
     (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
@@ -105,6 +121,10 @@ fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
         */
 
     addStatement("var $fieldName: ${type.name}? = null")
+    nullabilitySubField?.let {
+        addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+    }
+
     //}
 }
 

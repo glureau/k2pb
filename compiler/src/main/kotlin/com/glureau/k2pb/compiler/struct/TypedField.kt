@@ -47,7 +47,14 @@ fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
     when (field.type) {
         is ListType -> encodeListType(instanceName, field.name, field.type, tag)
         is MapType -> encodeMapType(field.name, field.type, tag)
-        is ReferenceType -> encodeReferenceType("$instanceName.${field.name}", field.type, tag, field.annotatedSerializer)
+        is ReferenceType -> encodeReferenceType(
+            "$instanceName.${field.name}",
+            field.type,
+            tag,
+            field.annotatedSerializer,
+            field.nullabilitySubField
+        )
+
         is ScalarFieldType -> encodeScalarFieldType(
             field.name,
             field.type,
@@ -62,7 +69,13 @@ fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
     when (field.type) {
         is ListType -> decodeListTypeVariableDefinition(field.name, field.type)
         is MapType -> decodeMapTypeVariableDefinition(field.name, field.type)
-        is ReferenceType -> decodeReferenceTypeVariableDefinition(field.name, field.type, field.annotatedSerializer)
+        is ReferenceType -> decodeReferenceTypeVariableDefinition(
+            field.name,
+            field.type,
+            field.annotatedSerializer,
+            field.nullabilitySubField
+        )
+
         is ScalarFieldType -> decodeScalarTypeVariableDefinition(
             field.name,
             field.type,
@@ -83,6 +96,7 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
             addStatement("${field.name} = it")
             endControlFlow()
         }
+
         is ScalarFieldType -> decodeScalarType(field.name, field.type, field.annotatedSerializer)
     }
 }

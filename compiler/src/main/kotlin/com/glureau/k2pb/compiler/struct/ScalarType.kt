@@ -27,13 +27,23 @@ data class ScalarFieldType(
     private fun safeWrite(fieldName: String, nullableTag: Int?, method: () -> CodeBlock) =
         if (isNullable) {
             CodeBlock.of(
+                "if ($fieldName != null) %L%L", method(),
+                if (nullableTag != null) {
+                    CodeBlock.of(
+                        "\nelse writeInt(value = 1, tag = $nullableTag, format = %T.DEFAULT)",
+                        ProtoIntegerType::class.asClassName()
+                    )
+                } else ""
+            )
+            /*
+            CodeBlock.of(
                 "if ($fieldName != null) %L" +
                         if (nullableTag != null) {
                             "\nelse writeInt(value = 1, tag = $nullableTag, format = %T.DEFAULT)"
                         } else "",
                 method(),
                 ProtoIntegerType::class.asClassName(),
-            )
+            )*/
         } else {
             method()
         }

@@ -172,6 +172,14 @@ message BarEvent {
   CommonClass common = 1;
 }
 
+File: k2pb/NullableValueClass.proto
+syntax = "proto3";
+
+message NullableValueClass {
+  string valueClassFromLib = 1;
+  bool isValueClassFromLibNull = 2;
+}
+
 File: k2pb/CollectionTypeEvent.proto
 syntax = "proto3";
 

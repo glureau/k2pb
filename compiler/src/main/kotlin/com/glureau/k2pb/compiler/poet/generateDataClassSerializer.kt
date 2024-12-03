@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.poet
 
+import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
@@ -20,6 +21,7 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
 ) {
     addStatement("if ($instanceName == null) return")
     messageNode.fields.forEach {
+        Logger.warn("data class encode: ${messageNode.name} / ${it.name} => ${(it as? TypedField)?.nullabilitySubField}")
         encodeField(instanceName, it)
     }
 }

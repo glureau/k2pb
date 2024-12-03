@@ -27,7 +27,7 @@ fun FunSpec.Builder.encodeListType(instanceName: String, fieldName: String, list
 
         is ReferenceType -> {
             beginControlFlow("$instanceName.$fieldName.forEach")
-            encodeReferenceType("it", listType.repeatedType, tag, null)
+            encodeReferenceType("it", listType.repeatedType, tag, null, null)
             endControlFlow()
         }
 

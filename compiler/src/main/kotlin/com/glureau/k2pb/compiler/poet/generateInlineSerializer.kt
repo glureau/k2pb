@@ -22,7 +22,13 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
         addCode(inlinedField.type.safeWriteMethodNoTag("instance.${inlinedField.name} /* M */", null))
         addStatement("")
     } else if (inlinedField is TypedField && inlinedField.type is ReferenceType) {
-        encodeReferenceType("$instanceName.${inlinedField.name}", inlinedField.type, tag = null, inlinedField.annotatedSerializer)
+        encodeReferenceType(
+            "$instanceName.${inlinedField.name}",
+            inlinedField.type,
+            tag = null,
+            inlinedField.annotatedSerializer,
+            inlinedField.nullabilitySubField
+        )
     }
 }
 
