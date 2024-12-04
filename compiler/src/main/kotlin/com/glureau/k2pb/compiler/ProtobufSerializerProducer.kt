@@ -87,7 +87,6 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                             }
                         }
                         .build())
-                .clearImports()
                 .build(),
             true
         )

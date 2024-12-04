@@ -48,7 +48,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         resolvePolymorphism(resolver)
 
-        //resolveDependencies(resolver)
+        resolveDependencies(resolver)
 
         val moduleName = moduleName(resolver)
         ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->

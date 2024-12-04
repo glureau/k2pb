@@ -206,8 +206,10 @@ import "DataClassFromLib.proto";
 
 message CollectionTypeEvent {
   repeated int32 integerList = 1;
-  map<string, int32> mapStringInt = 2;
-  repeated DataClassFromLib dataClassList = 3;
+  repeated int32 maybeIntegerList = 2;
+  bool isMaybeIntegerListNull = 3;
+  map<string, int32> mapStringInt = 4;
+  repeated DataClassFromLib dataClassList = 5;
 }
 
 File: k2pb/NullableNativeTypeEvent.proto

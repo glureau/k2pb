@@ -1,6 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
@@ -54,8 +55,8 @@ fun FunSpec.Builder.encodeListType(
         endControlFlow() // if
         beginControlFlow("else")
         addStatement(
-            "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
-            ProtoIntegerType::class.asClassName()
+            "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+            ProtoIntegerTypeDefault
         )
         endControlFlow() // else
     }

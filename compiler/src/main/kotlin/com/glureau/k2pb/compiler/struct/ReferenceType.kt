@@ -5,6 +5,7 @@ import com.glureau.k2pb.ProtoIntegerType
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.customSerializerType
+import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -39,7 +40,7 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
     }
 
     Logger.warn("Nothing found for ${type.name}, or is it just an ENUM ?")
-    append(type.className)
+    append(type.name)
 }
 
 fun FunSpec.Builder.encodeReferenceType(
@@ -75,8 +76,8 @@ fun FunSpec.Builder.encodeReferenceType(
             if (nullabilitySubField != null) {
                 beginControlFlow("else")
                 addStatement(
-                    "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
-                    ProtoIntegerType::class.asClassName()
+                    "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+                    ProtoIntegerTypeDefault
                 )
                 endControlFlow()
             }
@@ -106,8 +107,8 @@ fun FunSpec.Builder.encodeReferenceType(
         if (nullabilitySubField != null) {
             beginControlFlow("else")
             addStatement(
-                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
-                ProtoIntegerType::class.asClassName()
+                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+                ProtoIntegerTypeDefault
             )
             endControlFlow() // else
         }

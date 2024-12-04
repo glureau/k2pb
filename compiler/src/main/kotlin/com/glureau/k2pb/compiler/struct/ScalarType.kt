@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.CustomStringConverter
-import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
@@ -26,24 +26,21 @@ data class ScalarFieldType(
 
     private fun safeWrite(fieldName: String, nullableTag: Int?, method: () -> CodeBlock) =
         if (isNullable) {
-            CodeBlock.of(
-                "if ($fieldName != null) %L%L", method(),
-                if (nullableTag != null) {
-                    CodeBlock.of(
-                        "\nelse writeInt(value = 1, tag = $nullableTag, format = %T.DEFAULT)",
-                        ProtoIntegerType::class.asClassName()
-                    )
-                } else ""
-            )
-            /*
-            CodeBlock.of(
-                "if ($fieldName != null) %L" +
-                        if (nullableTag != null) {
-                            "\nelse writeInt(value = 1, tag = $nullableTag, format = %T.DEFAULT)"
-                        } else "",
-                method(),
-                ProtoIntegerType::class.asClassName(),
-            )*/
+            CodeBlock.builder()
+                .beginControlFlow("if ($fieldName != null)")
+                .add(method())
+                .endControlFlow()
+                .also {
+                    if (nullableTag != null) {
+                        it.beginControlFlow("else")
+                            .addStatement(
+                                "writeInt(value = 1, tag = $nullableTag, format = %T)",
+                                ProtoIntegerTypeDefault
+                            )
+                            .endControlFlow()
+                    }
+                }
+                .build()
         } else {
             method()
         }
@@ -62,10 +59,10 @@ data class ScalarFieldType(
             kotlinClass = kotlin.Int::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt($f, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeInt($f, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f)") },
-            readMethod = { CodeBlock.of("readInt(%T.DEFAULT)", ProtoIntegerType::class.asClassName()) },
+            readMethod = { CodeBlock.of("readInt(%T)", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("readInt32NoTag()") },
         )
         val IntNullable = Int.copy(isNullable = true)
@@ -73,10 +70,10 @@ data class ScalarFieldType(
             kotlinClass = kotlin.Char::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt($f.code, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeInt($f.code, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.code)") },
-            readMethod = { CodeBlock.of("readInt(%T.DEFAULT).toChar()", ProtoIntegerType::class.asClassName()) },
+            readMethod = { CodeBlock.of("readInt(%T).toChar()", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toChar()") },
         )
         val CharNullable = Char.copy(isNullable = true)
@@ -84,10 +81,10 @@ data class ScalarFieldType(
             kotlinClass = kotlin.Short::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt($f.toInt(), $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeInt($f.toInt(), $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.toInt())") },
-            readMethod = { CodeBlock.of("readInt(%T.DEFAULT).toShort()", ProtoIntegerType::class.asClassName()) },
+            readMethod = { CodeBlock.of("readInt(%T).toShort()", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toShort()") },
         )
         val ShortNullable = Short.copy(isNullable = true)
@@ -95,10 +92,10 @@ data class ScalarFieldType(
             kotlinClass = kotlin.Byte::class.asClassName(),
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt($f.toInt(), $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeInt($f.toInt(), $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.toInt())") },
-            readMethod = { CodeBlock.of("readInt(%T.DEFAULT).toByte()", ProtoIntegerType::class.asClassName()) },
+            readMethod = { CodeBlock.of("readInt(%T).toByte()", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("readIntNoTag().toByte()") },
         )
         val ByteNullable = Byte.copy(isNullable = true)
@@ -106,10 +103,10 @@ data class ScalarFieldType(
             kotlinClass = kotlin.Long::class.asClassName(),
             protoType = ScalarType.int64,
             writeMethod = { f, t ->
-                CodeBlock.of("writeLong($f, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeLong($f, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeLong($f)") },
-            readMethod = { CodeBlock.of("readLong(%T.DEFAULT)", ProtoIntegerType::class.asClassName()) },
+            readMethod = { CodeBlock.of("readLong(%T)", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("readLongNoTag()") },
         )
         val LongNullable = Long.copy(isNullable = true)
@@ -135,11 +132,11 @@ data class ScalarFieldType(
             kotlinClass = kotlin.Boolean::class.asClassName(),
             protoType = ScalarType.bool,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T.DEFAULT)", ProtoIntegerType::class.asClassName())
+                CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
-            readMethod = { CodeBlock.of("readInt(%T.DEFAULT) == 1", ProtoIntegerType::class.asClassName()) },
-            readMethodNoTag = { CodeBlock.of("readIntNoTag() == 1") },
+            readMethod = { CodeBlock.of("readInt(%T)·==·1 /* ooo */", ProtoIntegerTypeDefault) },
+            readMethodNoTag = { CodeBlock.of("readIntNoTag()·==·1") },
         )
         val BooleanNullable = Boolean.copy(isNullable = true)
         val ByteArray = ScalarFieldType(

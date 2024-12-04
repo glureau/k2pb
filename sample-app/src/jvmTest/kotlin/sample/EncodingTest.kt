@@ -14,7 +14,6 @@ import NativeTypeEventOuterClass
 import NullableBigDecimalHolderOuterClass
 import NullableBigDecimalValueClassHolderOuterClass
 import NullableNativeTypeEventOuterClass
-import NullableValueClassOuterClass
 import ObjectClassOuterClass
 import StandardClassOuterClass
 import TransientFieldOuterClass
@@ -225,6 +224,8 @@ class EncodingTest : BaseEncodingTest() {
                 .putMapStringInt("a", 2)
                 .addIntegerList(5)
                 .putMapStringInt("b", 4)
+                .addMaybeIntegerList(42)
+                .addMaybeIntegerList(51)
                 .build()
         )
     }

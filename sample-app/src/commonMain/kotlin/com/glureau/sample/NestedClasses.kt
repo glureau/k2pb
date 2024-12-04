@@ -21,6 +21,7 @@ data class WithNestClassB(
     data class NestedClass(
         val nestedEnum: NestedEnum = NestedEnum.C,
     ) {
+        @ProtoMessage
         enum class NestedEnum {
             A, B, C
         }
