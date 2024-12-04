@@ -81,7 +81,7 @@ fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) 
     appendLineWithIndent(indentLevel, "}")
 }
 
-fun Node.asClassName(): ClassName = ClassName(packageName, name)
+fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))
 fun Node.serializerClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Serializer")
 val writeMessageExt = MemberName("com.glureau.k2pb.runtime", "writeMessage")
 val readMessageExt = MemberName("com.glureau.k2pb.runtime", "readMessage")

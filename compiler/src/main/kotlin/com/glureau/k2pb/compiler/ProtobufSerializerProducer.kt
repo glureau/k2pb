@@ -49,6 +49,8 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                         .receiver(ClassName("com.glureau.k2pb.runtime", "K2PBConfig"))
                         .apply {
                             protobufAggregator.messages.forEach {
+                                val className = it.asClassName()
+                                val serializerClassName = it.serializerClassName()
                                 if (it.isPolymorphic) {
                                     /*
                                     addStatement(
@@ -58,21 +60,21 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                                     */
                                     addStatement(
                                         "registerSerializer(%T::class, %T())",
-                                        it.asClassName(),
-                                        it.serializerClassName()
+                                        className,
+                                        serializerClassName
                                     )
                                 } else {
                                     addStatement(
                                         "registerSerializer(%T::class, %T())",
-                                        it.asClassName(),
-                                        it.serializerClassName()
+                                        className,
+                                        serializerClassName
                                     )
                                 }
                                 it.superTypes.forEach { s ->
                                     addStatement(
                                         "registerPolymorphicChild(%T::class, %T::class)",
                                         s,
-                                        it.asClassName()
+                                        className
                                     )
                                 }
                             }
