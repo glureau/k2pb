@@ -77,7 +77,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                 val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
                     when {
                         it.type.inlineOf?.isNullable == true -> {
-                            "  ${it.name} = ${it.name} ?: ${it.type.name}(null), /* C */"
+                            "  ${it.name} = ${it.name} ?: ${it.type.className}(null), /* C */"
                         }
 
                         it.type.isEnum -> {
@@ -85,7 +85,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                         }
 
                         (it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum -> {
-                            "  ${it.name} = ${it.name} ?: ${it.type.name}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
+                            "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
                         }
 
                         else -> {

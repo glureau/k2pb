@@ -32,7 +32,7 @@ fun StringBuilder.appendFieldType(type: FieldType, annotatedSerializer: KSType?)
 fun StringBuilder.appendKotlinDefinition(type: FieldType): String {
     return when (type) {
         is ScalarFieldType -> type.kotlinClass.canonicalName
-        is ReferenceType -> type.name
+        is ReferenceType -> type.className.toString()
         is ListType -> appendKotlinListDefinition(type).toString()
         is MapType -> appendKotlinMapDefinition(type).toString()
     }

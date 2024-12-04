@@ -140,10 +140,12 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     val numberManager = NumberManager(1)
-    val fields = requireNotNull(primaryConstructor) {
-        "${this.simpleName.asString()} should have a primary constructor"
+    val primaryCtor = primaryConstructor
+    if (primaryCtor == null) {
+        Logger.error("${this.simpleName.asString()} should have a primary constructor", this)
+        error("Primary constructor is required")
     }
-        .parameters.mapNotNull { param ->
+    val fields = primaryCtor.parameters.mapNotNull { param ->
             val prop = this.getDeclaredProperties()
                     .firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
 
@@ -218,8 +220,9 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         name = propName,
                         annotatedName = prop.serialName,
                         type = annotatedDerivedType ?: ReferenceType(
-                            prop.type.toString(),
-                            prop.type.resolve().isMarkedNullable,
+                            className = prop.type.resolve().toClassName(),
+                            name = prop.type.toString(),
+                            isNullable = prop.type.resolve().isMarkedNullable,
                             isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
                         ).also {
                             Logger.warn("GREG 33 - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
@@ -364,6 +367,7 @@ private fun mapQfnToFieldType(
                 Logger.warn("GREG 22 - ${type.declaration.simpleName.asString()} is inlined $inlinedFieldType / $inlineAnnotatedSerializer")
 
                 ReferenceType(
+                    className = type.toClassName(),
                     name = qfn,
                     isNullable = type.isMarkedNullable == true,// inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
@@ -375,6 +379,7 @@ private fun mapQfnToFieldType(
                 val typeDecl = (type?.declaration as? KSClassDeclaration)
                 val isEnum = typeDecl?.isEnum == true
                 ReferenceType(
+                    className = type?.toClassName() ?: error("No type for $qfn"),
                     name = qfn,
                     isNullable = type?.isMarkedNullable == true,
                     isEnum = isEnum,

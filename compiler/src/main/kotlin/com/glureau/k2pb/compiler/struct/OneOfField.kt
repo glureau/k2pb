@@ -35,10 +35,10 @@ fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfFiel
     oneOfField.fields.forEach { subclass ->
         subclass as TypedField
         subclass.type as ReferenceType
-        beginControlFlow("is ${subclass.type.name} ->")
+        beginControlFlow("is %L ->", subclass.type.className)
         beginControlFlow("%M(%L)", writeMessageExt, subclass.protoNumber)
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(instance, %L::class)", subclass.type.name)
+        addStatement("encode(instance, %L::class)", subclass.type.className)
         endControlFlow()
         endControlFlow()
         endControlFlow()
@@ -59,7 +59,7 @@ fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
     oneOfField.fields.forEach { subclass ->
         subclass as TypedField
         subclass.type as ReferenceType
-        addStatement("%L -> decode(%L::class)", subclass.protoNumber, subclass.type.name)
+        addStatement("%L -> decode(%L::class)", subclass.protoNumber, subclass.type.className)
     }
     addStatement("else -> error(\"Ignoring unknown tag: \$oneOfTag\")")
     endControlFlow()

@@ -10,7 +10,7 @@ internal class InstantStringConverter(val format: DateTimeFormat<DateTimeCompone
     CustomStringConverter<Instant> {
     override fun encode(value: Instant): String = value.format(format)
 
-    override fun decode(data: String): Instant = Instant.parse(data, format)
+    override fun decode(data: String): Instant? = Instant.parse(data, format)
 }
 
 public class InstantIsoDateTimeOffsetConverter() : CustomStringConverter<Instant>
