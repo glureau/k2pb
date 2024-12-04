@@ -106,7 +106,7 @@ fun FunSpec.Builder.encodeReferenceType(
         if (nullabilitySubField != null) {
             beginControlFlow("else")
             addStatement(
-                "writeInt(value = 1, tag = ${nullabilitySubField?.protoNumber}, format = %T.DEFAULT)",
+                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
                 ProtoIntegerType::class.asClassName()
             )
             endControlFlow() // else

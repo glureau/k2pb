@@ -1,7 +1,9 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.ProtoIntegerType
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 
 data class ListType(val repeatedType: FieldType, override val isNullable: Boolean) : FieldType
 
@@ -14,10 +16,21 @@ fun StringBuilder.appendKotlinListDefinition(type: ListType) = apply {
     append("List<${appendKotlinDefinition(type.repeatedType)}>" + if (type.isNullable) "?" else "")
 }
 
-fun FunSpec.Builder.encodeListType(instanceName: String, fieldName: String, listType: ListType, tag: Int) {
+fun FunSpec.Builder.encodeListType(
+    instanceName: String,
+    fieldName: String,
+    listType: ListType,
+    tag: Int,
+    nullabilitySubField: NullabilitySubField?
+) {
+    if (nullabilitySubField != null) {
+        beginControlFlow("if ($instanceName.$fieldName != null)")
+    }
+
     when (listType.repeatedType) {
         is ScalarFieldType -> {
             beginControlFlow("%M($tag)", writeMessageExt)
+
             beginControlFlow("$instanceName.$fieldName.forEach")
             addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
             addStatement("")
@@ -35,11 +48,29 @@ fun FunSpec.Builder.encodeListType(instanceName: String, fieldName: String, list
             addStatement("/* ${listType.repeatedType} */")
         }
     }
+
+
+    if (nullabilitySubField != null) {
+        endControlFlow() // if
+        beginControlFlow("else")
+        addStatement(
+            "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
+            ProtoIntegerType::class.asClassName()
+        )
+        endControlFlow() // else
+    }
 }
 
-fun FunSpec.Builder.decodeListTypeVariableDefinition(fieldName: String, listType: ListType) {
+fun FunSpec.Builder.decodeListTypeVariableDefinition(
+    fieldName: String,
+    listType: ListType,
+    nullabilitySubField: NullabilitySubField?
+) {
     val typeName = StringBuilder().appendKotlinDefinition(listType)
-    addStatement("val ${fieldName}: Mutable${typeName} = mutableListOf()")
+    addStatement("val ${fieldName}: Mutable${typeName.removeSuffix("?")} = mutableListOf()")
+    nullabilitySubField?.let {
+        addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+    }
 }
 
 fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {

@@ -45,7 +45,7 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
 fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
     val tag = field.protoNumber
     when (field.type) {
-        is ListType -> encodeListType(instanceName, field.name, field.type, tag)
+        is ListType -> encodeListType(instanceName, field.name, field.type, tag, field.nullabilitySubField)
         is MapType -> encodeMapType(field.name, field.type, tag)
         is ReferenceType -> encodeReferenceType(
             "$instanceName.${field.name}",
@@ -67,7 +67,7 @@ fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
 
 fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
     when (field.type) {
-        is ListType -> decodeListTypeVariableDefinition(field.name, field.type)
+        is ListType -> decodeListTypeVariableDefinition(field.name, field.type, field.nullabilitySubField)
         is MapType -> decodeMapTypeVariableDefinition(field.name, field.type)
         is ReferenceType -> decodeReferenceTypeVariableDefinition(
             field.name,
