@@ -241,6 +241,7 @@ syntax = "proto3";
 
 message NullableBigDecimalHolder {
   string bd = 1;
+  bool isBdNull = 2;
 }
 
 File: k2pb/Vehicle.proto

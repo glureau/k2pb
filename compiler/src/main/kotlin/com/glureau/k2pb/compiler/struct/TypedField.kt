@@ -31,7 +31,7 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     append(" = ")
     append(field.protoNumber)
     appendLine(";")
-    if (field.nullabilitySubField != null && field.annotatedSerializer == null) {
+    if (field.nullabilitySubField != null) {
         append(indentation(indentLevel))
         appendFieldType(ScalarFieldType.Boolean, null)
         append(" ")
@@ -72,7 +72,6 @@ fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
         is ReferenceType -> decodeReferenceTypeVariableDefinition(
             field.name,
             field.type,
-            field.annotatedSerializer,
             field.nullabilitySubField
         )
 

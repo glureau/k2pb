@@ -40,7 +40,6 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
     }
     addStatement("")
 
-    addStatement("/* MessageNode: $messageNode */")
     if (messageNode.isInlineClass) {
         return
     }
@@ -51,7 +50,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
         beginControlFlow("${f.protoNumber} ->")
         decodeField(f)
         endControlFlow()
-        if (f is TypedField && f.nullabilitySubField != null && f.annotatedSerializer == null) {
+        if (f is TypedField && f.nullabilitySubField != null) {
             beginControlFlow("${f.nullabilitySubField.protoNumber} ->")
             decodeScalarType(f.nullabilitySubField.fieldName, ScalarFieldType.Boolean, null)
             endControlFlow()
@@ -75,37 +74,32 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
             }
 
             is TypedField -> {
-                /*if (it.annotatedSerializer != null) {
-                    val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
-                        "  ${it.name} = requireNotNull(%T().decode(${it.nameOrDefault()})) /* A */"
-                    } else {
-                        "  ${it.name} = (${it.nameOrDefault()})?.let { %T().decode(it) } /* B */"
-                    }
-                    addStatement(str, it.annotatedSerializer.toClassName())
-                } else {*/
                 val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
-                    if (it.type.inlineOf?.isNullable == true) {
-                        "  ${it.name} = ${it.name} ?: ${it.type.name}(null), /* C */"
-                    } else {
-                        if (it.type.isEnum) {
+                    when {
+                        it.type.inlineOf?.isNullable == true -> {
+                            "  ${it.name} = ${it.name} ?: ${it.type.name}(null), /* C */"
+                        }
+
+                        it.type.isEnum -> {
                             "  ${it.name} = ${it.name} ?: ${it.type.enumFirstEntry}, /* EE */"
-                        } else {
-                            if ((it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum) {
-                                "  ${it.name} = ${it.name} ?: ${it.type.name}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
-                            } else {
-                                "  ${it.name} = requireNotNull(${it.name}), /* D */"
-                            }
+                        }
+
+                        (it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum -> {
+                            "  ${it.name} = ${it.name} ?: ${it.type.name}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
+                        }
+
+                        else -> {
+                            "  ${it.name} = requireNotNull(${it.name}), /* D */"
                         }
                     }
                 } else {
-                    if (it.nullabilitySubField != null && it.annotatedSerializer == null) {
-                        "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else ${it.name}, /* K */"
+                    if (it.nullabilitySubField != null) {// && it.annotatedSerializer == null) {
+                        "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* K */"
                     } else {
                         "  ${it.name} = ${it.nameOrDefault()}, /* E */"
                     }
                 }
                 addStatement(str)
-                //}
             }
         }
     }

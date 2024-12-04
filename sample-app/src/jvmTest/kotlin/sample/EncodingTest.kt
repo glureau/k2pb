@@ -313,6 +313,7 @@ class EncodingTest : BaseEncodingTest() {
             ktInstance = NullableBigDecimalHolder(null),
             protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
                 //.setBd(null) // <- NPE
+                .setIsBdNull(true)
                 .build()
         )
     }

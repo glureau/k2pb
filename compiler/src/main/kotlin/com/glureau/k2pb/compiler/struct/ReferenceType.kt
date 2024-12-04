@@ -71,6 +71,14 @@ fun FunSpec.Builder.encodeReferenceType(
 
         if (checkNullability) {
             endControlFlow()
+            if (nullabilitySubField != null) {
+                beginControlFlow("else")
+                addStatement(
+                    "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T.DEFAULT)",
+                    ProtoIntegerType::class.asClassName()
+                )
+                endControlFlow()
+            }
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
@@ -132,28 +140,12 @@ fun FunSpec.Builder.encodeReferenceType(
 fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
     fieldName: String,
     type: ReferenceType,
-    annotatedSerializer: KSType?,
     nullabilitySubField: NullabilitySubField?
 ) {
-    /*
-    (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
-        val parents = (annSerializer.declaration as KSClassDeclaration)
-            .superTypes
-            .map { it.resolve().toClassName() }
-        if (parents.contains(CustomStringConverter::class.asClassName())) {
-            addStatement("var $fieldName: String? = null /* CUSTO */")
-        } else {
-            error("Not supported yet")
-        }
-    } ?: run {
-        */
-
     addStatement("var $fieldName: ${type.name}? = null")
     nullabilitySubField?.let {
         addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
     }
-
-    //}
 }
 
 fun FunSpec.Builder.decodeReferenceType(
