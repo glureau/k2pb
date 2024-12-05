@@ -54,20 +54,11 @@ val KSClassDeclaration.isEnum: Boolean
 fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
     when {
         declaration.isSealed || declaration.isAbstractClass -> recordMessageNode(declaration.abstractToMessageNode())
+
         declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode())
         declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
         declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
         declaration.isInlineClass -> {
-            /*
-            val inlineProperty = declaration.getDeclaredProperties().first()
-            val inlinedFieldType = inlineProperty.type.toProtobufFieldType()
-            InlinedTypeRecorder.recordInlinedType(
-                InlinedTypeRecorder.InlineNode(
-                    qualifiedName = declaration.qualifiedName!!.asString(),
-                    inlinedFieldType = inlinedFieldType,
-                    inlineName = inlineProperty.simpleName.asString(),
-                )
-            )*/
             recordMessageNode(declaration.dataClassToMessageNode())
         }
 
@@ -147,111 +138,111 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         error("Primary constructor is required")
     }
     val fields = primaryCtor.parameters.mapNotNull { param ->
-            val prop = this.getDeclaredProperties()
-                    .firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
+        val prop = this.getDeclaredProperties()
+            .firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
 
-            //val fields = getDeclaredProperties().mapNotNull { prop ->
-            if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
-                Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
-                return@mapNotNull null
+        //val fields = getDeclaredProperties().mapNotNull { prop ->
+        if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
+            Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+            return@mapNotNull null
+        }
+        val resolvedType = prop.type.resolve()
+        val resolvedDeclaration = resolvedType.declaration
+        val isInlineClass = resolvedDeclaration is KSClassDeclaration &&
+                (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(
+                    Modifier.VALUE
+                ))
+
+        // For some reason, KSP doesn't always see the backing field in other modules... (1.9.25-1.0.20)
+        /*
+        if (!prop.hasBackingField) {
+            Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+            return@mapNotNull error("no backing field? $isInlineClass ${prop.simpleName.asString()} // ALL PROP = ${getAllProperties().joinToString { " ** " + it.simpleName.asString() + " / " + it.hasBackingField + " / " + it.type }}")
+        }
+        */
+
+
+        if (isInlineClass) {
+            val inlineProperty = (resolvedDeclaration as KSClassDeclaration).getDeclaredProperties().first()
+            val type = inlineProperty.type
+            if (type is KSClassDeclaration) {
+                TODO("HERE?")
             }
-            val resolvedType = prop.type.resolve()
-            val resolvedDeclaration = resolvedType.declaration
-            val isInlineClass = resolvedDeclaration is KSClassDeclaration &&
-                    (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(
-                        Modifier.VALUE
-                    ))
-
-            // For some reason, KSP doesn't always see the backing field in other modules... (1.9.25-1.0.20)
             /*
-            if (!prop.hasBackingField) {
-                Logger.info("Ignored property without backing field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
-                return@mapNotNull error("no backing field? $isInlineClass ${prop.simpleName.asString()} // ALL PROP = ${getAllProperties().joinToString { " ** " + it.simpleName.asString() + " / " + it.hasBackingField + " / " + it.type }}")
-            }
-            */
-
-
-            if (isInlineClass) {
-                val inlineProperty = (resolvedDeclaration as KSClassDeclaration).getDeclaredProperties().first()
-                val type = inlineProperty.type
-                if (type is KSClassDeclaration) {
-                    TODO("HERE?")
-                }
-                /*
-                val inlinedFieldType = type.toProtobufFieldType()
-                InlinedTypeRecorder.recordInlinedType(
-                    InlinedTypeRecorder.InlineNode(
-                        resolvedDeclaration.qualifiedName!!.asString(),
-                        inlinedFieldType,
-                        inlineProperty.simpleName.asString(),
-                    )
+            val inlinedFieldType = type.toProtobufFieldType()
+            InlinedTypeRecorder.recordInlinedType(
+                InlinedTypeRecorder.InlineNode(
+                    resolvedDeclaration.qualifiedName!!.asString(),
+                    inlinedFieldType,
+                    inlineProperty.simpleName.asString(),
                 )
-                */
+            )
+            */
+        }
+
+        //val replacement = sharedOptions.replace(prop.type.toString())
+        // TODO: Handle all serializers... eventually remove the replacement via options
+        val annotatedConverter = prop.annotations
+            .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
+            ?.getArg<KSType?>(ProtoStringConverter::converter)
+        val annotatedDerivedType = when (annotatedConverter) {
+            is CustomStringConverter<*> -> ScalarFieldType.String
+            else -> null
+        }
+        val annotatedNumber = prop.protoNumberInternal
+        val propName = prop.simpleName.asString()
+        when {
+            resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
+                TypedField(
+                    name = propName,
+                    annotatedName = prop.serialName.decapitalizeUS(),
+                    type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
+                    comment = prop.docString,
+                    //annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedConverter,
+                    protoNumber = numberManager.resolve(propName, annotatedNumber),
+                    nullabilitySubField = null,
+                )
             }
 
-            //val replacement = sharedOptions.replace(prop.type.toString())
-            // TODO: Handle all serializers... eventually remove the replacement via options
-            val annotatedConverter = prop.annotations
-                .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
-                ?.getArg<KSType?>(ProtoStringConverter::converter)
-            val annotatedDerivedType = when (annotatedConverter) {
-                is CustomStringConverter<*> -> ScalarFieldType.String
-                else -> null
+            resolvedType.isError -> {
+                Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
+                Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")// TODO doc
+                TypedField(
+                    name = propName,
+                    annotatedName = prop.serialName,
+                    type = annotatedDerivedType ?: ReferenceType(
+                        className = prop.type.resolve().toClassName(),
+                        name = prop.type.toString(),
+                        isNullable = prop.type.resolve().isMarkedNullable,
+                        isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
+                    ).also {
+                        Logger.warn("GREG 33 - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
+                    },
+                    comment = prop.docString,
+                    //annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedConverter,
+                    protoNumber = numberManager.resolve(propName, annotatedNumber),
+                    nullabilitySubField = null, // TODO: handle nullability
+                )
+                    .also { Logger.warn("resolvedType.isError -> $it") }
             }
-            val annotatedNumber = prop.protoNumberInternal
-            val propName = prop.simpleName.asString()
-            when {
-                resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
-                    TypedField(
-                        name = propName,
-                        annotatedName = prop.serialName.decapitalizeUS(),
-                        type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
-                        comment = prop.docString,
-                        //annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedConverter,
-                        protoNumber = numberManager.resolve(propName, annotatedNumber),
-                        nullabilitySubField = null,
-                    )
-                }
 
-                resolvedType.isError -> {
-                    Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
-                    Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")// TODO doc
-                    TypedField(
-                        name = propName,
-                        annotatedName = prop.serialName,
-                        type = annotatedDerivedType ?: ReferenceType(
-                            className = prop.type.resolve().toClassName(),
-                            name = prop.type.toString(),
-                            isNullable = prop.type.resolve().isMarkedNullable,
-                            isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
-                        ).also {
-                            Logger.warn("GREG 33 - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
-                        },
-                        comment = prop.docString,
-                        //annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedConverter,
-                        protoNumber = numberManager.resolve(propName, annotatedNumber),
-                        nullabilitySubField = null, // TODO: handle nullability
-                    )
-                        .also { Logger.warn("resolvedType.isError -> $it") }
-                }
-
-                else -> {
-                    val type = annotatedDerivedType ?: prop.type.toProtobufFieldType() // TODO: Common to 3 branches?
-                    TypedField(
-                        name = propName,
-                        annotatedName = prop.serialName,
-                        type = type,
-                        comment = prop.docString,
-                        //annotatedNumber = annotatedNumber,
-                        annotatedSerializer = annotatedConverter,
-                        protoNumber = numberManager.resolve(propName, annotatedNumber),
-                        nullabilitySubField = null,
-                    ).withNullabilitySubFieldIfNeeded(numberManager)
-                }
+            else -> {
+                val type = annotatedDerivedType ?: prop.type.toProtobufFieldType() // TODO: Common to 3 branches?
+                TypedField(
+                    name = propName,
+                    annotatedName = prop.serialName,
+                    type = type,
+                    comment = prop.docString,
+                    //annotatedNumber = annotatedNumber,
+                    annotatedSerializer = annotatedConverter,
+                    protoNumber = numberManager.resolve(propName, annotatedNumber),
+                    nullabilitySubField = null,
+                ).withNullabilitySubFieldIfNeeded(numberManager)
             }
         }
+    }
     if (this.isInlineClass) {
         require(fields.size == 1) {
             "One and only one field is allowed in an inline class: " +

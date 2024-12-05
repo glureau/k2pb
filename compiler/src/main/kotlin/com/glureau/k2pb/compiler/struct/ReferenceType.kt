@@ -1,7 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.CustomStringConverter
-import com.glureau.k2pb.ProtoIntegerType
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.customSerializerType
@@ -23,7 +22,7 @@ data class ReferenceType(
     val inlineOf: FieldType? = null,
     val inlineName: String? = null,
     val inlineAnnotatedSerializer: KSType? = null,
-) : FieldType 
+) : FieldType
 
 fun StringBuilder.appendReferenceType(type: ReferenceType) {
     // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
@@ -113,6 +112,9 @@ fun FunSpec.Builder.encodeReferenceType(
             endControlFlow() // else
         }
     } ?: run {
+        if (type.isNullable) {
+            beginControlFlow("if ($fieldName != null)")
+        }
 
         if (type.isEnum) {
             addStatement("// Enum should not be encoded if it's the default value")
@@ -138,6 +140,19 @@ fun FunSpec.Builder.encodeReferenceType(
             endControlFlow() // writeMessage
         } else {
             endControlFlow() // if (enum)
+        }
+
+        if (type.isNullable) {
+            endControlFlow() // if (!null)
+        }
+
+        if (nullabilitySubField != null) {
+            beginControlFlow("else")
+            addStatement(
+                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+                ProtoIntegerTypeDefault
+            )
+            endControlFlow() // else
         }
     }
 }

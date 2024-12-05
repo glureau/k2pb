@@ -90,7 +90,6 @@ public class K2PBConfig internal constructor() {
 internal class ConfiguredProtoSerializer(private val config: K2PBConfig) : DelegateProtoSerializer {
     @Suppress("UNCHECKED_CAST")
     override fun ProtobufWriter.encode(instance: Any?, instanceClass: KClass<*>) {
-        println("ConfiguredProtoSerializer - encode - $instanceClass")
         config.serializers[instanceClass]?.let {
             with(it as ProtoSerializer<Any>) {
                 encode(instance, this@ConfiguredProtoSerializer)
