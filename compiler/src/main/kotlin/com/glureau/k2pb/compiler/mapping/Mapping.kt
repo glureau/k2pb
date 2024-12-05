@@ -33,6 +33,7 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ksp.toClassName
+import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.modifiers
 
 
 val KSClassDeclaration.isClass: Boolean
@@ -148,10 +149,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         }
         val resolvedType = prop.type.resolve()
         val resolvedDeclaration = resolvedType.declaration
-        val isInlineClass = resolvedDeclaration is KSClassDeclaration &&
-                (resolvedDeclaration.modifiers.contains(Modifier.INLINE) || resolvedDeclaration.modifiers.contains(
-                    Modifier.VALUE
-                ))
+        val isInlineClass = resolvedDeclaration is KSClassDeclaration && resolvedDeclaration.isInlineClass
 
         // For some reason, KSP doesn't always see the backing field in other modules... (1.9.25-1.0.20)
         /*
@@ -163,7 +161,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
 
 
         if (isInlineClass) {
-            val inlineProperty = (resolvedDeclaration as KSClassDeclaration).getDeclaredProperties().first()
+            val inlineProperty = resolvedDeclaration.getDeclaredProperties().first()
             val type = inlineProperty.type
             if (type is KSClassDeclaration) {
                 TODO("HERE?")
@@ -206,7 +204,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             }
 
             resolvedType.isError -> {
-                Logger.warn("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
+                Logger.error("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
                 Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")// TODO doc
                 TypedField(
                     name = propName,
@@ -349,14 +347,13 @@ private fun mapQfnToFieldType(
 
         // TODO: Consider nullability for the scalar types too!!
         else -> {
-            if (type?.declaration?.modifiers?.contains(Modifier.VALUE) == true) {
+            val typeDecl = type?.declaration as? KSClassDeclaration
+            if (typeDecl?.isInlineClass == true) {
                 val inlined = (type.declaration as KSClassDeclaration).getDeclaredProperties().first()
                 val inlinedFieldType = inlined.type.toProtobufFieldType()
                 val inlineAnnotatedSerializer = inlined.annotations
                     .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
                     ?.getArg<KSType?>(ProtoStringConverter::converter)
-
-                Logger.warn("GREG 22 - ${type.declaration.simpleName.asString()} is inlined $inlinedFieldType / $inlineAnnotatedSerializer")
 
                 ReferenceType(
                     className = type.toClassName(),
@@ -368,17 +365,16 @@ private fun mapQfnToFieldType(
                     isEnum = inlined.modifiers.contains(Modifier.ENUM),
                 )
             } else {
-                val typeDecl = (type?.declaration as? KSClassDeclaration)
                 val isEnum = typeDecl?.isEnum == true
                 ReferenceType(
                     className = type?.toClassName() ?: error("No type for $qfn"),
                     name = qfn,
-                    isNullable = type?.isMarkedNullable == true,
+                    isNullable = type.isMarkedNullable == true,
                     isEnum = isEnum,
                     enumFirstEntry = if (isEnum) {
-                        typeDecl?.declarations
-                            ?.filterIsInstance<KSClassDeclaration>()
-                            ?.firstOrNull()
+                        typeDecl.declarations
+                            .filterIsInstance<KSClassDeclaration>()
+                            .firstOrNull()
                             ?.toClassName()
                     } else {
                         null

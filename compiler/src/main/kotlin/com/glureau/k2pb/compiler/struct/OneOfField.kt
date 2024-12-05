@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.compiler.decapitalizeUS
 import com.squareup.kotlinpoet.FunSpec
 
 // This is an explicit implementation of the oneOf field:
@@ -23,7 +24,7 @@ data class OneOfField(
 ) : FieldInterface
 
 fun StringBuilder.appendOneOfField(indentLevel: Int, field: OneOfField, numberManager: NumberManager) {
-    appendLineWithIndent(indentLevel, "oneof ${field.name} {")
+    appendLineWithIndent(indentLevel, "oneof ${field.name.substringAfterLast(".").decapitalizeUS()} {")
     field.fields.forEach { subclass ->
         appendField(indentLevel + 1, subclass, numberManager)
     }

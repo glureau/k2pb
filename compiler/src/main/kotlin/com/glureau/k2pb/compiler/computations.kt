@@ -41,8 +41,8 @@ fun computeImports(
                     enumNodes.flatMap { listOf(it.name) }
             ).distinct()
 
-    Logger.warn("All type references: ${allTypeReferences}")
-    Logger.warn("Local references: ${locallyDeclaredReferences}")
+    Logger.warn("All type references: $allTypeReferences")
+    Logger.warn("Local references: $locallyDeclaredReferences")
 
     return (allTypeReferences - locallyDeclaredReferences.toSet())
         .onEach { string -> Logger.warn("Resolving: $string") }
@@ -61,7 +61,7 @@ fun FieldInterface.resolvedExternalTypes(): List<String> {
                 Logger.warn("RESOLVING CUSTOM STRING CONVERTER - skipping resolution")
                 emptyList()
             } else {
-                Logger.warn("RESOLVING - no annotated serializer ${this.annotatedSerializer}")
+                Logger.warn("RESOLVING - no annotated serializer ${this.name}")
                 this.type.resolvedExternalTypes()
             }
         }
