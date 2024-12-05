@@ -14,7 +14,6 @@ import com.glureau.k2pb.compiler.poet.generateObjectSerializerEncode
 import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerDecode
 import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerEncode
 import com.google.devtools.ksp.symbol.KSFile
-import com.google.devtools.ksp.symbol.impl.synthetic.KSErrorTypeClassDeclaration.packageName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -71,7 +70,7 @@ fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) 
         appendField(indentLevel + 1, it, messageNode.numberManager)
     }
     messageNode.nestedNodes
-        .filter { it.generatesNow }
+        //.filter { it.generatesNow }
         .forEach {
             when (it) {
                 is MessageNode -> appendMessageNode(indentLevel + 1, it)
@@ -94,6 +93,7 @@ fun FileSpec.Builder.addMessageNode(messageNode: MessageNode) {
     addType(
         TypeSpec
             .classBuilder(messageNode.serializerClassName())
+            .addModifiers(KModifier.INTERNAL)
             .addSuperinterface(ProtoSerializer::class.asClassName().parameterizedBy(className))
             .addFunction(
                 FunSpec.builder("encode")

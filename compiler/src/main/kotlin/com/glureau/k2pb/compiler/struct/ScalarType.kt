@@ -135,8 +135,9 @@ data class ScalarFieldType(
                 CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
-            readMethod = { CodeBlock.of("readInt(%T)·==·1 /* ooo */", ProtoIntegerTypeDefault) },
-            readMethodNoTag = { CodeBlock.of("readIntNoTag()·==·1") },
+            // '\n' are used because '·' is still wrapped even if it shouldn't...
+            readMethod = { CodeBlock.of("\nreadInt(%T)·==·1 /* ooo */", ProtoIntegerTypeDefault) },
+            readMethodNoTag = { CodeBlock.of("\nreadIntNoTag()·==·1") },
         )
         val BooleanNullable = Boolean.copy(isNullable = true)
         val ByteArray = ScalarFieldType(
@@ -200,7 +201,6 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     annotatedSerializer: KSType?,
     nullabilitySubField: NullabilitySubField?
 ) {
-    val typeName = type.kotlinClass.canonicalName
     annotatedSerializer?.let { annSerializer ->
         val parents = (annSerializer.declaration as KSClassDeclaration)
             .superTypes
@@ -213,7 +213,7 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
         // TODO: Support nullability subfield with annotated serializer
 
     } ?: run {
-        addStatement("var $fieldName: $typeName? = null")
+        addStatement("var $fieldName: %T? = null", type.kotlinClass)
         if (nullabilitySubField != null) {
             addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
         }

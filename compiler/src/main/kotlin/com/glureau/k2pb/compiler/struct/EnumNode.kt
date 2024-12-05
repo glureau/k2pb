@@ -48,6 +48,7 @@ fun FileSpec.Builder.addEnumNode(enumNode: EnumNode) {
     addType(
         TypeSpec
             .classBuilder(enumNode.serializerClassName())
+            .addModifiers(KModifier.INTERNAL)
             .addSuperinterface(ProtoSerializer::class.asClassName().parameterizedBy(className))
             .addFunction(
                 FunSpec.builder("encode")

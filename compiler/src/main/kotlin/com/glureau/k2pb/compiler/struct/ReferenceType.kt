@@ -97,7 +97,7 @@ fun FunSpec.Builder.encodeReferenceType(
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(${fieldName}, %L::class) /* FF */", type.className)
+        addStatement("encode(${fieldName}, %T::class) /* FF */", type.className)
         endControlFlow()
 
         if (condition.isNotEmpty()) {
@@ -129,7 +129,7 @@ fun FunSpec.Builder.encodeReferenceType(
 
         beginControlFlow("with(protoSerializer)")
         addStatement(
-            "encode(${fieldName}, %L::class)",
+            "encode(${fieldName}, %T::class)",
             type.className
         )
         endControlFlow() // with
@@ -147,7 +147,7 @@ fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
     type: ReferenceType,
     nullabilitySubField: NullabilitySubField?
 ) {
-    addStatement("var $fieldName: %L? = null", type.className)
+    addStatement("var $fieldName: %T? = null", type.className)
     nullabilitySubField?.let {
         addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
     }
@@ -184,7 +184,7 @@ fun FunSpec.Builder.decodeReferenceType(
             beginControlFlow("%M", readMessageExt)
         }
         beginControlFlow("with(protoSerializer) {")
-        addStatement("decode(%L::class)", fieldType.className)
+        addStatement("decode(%T::class)", fieldType.className)
         endControlFlow()
         if (useReadMessage) {
             endControlFlow()

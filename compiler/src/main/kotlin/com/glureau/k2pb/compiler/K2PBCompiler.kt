@@ -16,6 +16,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 
@@ -111,8 +112,15 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             Logger.warn("--- UNKNOWN REFERENCES --- DONE")
             unknownReferences.forEach {
                 Logger.warn("RESOLVING: $it")
-                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))
-                protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
+                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
+                if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
+                    Logger.warn("$it is referenced but not annotated with @ProtoMessage")
+                    // TODO: Should be an error
+                }
+
+                TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
+                    reference.simpleName.asString()
+                //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false
             }
 

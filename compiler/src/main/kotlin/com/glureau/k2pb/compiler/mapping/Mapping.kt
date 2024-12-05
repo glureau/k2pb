@@ -143,6 +143,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     val primaryCtor = primaryConstructor
     if (primaryCtor == null) {
         Logger.error("${this.simpleName.asString()} should have a primary constructor", this)
+        Thread.sleep(3000)
         error("Primary constructor is required")
     }
     val fields = primaryCtor.parameters.mapNotNull { param ->

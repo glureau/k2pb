@@ -56,7 +56,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
             endControlFlow()
         }
     }
-    beginControlFlow("else -> ")
+    beginControlFlow("else ->")
     //addStatement("pushBackTag()") // ???
     // TODO: Incomplete implementation, ignoring a tag should also ignore the next data...
     addStatement("// Ignore unknown tag??")
