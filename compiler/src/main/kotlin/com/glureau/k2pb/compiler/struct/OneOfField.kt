@@ -1,6 +1,8 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.decapitalizeUS
+import com.glureau.k2pb.compiler.poet.readMessageExt
+import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.FunSpec
 
 // This is an explicit implementation of the oneOf field:

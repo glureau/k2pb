@@ -25,11 +25,6 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     appendComment(indentLevel, field.comment)
 
     append(indentation(indentLevel))
-    if (field.type is ReferenceType) {
-        appendLine("/* ${field.type.tmpOriginTest} */")
-    }
-
-    append(indentation(indentLevel))
     appendFieldType(field.type, field.annotatedSerializer)
     append(" ")
     append(field.resolvedName)

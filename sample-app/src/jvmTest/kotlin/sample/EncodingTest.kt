@@ -14,6 +14,7 @@ import NativeTypeEventOuterClass
 import NullableBigDecimalHolderOuterClass
 import NullableBigDecimalValueClassHolderOuterClass
 import NullableNativeTypeEventOuterClass
+import NullableValueClassHolderOuterClass
 import ObjectClassOuterClass
 import StandardClassOuterClass
 import TransientFieldOuterClass
@@ -207,6 +208,8 @@ class EncodingTest : BaseEncodingTest() {
         assertCompatibleSerialization(
             ktInstance = CollectionTypeEvent(
                 integerList = listOf(1, 3, 5),
+                stringList = listOf("aaa", "bbb", "ccc"),
+                maybeIntegerList = listOf(42, 51),
                 mapStringInt = mapOf(
                     "a" to 2,
                     "b" to 4,
@@ -226,6 +229,9 @@ class EncodingTest : BaseEncodingTest() {
                 .putMapStringInt("b", 4)
                 .addMaybeIntegerList(42)
                 .addMaybeIntegerList(51)
+                .addStringList("aaa")
+                .addStringList("bbb")
+                .addStringList("ccc")
                 .build()
         )
     }

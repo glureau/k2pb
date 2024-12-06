@@ -33,7 +33,6 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ksp.toClassName
-import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.modifiers
 
 
 val KSClassDeclaration.isClass: Boolean
@@ -302,7 +301,8 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
 private fun KSTypeReference.toProtobufFieldType(): FieldType {
     val declaration = this.resolve().declaration
     val qualifiedName = declaration.qualifiedName?.asString()
-    return mapQfnToFieldType(qualifiedName!!, this.resolve())
+    return mapQfnToFieldType(qualifiedName ?: error("Cannot resolve $this, please add the explicit dependency for it " +
+            "while k2pb dev try another implementation approach..."), this.resolve())
 }
 
 private fun mapQfnToFieldType(
@@ -367,7 +367,7 @@ private fun mapQfnToFieldType(
             } else {
                 val isEnum = typeDecl?.isEnum == true
                 ReferenceType(
-                    className = type?.toClassName() ?: error("No type for $qfn"),
+                    className = typeDecl?.toClassName() ?: error("No type for $qfn"),
                     name = qfn,
                     isNullable = type.isMarkedNullable == true,
                     isEnum = isEnum,

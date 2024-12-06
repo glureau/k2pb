@@ -6,6 +6,8 @@ import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.customSerializerType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
+import com.glureau.k2pb.compiler.poet.readMessageExt
+import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName

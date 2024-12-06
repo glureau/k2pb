@@ -5,11 +5,9 @@ import com.glureau.sample.lib.DataClassFromLib
 
 @ProtoMessage
 data class CollectionTypeEvent(
-    val integerList: List<Int> = listOf(42, 51),
-    val maybeIntegerList: List<Int>? = listOf(42, 51),
-    val mapStringInt: Map<String, Int> = mapOf(
-        "a" to 1,
-        "b" to 2,
-    ),
+    val integerList: List<Int>,
+    val stringList: List<String>,
+    val maybeIntegerList: List<Int>?,
+    val mapStringInt: Map<String, Int>,
     val dataClassList: List<DataClassFromLib>,
 ) : EventInterface

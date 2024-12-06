@@ -54,6 +54,9 @@ kotlin {
                 api(project(":annotations"))
             }
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 
     targets.all {

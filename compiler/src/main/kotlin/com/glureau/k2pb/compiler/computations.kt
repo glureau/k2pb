@@ -30,16 +30,35 @@ fun interface ImportResolver {
     fun resolve(protobufName: String): String
 }
 
+private fun collectNodes(
+    messageNodes: List<MessageNode>,
+    enumNodes: List<EnumNode>,
+): List<Node> {
+    return messageNodes.flatMap { it.nestedNodes } + enumNodes
+}
+
+private fun MessageNode.allNodes(): List<Node> {
+    return this.nestedNodes.flatMap {
+        when (it) {
+            is MessageNode -> it.allNodes()
+            is EnumNode -> listOf(it)
+        }
+    } + this
+}
+
 fun computeImports(
     messageNodes: List<MessageNode>,
     enumNodes: List<EnumNode>,
     importResolver: ImportResolver,
     locallyDeclaredReferences: List<String>,
 ): List<String> {
-    val allTypeReferences = (
-            messageNodes.flatMap { it.fields.flatMap { it.resolvedExternalTypes() } } +
-                    enumNodes.flatMap { listOf(it.name) }
-            ).distinct()
+    val allNodes = messageNodes.flatMap { it.allNodes() } + enumNodes
+    val allTypeReferences = allNodes.flatMap { node ->
+        when (node) {
+            is MessageNode -> node.fields.flatMap { it.resolvedExternalTypes() }
+            is EnumNode -> listOf(node.name)
+        }
+    }.distinct()
 
     Logger.warn("All type references: $allTypeReferences")
     Logger.warn("Local references: $locallyDeclaredReferences")

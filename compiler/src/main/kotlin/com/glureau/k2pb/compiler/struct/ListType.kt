@@ -2,6 +2,8 @@ package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.ProtoIntegerType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
+import com.glureau.k2pb.compiler.poet.readMessageExt
+import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
@@ -30,17 +32,27 @@ fun FunSpec.Builder.encodeListType(
 
     when (listType.repeatedType) {
         is ScalarFieldType -> {
-            beginControlFlow("%M($tag)", writeMessageExt)
-
-            beginControlFlow("$instanceName.$fieldName.forEach")
-            addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
-            addStatement("")
-            endControlFlow() // forEach
-            endControlFlow() // writeMessage {}
+            // https://protobuf.dev/programming-guides/encoding/#packed
+            when (listType.repeatedType.protoType) {
+                ScalarType.string, ScalarType.bytes -> {
+                    beginControlFlow("$instanceName.$fieldName.forEach /* scalar bs */")
+                    addCode(listType.repeatedType.safeWriteMethod("it", tag, null))
+                    addStatement("")
+                    endControlFlow() // forEach
+                }
+                else -> {
+                    beginControlFlow("%M($tag)", writeMessageExt)
+                    beginControlFlow("$instanceName.$fieldName.forEach /* scalar */")
+                    addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
+                    addStatement("")
+                    endControlFlow() // forEach
+                    endControlFlow() // writeMessage {}
+                }
+            }
         }
 
         is ReferenceType -> {
-            beginControlFlow("$instanceName.$fieldName.forEach")
+            beginControlFlow("$instanceName.$fieldName.forEach /* ref */")
             encodeReferenceType("it", listType.repeatedType, tag, null, null)
             endControlFlow()
         }
@@ -77,13 +89,24 @@ fun FunSpec.Builder.decodeListTypeVariableDefinition(
 fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {
     when (listType.repeatedType) {
         is ScalarFieldType -> {
-            beginControlFlow("%M()", readMessageExt)
-            beginControlFlow("while (!eof)")
-            addCode("$fieldName += ")
-            addCode(listType.repeatedType.readMethodNoTag())
-            addStatement("")
-            endControlFlow() // while (!eof)
-            endControlFlow() // readMessage {}
+            // https://protobuf.dev/programming-guides/encoding/#packed
+            when (listType.repeatedType.protoType) {
+                ScalarType.string, ScalarType.bytes -> {
+                    addCode("$fieldName += ")
+                    addCode(listType.repeatedType.readMethodNoTag())
+                    addStatement("")
+                }
+
+                else -> {
+                    beginControlFlow("%M()", readMessageExt)
+                    beginControlFlow("while (!eof)")
+                    addCode("$fieldName += ")
+                    addCode(listType.repeatedType.readMethodNoTag())
+                    addStatement("")
+                    endControlFlow() // while (!eof)
+                    endControlFlow() // readMessage {}
+                }
+            }
         }
 
         is ReferenceType -> {
