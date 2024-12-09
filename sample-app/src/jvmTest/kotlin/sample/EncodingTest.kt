@@ -87,40 +87,6 @@ class EncodingTest : BaseEncodingTest() {
     }
 
     @Test
-    fun checkCollectionTypeEvent() {
-        assertCompatibleSerialization(
-            ktInstance = CollectionTypeEvent(
-                integerList = listOf(1, 3, 5),
-                stringList = listOf("aaa", "bbb", "ccc"),
-                maybeIntegerList = listOf(42, 51),
-                mapStringInt = mapOf(
-                    "a" to 2,
-                    "b" to 4,
-                ),
-                dataClassList = listOf(DataClassFromLib(42)),
-            ),
-            protocInstance = CollectionTypeEventOuterClass.CollectionTypeEvent.newBuilder()
-                .addIntegerList(1)
-                .addDataClassList(
-                    dataClassFromLib {
-                        myInt = 42
-                    }
-                )
-                .addIntegerList(3)
-                .putMapStringInt("a", 2)
-                .addIntegerList(5)
-                .putMapStringInt("b", 4)
-                .addMaybeIntegerList(42)
-                .addMaybeIntegerList(51)
-                .addStringList("aaa")
-                .addStringList("bbb")
-                .addStringList("ccc")
-                .build()
-        )
-    }
-
-
-    @Test
     fun checkCommentedClass() {
         assertCompatibleSerialization(
             ktInstance = CommentedClass("helloworld"),

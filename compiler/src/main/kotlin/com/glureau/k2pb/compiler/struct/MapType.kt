@@ -2,6 +2,7 @@ package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 
 data class MapType(
@@ -29,14 +30,16 @@ fun FunSpec.Builder.encodeMapType(fieldName: String, type: MapType, tag: Int) {
     beginControlFlow("instance.${fieldName}.forEach")
     beginControlFlow("%M($tag)", writeMessageExt)
     addCode(type.keyType.write("it.key", 1))
-    addStatement("")
-
     addCode(type.valueType.write("it.value", 2))
-    addStatement("")
-
     endControlFlow() // writeMessage of the item
     endControlFlow() // forEach
 }
+
+private fun FieldType.write(name: String, tag: Int): CodeBlock =
+    when (this) {
+        is ScalarFieldType -> safeWriteMethod(name, tag, null, true)
+        else -> TODO()
+    }
 
 fun FunSpec.Builder.decodeMapTypeVariableDefinition(fieldName: String, type: MapType) {
     val typeName = StringBuilder().appendKotlinDefinition(type)

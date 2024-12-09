@@ -64,9 +64,9 @@ fun FunSpec.Builder.encodeReferenceType(
         annSerializer.customSerializerType()?.let { customType ->
             if (tag != null) {
                 /* TODO: custom string converter nullability */
-                addCode(customType.safeWriteMethod(encodedTmpName, tag, null))
+                addCode(customType.safeWriteMethod(encodedTmpName, tag, null, false))
             } else {
-                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null))
+                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null, false))
             }
             addStatement("")
         }

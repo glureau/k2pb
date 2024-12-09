@@ -43,9 +43,3 @@ fun FieldType.readNoTag(): CodeBlock =
         is ScalarFieldType -> readMethodNoTag()
         else -> TODO()
     }
-
-fun FieldType.write(name: String, tag: Int): CodeBlock =
-    when (this) {
-        is ScalarFieldType -> safeWriteMethod(name, tag, null)
-        else -> TODO()
-    }

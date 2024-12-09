@@ -36,14 +36,14 @@ fun FunSpec.Builder.encodeListType(
             when (listType.repeatedType.protoType) {
                 ScalarType.string, ScalarType.bytes -> {
                     beginControlFlow("$instanceName.$fieldName.forEach /* scalar bs */")
-                    addCode(listType.repeatedType.safeWriteMethod("it", tag, null))
+                    addCode(listType.repeatedType.safeWriteMethod("it", tag, null, true))
                     addStatement("")
                     endControlFlow() // forEach
                 }
                 else -> {
                     beginControlFlow("%M($tag)", writeMessageExt)
                     beginControlFlow("$instanceName.$fieldName.forEach /* scalar */")
-                    addCode(listType.repeatedType.safeWriteMethodNoTag("it", null))
+                    addCode(listType.repeatedType.safeWriteMethodNoTag("it", null, true))
                     addStatement("")
                     endControlFlow() // forEach
                     endControlFlow() // writeMessage {}

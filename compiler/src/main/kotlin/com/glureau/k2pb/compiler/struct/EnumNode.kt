@@ -58,7 +58,7 @@ fun FileSpec.Builder.addEnumNode(enumNode: EnumNode) {
                     .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
                     .apply {
                         addStatement("if ($instanceName == null) return")
-                        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("$instanceName.ordinal /* OR */", null))
+                        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("$instanceName.ordinal /* OR */", null, false))
                     }
                     .build()
             )
