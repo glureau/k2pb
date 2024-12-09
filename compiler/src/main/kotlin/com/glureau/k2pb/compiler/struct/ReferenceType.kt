@@ -85,6 +85,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
+        val isInlinedInt = (inlinedType as? ScalarFieldType)?.protoType == ScalarType.int32
         val condition = mutableListOf<String>()
         if (nullabilitySubField != null) condition += "$fieldName != null"
         if (isInlineEnum) condition += "$fieldName != ${type.className}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
@@ -94,7 +95,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (tag != null) {
-            val wireType = if (isInlineEnum) "VARINT" else "SIZE_DELIMITED"
+            val wireType = if (isInlineEnum || isInlinedInt) "VARINT" else "SIZE_DELIMITED"
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoSerializer)")

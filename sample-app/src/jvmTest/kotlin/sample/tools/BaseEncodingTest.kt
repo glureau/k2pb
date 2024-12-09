@@ -1,4 +1,4 @@
-package sample
+package sample.kt.tools
 
 import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.decodeFromByteArray
@@ -6,9 +6,8 @@ import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.sample.lib.registerSampleLibSerializers
 import com.glureau.sample.registerSampleAppSerializers
 import com.google.protobuf.GeneratedMessage
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import kotlin.test.assertContentEquals
-
 
 abstract class BaseEncodingTest {
 
@@ -34,8 +33,8 @@ abstract class BaseEncodingTest {
         println("Decoded Kt : $decodedViaKtxSerialization")
 
         // Asserting that data encoded from protoc generated files and decoded via ktx serialization are equals.
-        assertEquals(ktInstance, decodedViaKtxSerialization)
+        Assert.assertEquals(ktInstance, decodedViaKtxSerialization)
         // Asserting that data encoded from ktx serialization and decoded via protoc generated files are equals.
-        assertEquals(protocInstance, decodedViaProtocGeneratedCode)
+        Assert.assertEquals(protocInstance, decodedViaProtocGeneratedCode)
     }
 }

@@ -10,10 +10,8 @@ import CommentedClassOuterClass
 import CommonClassOuterClass
 import EnumHolderOuterClass
 import FooEventOuterClass
-import NativeTypeEventOuterClass
 import NullableBigDecimalHolderOuterClass
 import NullableBigDecimalValueClassHolderOuterClass
-import NullableNativeTypeEventOuterClass
 import NullableValueClassHolderOuterClass
 import ObjectClassOuterClass
 import StandardClassOuterClass
@@ -35,11 +33,9 @@ import com.glureau.sample.CommentedClass
 import com.glureau.sample.CommonClass
 import com.glureau.sample.FooEvent
 import com.glureau.sample.MultiModule
-import com.glureau.sample.NativeTypeEvent
 import com.glureau.sample.NullableBigDecimalHolder
 import com.glureau.sample.NullableBigDecimalValueClass
 import com.glureau.sample.NullableBigDecimalValueClassHolder
-import com.glureau.sample.NullableNativeTypeEvent
 import com.glureau.sample.NullableValueClassHolder
 import com.glureau.sample.ObjectClass
 import com.glureau.sample.StandardClass
@@ -55,10 +51,10 @@ import com.glureau.sample.lib.ValueClassList
 import com.glureau.sample.lib.ValueClassOfEnum
 import com.glureau.sample.lib.ValueClassOfEnumHolder
 import com.google.protobuf.kotlin.toByteString
-import com.google.protobuf.kotlin.toByteStringUtf8
 import dataClassFromLib
 import multiModule
 import org.junit.Test
+import sample.kt.tools.BaseEncodingTest
 import user
 import valueClassList
 import vehicle
@@ -86,119 +82,6 @@ class EncodingTest : BaseEncodingTest() {
                         .setId("helloworld")
                         .build()
                 )
-                .build()
-        )
-    }
-
-    @Test
-    fun checkNativeType() {
-        assertCompatibleSerialization(
-            ktInstance = NativeTypeEvent(
-                integer = 42, // int32
-                long = 84L, // int64
-                float = 12.34f, // float
-                double = 56.789, // float
-                string = "Hello World", // string
-                short = 5342, // int32
-                char = 'G', // int32
-                boolean = true, // bool
-                byte = 42.toByte(), // int32
-                byteArray = "Hello World".toByteArray(),
-            ),
-            protocInstance = NativeTypeEventOuterClass.NativeTypeEvent.newBuilder()
-                .setInteger(42)
-                .setLong(84L)
-                .setFloat(12.34f)
-                .setDouble(56.789)
-                .setString("Hello World")
-                .setShort(5342)
-                .setChar('G'.toInt())
-                .setBoolean(true)
-                .setByte(42)
-                .setByteArray("Hello World".toByteStringUtf8())
-                .build()
-        )
-    }
-
-    @Test
-    fun checkNullableNativeType() {
-        assertCompatibleSerialization(
-            ktInstance = NullableNativeTypeEvent(
-                integer = 42, // int32
-                long = 84L, // int64
-                float = 12.34f, // float
-                double = 56.789, // float
-                string = "Hello World", // string
-                short = 5342, // int32
-                char = 'G', // int32
-                boolean = true, // bool
-                byte = 42.toByte(), // int32
-                byteArray = "Hello World".toByteArray(),
-            ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
-                .setInteger(42)
-                .setLong(84L)
-                .setFloat(12.34f)
-                .setDouble(56.789)
-                .setString("Hello World")
-                .setShort(5342)
-                .setChar('G'.toInt())
-                .setBoolean(true)
-                .setByte(42)
-                .setByteArray("Hello World".toByteStringUtf8())
-                .build()
-        )
-        assertCompatibleSerialization(
-            ktInstance = NullableNativeTypeEvent(
-                integer = null,
-                long = null,
-                float = null,
-                double = null,
-                string = null,
-                short = null,
-                char = null,
-                boolean = null,
-                byte = null,
-                byteArray = null,
-            ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
-                .setIsIntegerNull(true)
-                .setIsLongNull(true)
-                .setIsFloatNull(true)
-                .setIsDoubleNull(true)
-                .setIsStringNull(true)
-                .setIsShortNull(true)
-                .setIsCharNull(true)
-                .setIsBooleanNull(true)
-                .setIsByteNull(true)
-                .setIsByteArrayNull(true)
-                .build()
-        )
-
-        assertCompatibleSerialization(
-            ktInstance = NullableNativeTypeEvent(
-                integer = null,
-                long = null,
-                float = null,
-                double = null,
-                string = "Hola !",
-                short = null,
-                char = null,
-                boolean = null,
-                byte = null,
-                byteArray = null,
-            ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
-                .setIsIntegerNull(true)
-                .setIsLongNull(true)
-                .setIsFloatNull(true)
-                .setIsDoubleNull(true)
-                .setString("Hola !")
-                .setIsShortNull(true)
-                .setIsCharNull(true)
-                .setIsBooleanNull(true)
-                .setIsByteNull(true)
-                .setIsByteArrayNull(true)
                 .build()
         )
     }

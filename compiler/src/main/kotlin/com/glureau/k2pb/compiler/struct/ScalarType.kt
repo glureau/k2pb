@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 data class ScalarFieldType(
     val kotlinClass: ClassName,
     val protoType: ScalarType,
+    val shouldEncode: (fieldName: String) -> String,
     private val writeMethod: (fieldName: String, tag: Int) -> CodeBlock,
     private val writeMethodNoTag: (fieldName: String) -> CodeBlock,
     val readMethod: () -> CodeBlock,
@@ -25,29 +26,35 @@ data class ScalarFieldType(
         { f, nt -> safeWrite(f, nt) { writeMethodNoTag(f) } }
 
     private fun safeWrite(fieldName: String, nullableTag: Int?, method: () -> CodeBlock) =
-        if (isNullable) {
-            CodeBlock.builder()
-                .beginControlFlow("if ($fieldName != null)")
-                .add(method())
-                .endControlFlow()
-                .also {
+        CodeBlock.builder()
+            .also { builder -> if (isNullable) builder.beginControlFlow("if ($fieldName != null)") }
+            .beginControlFlow("if (${shouldEncode(fieldName)})")
+            .add(method())
+            .addStatement("")
+            .endControlFlow()
+            .addStatement("// else: default value should not be encoded")
+            .also { builder ->
+                if (isNullable) {
                     if (nullableTag != null) {
-                        it.beginControlFlow("else")
+                        builder.endControlFlow()
+                            .beginControlFlow("else")
                             .addStatement(
                                 "writeInt(value = 1, tag = $nullableTag, format = %T)",
                                 ProtoIntegerTypeDefault
                             )
                             .endControlFlow()
+                    } else {
+                        builder.endControlFlow()
+
                     }
                 }
-                .build()
-        } else {
-            method()
-        }
+            }
+            .build()
 
     companion object {
         val String = ScalarFieldType(
             kotlinClass = kotlin.String::class.asClassName(),
+            shouldEncode = { "$it != \"\"" },
             protoType = ScalarType.string,
             writeMethod = { f, t -> CodeBlock.of("writeString($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeString($f)") },
@@ -57,6 +64,7 @@ data class ScalarFieldType(
         val StringNullable = String.copy(isNullable = true)
         val Int = ScalarFieldType(
             kotlinClass = kotlin.Int::class.asClassName(),
+            shouldEncode = { "$it != 0" },
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f, $t, %T)", ProtoIntegerTypeDefault)
@@ -68,6 +76,7 @@ data class ScalarFieldType(
         val IntNullable = Int.copy(isNullable = true)
         val Char = ScalarFieldType(
             kotlinClass = kotlin.Char::class.asClassName(),
+            shouldEncode = { "$it != 0.toChar()" },
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.code, $t, %T)", ProtoIntegerTypeDefault)
@@ -79,6 +88,7 @@ data class ScalarFieldType(
         val CharNullable = Char.copy(isNullable = true)
         val Short = ScalarFieldType(
             kotlinClass = kotlin.Short::class.asClassName(),
+            shouldEncode = { "$it != 0.toShort()" },
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T)", ProtoIntegerTypeDefault)
@@ -90,6 +100,7 @@ data class ScalarFieldType(
         val ShortNullable = Short.copy(isNullable = true)
         val Byte = ScalarFieldType(
             kotlinClass = kotlin.Byte::class.asClassName(),
+            shouldEncode = { "$it != 0.toByte()" },
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T)", ProtoIntegerTypeDefault)
@@ -101,6 +112,7 @@ data class ScalarFieldType(
         val ByteNullable = Byte.copy(isNullable = true)
         val Long = ScalarFieldType(
             kotlinClass = kotlin.Long::class.asClassName(),
+            shouldEncode = { "$it != 0L" },
             protoType = ScalarType.int64,
             writeMethod = { f, t ->
                 CodeBlock.of("writeLong($f, $t, %T)", ProtoIntegerTypeDefault)
@@ -112,6 +124,7 @@ data class ScalarFieldType(
         val LongNullable = Long.copy(isNullable = true)
         val Float = ScalarFieldType(
             kotlinClass = kotlin.Float::class.asClassName(),
+            shouldEncode = { "$it != 0.0f" },
             protoType = ScalarType.float,
             writeMethod = { f, t -> CodeBlock.of("writeFloat($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeFloat($f)") },
@@ -121,6 +134,7 @@ data class ScalarFieldType(
         val FloatNullable = Float.copy(isNullable = true)
         val Double = ScalarFieldType(
             kotlinClass = kotlin.Double::class.asClassName(),
+            shouldEncode = { "$it != 0.0" },
             protoType = ScalarType.double,
             writeMethod = { f, t -> CodeBlock.of("writeDouble($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeDouble($f)") },
@@ -130,9 +144,12 @@ data class ScalarFieldType(
         val DoubleNullable = Double.copy(isNullable = true)
         val Boolean = ScalarFieldType(
             kotlinClass = kotlin.Boolean::class.asClassName(),
+            shouldEncode = { "$it != false" },
             protoType = ScalarType.bool,
             writeMethod = { f, t ->
-                CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T)", ProtoIntegerTypeDefault)
+                // As 'false' should not be encoded (default value), we will always call this method for "true"
+                //CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T)", ProtoIntegerTypeDefault)
+                CodeBlock.of("writeInt(1, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
             // '\n' are used because '·' is still wrapped even if it shouldn't...
@@ -142,6 +159,7 @@ data class ScalarFieldType(
         val BooleanNullable = Boolean.copy(isNullable = true)
         val ByteArray = ScalarFieldType(
             kotlinClass = kotlin.ByteArray::class.asClassName(),
+            shouldEncode = { "$it.isNotEmpty()" },
             protoType = ScalarType.bytes,
             writeMethod = { f, t ->
                 CodeBlock.of("writeBytes($f, $t)")
