@@ -49,7 +49,8 @@ fun FunSpec.Builder.encodeReferenceType(
     type: ReferenceType,
     tag: Int?,
     annotatedSerializer: KSType?,
-    nullabilitySubField: NullabilitySubField?
+    nullabilitySubField: NullabilitySubField?,
+    forceEncodeDefault: Boolean = false,
 ) {
     (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
         val fieldAccess = fieldName + (type.inlineName?.let { ".$it" } ?: "")
@@ -64,9 +65,9 @@ fun FunSpec.Builder.encodeReferenceType(
         annSerializer.customSerializerType()?.let { customType ->
             if (tag != null) {
                 /* TODO: custom string converter nullability */
-                addCode(customType.safeWriteMethod(encodedTmpName, tag, null, false))
+                addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
             } else {
-                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null, false))
+                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null, forceEncodeDefault))
             }
             addStatement("")
         }
@@ -87,14 +88,16 @@ fun FunSpec.Builder.encodeReferenceType(
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
         val isInlinedInt = (inlinedType as? ScalarFieldType)?.protoType == ScalarType.int32
         val condition = mutableListOf<String>()
-        if (nullabilitySubField != null) condition += "$fieldName != null"
         if (isInlineEnum) condition += "$fieldName != ${type.className}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
         if (inlinedType is ScalarFieldType) condition += inlinedType.shouldEncodeDefault(fieldName + "." + type.inlineName)
 
-        if (condition.isNotEmpty()) {
-            beginControlFlow("if (${condition.joinToString(" && ")})")
+        if (nullabilitySubField != null) {
+            beginControlFlow("if ($fieldName != null)")
         }
 
+        if (!forceEncodeDefault && condition.isNotEmpty()) {
+            beginControlFlow("if (${condition.joinToString(" && ")})")
+        }
         if (tag != null) {
             val wireType = if (isInlineEnum || isInlinedInt) "VARINT" else "SIZE_DELIMITED"
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
@@ -103,11 +106,12 @@ fun FunSpec.Builder.encodeReferenceType(
         addStatement("encode(${fieldName}, %T::class) /* FF */", type.className)
         endControlFlow()
 
-        if (condition.isNotEmpty()) {
+        if (!forceEncodeDefault && condition.isNotEmpty()) {
             endControlFlow() // if (condition)
         }
 
         if (nullabilitySubField != null) {
+            endControlFlow() // if (nullabilitySubField)
             beginControlFlow("else")
             addStatement(
                 "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",

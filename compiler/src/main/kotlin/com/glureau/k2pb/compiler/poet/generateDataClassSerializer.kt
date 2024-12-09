@@ -87,6 +87,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                         (it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum -> {
                             "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
                         }
+
                         (it.type.inlineOf is ScalarFieldType) -> {
                             "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.defaultValue}), /* E */"
                         }
@@ -96,9 +97,12 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                         }
                     }
                 } else {
-                    if (it.nullabilitySubField != null) {// && it.annotatedSerializer == null) {
-                        if (it.type is ReferenceType) {
-                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* K */"
+                    if (it.nullabilitySubField != null) {
+                        if (it.type is ReferenceType && it.type.inlineOf is ScalarFieldType) {
+                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null " +
+                                    "else (${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue})), /* KP */"
+                        } else if (it.type is ReferenceType) {
+                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* KL */"
                         } else {
                             "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else ${it.nameOrDefault()}, /* K */"
                         }
