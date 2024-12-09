@@ -1,4 +1,4 @@
-package com.glureau.sample
+package com.glureau.sample.proto
 
 import com.glureau.k2pb.annotation.ProtoMessage
 

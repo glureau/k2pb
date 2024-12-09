@@ -7,7 +7,7 @@ import org.junit.runners.JUnit4
 import java.io.File
 
 @RunWith(JUnit4::class)
-class TestSamples {
+class ProtoFilesTest {
 
     @Test
     fun `check all generated files`() {

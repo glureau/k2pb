@@ -6,7 +6,7 @@ import com.google.protobuf.kotlin.toByteStringUtf8
 import sample.kt.tools.BaseEncodingTest
 import kotlin.test.Test
 
-class NativeType : BaseEncodingTest() {
+class NativeTypeTest : BaseEncodingTest() {
     @Test
     fun data() {
         assertCompatibleSerialization(

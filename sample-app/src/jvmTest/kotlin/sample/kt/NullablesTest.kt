@@ -1,14 +1,15 @@
 package sample.kt
 
-import NativeTypeEventOuterClass
 import NullableNativeTypeEventOuterClass
-import com.glureau.sample.NativeTypeEvent
+import NullableValueClassHolderOuterClass
 import com.glureau.sample.NullableNativeTypeEvent
+import com.glureau.sample.NullableValueClassHolder
+import com.glureau.sample.lib.ValueClassFromLib
 import com.google.protobuf.kotlin.toByteStringUtf8
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
 
-class NullableNativeType : BaseEncodingTest() {
+class NullablesTest : BaseEncodingTest() {
 
     @Test
     fun data() {
@@ -128,5 +129,30 @@ class NullableNativeType : BaseEncodingTest() {
                 .setByteArray("".toByteStringUtf8())
                 .build()
         )
+    }
+
+
+    @Test
+    fun nullableValueClass() {
+        assertCompatibleSerialization(
+            ktInstance = NullableValueClassHolder(ValueClassFromLib("42")),
+            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
+                .setValueClassFromLib("42")
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableValueClassHolder(null),
+            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
+                .setValueClassFromLib("")
+                .setIsValueClassFromLibNull(true)
+                .build()
+        )
+        assertCompatibleSerialization(
+            ktInstance = NullableValueClassHolder(ValueClassFromLib("")),
+            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
+                .setValueClassFromLib("")
+                .setIsValueClassFromLibNull(false)
+                .build()
+        ) // Default value are still serialized on K2PB today
     }
 }

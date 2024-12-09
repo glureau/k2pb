@@ -125,6 +125,22 @@ message NativeTypeEvent {
   bytes byteArray = 10;
 }
 
+File: k2pb/NullableInlinedCollection.proto
+syntax = "proto3";
+
+import "AnEnum.proto";
+
+message NullableInlinedCollection {
+  repeated string valueClassList = 1;
+  bool isValueClassListNull = 2;
+  repeated AnEnum valueClassOfEnumList = 3;
+  bool isValueClassOfEnumListNull = 4;
+  repeated AnEnum valueClassOfNullableEnumList = 5;
+  bool isValueClassOfNullableEnumListNull = 6;
+  repeated string valueClassOfNullableStringList = 7;
+  bool isValueClassOfNullableStringListNull = 8;
+}
+
 File: k2pb/BigDecimalHolder.proto
 syntax = "proto3";
 
@@ -199,20 +215,6 @@ message BarEvent {
   CommonClass common = 1;
 }
 
-File: k2pb/CollectionTypeEvent.proto
-syntax = "proto3";
-
-import "DataClassFromLib.proto";
-
-message CollectionTypeEvent {
-  repeated int32 integerList = 1;
-  repeated string stringList = 2;
-  repeated int32 maybeIntegerList = 3;
-  bool isMaybeIntegerListNull = 4;
-  map<string, int32> mapStringInt = 5;
-  repeated DataClassFromLib dataClassList = 6;
-}
-
 File: k2pb/NullableNativeTypeEvent.proto
 syntax = "proto3";
 
@@ -265,6 +267,32 @@ message Vehicle {
   message Car {
     string brand = 1;
   }
+}
+
+File: k2pb/InlinedCollection.proto
+syntax = "proto3";
+
+import "AnEnum.proto";
+
+message InlinedCollection {
+  repeated string valueClassList = 1;
+  repeated AnEnum valueClassOfEnumList = 2;
+  repeated AnEnum valueClassOfNullableEnumList = 3;
+  repeated string valueClassOfNullableStringList = 4;
+}
+
+File: k2pb/CollectionType.proto
+syntax = "proto3";
+
+import "DataClassFromLib.proto";
+
+message CollectionType {
+  repeated int32 integerList = 1;
+  repeated string stringList = 2;
+  repeated int32 maybeIntegerList = 3;
+  bool isMaybeIntegerListNull = 4;
+  map<string, int32> mapStringInt = 5;
+  repeated DataClassFromLib dataClassList = 6;
 }
 
 File: k2pb/ValueClassList.proto
