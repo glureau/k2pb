@@ -149,6 +149,16 @@ class EncodingTest : BaseEncodingTest() {
                 valueClassFromLib = "42"
             }
         )
+
+        assertCompatibleSerialization(
+            ktInstance = MultiModule(DataClassFromLib(0), ValueClassFromLib("")),
+            protocInstance = multiModule {
+                dataClassFromLib = dataClassFromLib {
+                    myInt = 0
+                }
+                valueClassFromLib = ""
+            }
+        )
     }
 
     @Test

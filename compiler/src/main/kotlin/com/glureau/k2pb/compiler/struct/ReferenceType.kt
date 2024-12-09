@@ -89,6 +89,7 @@ fun FunSpec.Builder.encodeReferenceType(
         val condition = mutableListOf<String>()
         if (nullabilitySubField != null) condition += "$fieldName != null"
         if (isInlineEnum) condition += "$fieldName != ${type.className}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
+        if (inlinedType is ScalarFieldType) condition += inlinedType.shouldEncodeDefault(fieldName + "." + type.inlineName)
 
         if (condition.isNotEmpty()) {
             beginControlFlow("if (${condition.joinToString(" && ")})")

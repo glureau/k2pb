@@ -14,6 +14,7 @@ data class ScalarFieldType(
     val kotlinClass: ClassName,
     val protoType: ScalarType,
     val shouldEncodeDefault: (fieldName: String) -> String,
+    val defaultValue: String,
     private val writeMethod: (fieldName: String, tag: Int) -> CodeBlock,
     private val writeMethodNoTag: (fieldName: String) -> CodeBlock,
     val readMethod: () -> CodeBlock,
@@ -57,6 +58,7 @@ data class ScalarFieldType(
         val String = ScalarFieldType(
             kotlinClass = kotlin.String::class.asClassName(),
             shouldEncodeDefault = { "$it != \"\"" },
+            defaultValue = "\"\"",
             protoType = ScalarType.string,
             writeMethod = { f, t -> CodeBlock.of("writeString($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeString($f)") },
@@ -67,6 +69,7 @@ data class ScalarFieldType(
         val Int = ScalarFieldType(
             kotlinClass = kotlin.Int::class.asClassName(),
             shouldEncodeDefault = { "$it != 0" },
+            defaultValue = "0",
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f, $t, %T)", ProtoIntegerTypeDefault)
@@ -79,6 +82,7 @@ data class ScalarFieldType(
         val Char = ScalarFieldType(
             kotlinClass = kotlin.Char::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.toChar()" },
+            defaultValue = "0.toChar()",
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.code, $t, %T)", ProtoIntegerTypeDefault)
@@ -91,6 +95,7 @@ data class ScalarFieldType(
         val Short = ScalarFieldType(
             kotlinClass = kotlin.Short::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.toShort()" },
+            defaultValue = "0.toShort()",
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T)", ProtoIntegerTypeDefault)
@@ -103,6 +108,7 @@ data class ScalarFieldType(
         val Byte = ScalarFieldType(
             kotlinClass = kotlin.Byte::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.toByte()" },
+            defaultValue = "0.toByte()",
             protoType = ScalarType.int32,
             writeMethod = { f, t ->
                 CodeBlock.of("writeInt($f.toInt(), $t, %T)", ProtoIntegerTypeDefault)
@@ -115,6 +121,7 @@ data class ScalarFieldType(
         val Long = ScalarFieldType(
             kotlinClass = kotlin.Long::class.asClassName(),
             shouldEncodeDefault = { "$it != 0L" },
+            defaultValue = "0L",
             protoType = ScalarType.int64,
             writeMethod = { f, t ->
                 CodeBlock.of("writeLong($f, $t, %T)", ProtoIntegerTypeDefault)
@@ -127,6 +134,7 @@ data class ScalarFieldType(
         val Float = ScalarFieldType(
             kotlinClass = kotlin.Float::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.0f" },
+            defaultValue = "0.0f",
             protoType = ScalarType.float,
             writeMethod = { f, t -> CodeBlock.of("writeFloat($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeFloat($f)") },
@@ -137,6 +145,7 @@ data class ScalarFieldType(
         val Double = ScalarFieldType(
             kotlinClass = kotlin.Double::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.0" },
+            defaultValue = "0.0",
             protoType = ScalarType.double,
             writeMethod = { f, t -> CodeBlock.of("writeDouble($f, $t)") },
             writeMethodNoTag = { f -> CodeBlock.of("writeDouble($f)") },
@@ -147,6 +156,7 @@ data class ScalarFieldType(
         val Boolean = ScalarFieldType(
             kotlinClass = kotlin.Boolean::class.asClassName(),
             shouldEncodeDefault = { "$it != false" },
+            defaultValue = "false",
             protoType = ScalarType.bool,
             writeMethod = { f, t ->
                 // As 'false' should not be encoded (default value), we will always call this method for "true"
@@ -162,6 +172,7 @@ data class ScalarFieldType(
         val ByteArray = ScalarFieldType(
             kotlinClass = kotlin.ByteArray::class.asClassName(),
             shouldEncodeDefault = { "$it.isNotEmpty()" },
+            defaultValue = "byteArrayOf()",
             protoType = ScalarType.bytes,
             writeMethod = { f, t ->
                 CodeBlock.of("writeBytes($f, $t)")

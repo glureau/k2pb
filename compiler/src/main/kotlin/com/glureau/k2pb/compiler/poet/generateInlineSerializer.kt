@@ -20,7 +20,7 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
     require(messageNode.fields.size == 1) { "Only one field is allowed in an inline class: $messageNode" }
     val inlinedField = messageNode.fields.first()
     if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
-        addCode(inlinedField.type.safeWriteMethodNoTag("$instanceName.${inlinedField.name} /* M */", null, false))
+        addCode(inlinedField.type.safeWriteMethodNoTag("$instanceName.${inlinedField.name} /* M */", null, true))
         addStatement("")
     } else if (inlinedField is TypedField && inlinedField.type is ReferenceType) {
         encodeReferenceType(

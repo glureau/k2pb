@@ -87,6 +87,9 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                         (it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum -> {
                             "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
                         }
+                        (it.type.inlineOf is ScalarFieldType) -> {
+                            "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.defaultValue}), /* E */"
+                        }
 
                         else -> {
                             "  ${it.name} = requireNotNull(${it.name}), /* D */"
