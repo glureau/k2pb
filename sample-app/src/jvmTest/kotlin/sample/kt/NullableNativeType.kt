@@ -103,7 +103,7 @@ class NullableNativeType : BaseEncodingTest() {
     @Test
     fun defaults() {
         assertCompatibleSerialization(
-            ktInstance = NativeTypeEvent(
+            ktInstance = NullableNativeTypeEvent(
                 integer = 0, // int32
                 long = 0L, // int64
                 float = 0f, // float
@@ -115,7 +115,7 @@ class NullableNativeType : BaseEncodingTest() {
                 byte = 0.toByte(), // int32
                 byteArray = "".toByteArray(),
             ),
-            protocInstance = NativeTypeEventOuterClass.NativeTypeEvent.newBuilder()
+            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
                 .setInteger(0)
                 .setLong(0L)
                 .setFloat(0f)

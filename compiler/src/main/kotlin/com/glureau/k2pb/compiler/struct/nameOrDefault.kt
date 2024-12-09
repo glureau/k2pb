@@ -19,7 +19,7 @@ fun TypedField.nameOrDefault(): String {
         ScalarFieldType.Byte,
         ScalarFieldType.ByteNullable -> "$name ?: 0"
         ScalarFieldType.Boolean,
-        ScalarFieldType.BooleanNullable -> "$name ?: false"
+        ScalarFieldType.BooleanNullable -> "$name == true"
         ScalarFieldType.String,
         ScalarFieldType.StringNullable -> "$name ?: \"\""
         ScalarFieldType.ByteArray,

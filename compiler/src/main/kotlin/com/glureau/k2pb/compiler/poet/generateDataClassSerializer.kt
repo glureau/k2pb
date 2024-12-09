@@ -94,7 +94,11 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                     }
                 } else {
                     if (it.nullabilitySubField != null) {// && it.annotatedSerializer == null) {
-                        "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* K */"
+                        if (it.type is ReferenceType) {
+                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* K */"
+                        } else {
+                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else ${it.nameOrDefault()}, /* K */"
+                        }
                     } else {
                         "  ${it.name} = ${it.nameOrDefault()}, /* E */"
                     }
