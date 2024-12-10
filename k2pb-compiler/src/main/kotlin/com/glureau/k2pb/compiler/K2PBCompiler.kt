@@ -107,11 +107,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         val lastSignatures = mutableSetOf<String>()
         do {
             var done = true
-            Logger.warn("--- UNKNOWN REFERENCES ---")
             val unknownReferences = protobufAggregator.unknownReferences()
-            Logger.warn("--- UNKNOWN REFERENCES --- DONE")
             unknownReferences.forEach {
-                Logger.warn("RESOLVING: $it")
                 val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
                 if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
                     Logger.warn("$it is referenced but not annotated with @ProtoMessage")

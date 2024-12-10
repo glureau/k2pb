@@ -13,12 +13,6 @@ repositories {
     mavenCentral()
 }
 
-ksp {
-    arg("k2pb:replacement", "BigDecimal=kotlin.String;java.math.BigDecimal=kotlin.String;AnotherCustomType=kotlin.Int")
-    //ScriptEngineManager().getEngineByName("").eval("")
-    val a = "com.glureau.sample.Vehicle"
-}
-
 kotlin {
     jvm {
         withJava()
@@ -30,7 +24,7 @@ kotlin {
         }
         commonMain {
             dependencies {
-                implementation(project(":annotations"))
+                implementation(project(":k2pb-annotations"))
                 implementation(project(":k2pb-runtime"))
                 implementation(project(":k2pb-serializers-datetime"))
                 implementation(project(":sample-lib"))
@@ -56,7 +50,7 @@ kotlin {
 }
 
 dependencies {
-    add("kspJvm", project(":compiler"))
+    add("kspJvm", project(":k2pb-compiler"))
 }
 
 task("copyProtoFiles", type = Copy::class) {

@@ -213,16 +213,13 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         name = prop.type.toString(),
                         isNullable = prop.type.resolve().isMarkedNullable,
                         isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
-                    ).also {
-                        Logger.warn("GREG 33 - ${prop.simpleName} - ${prop.type.resolve().declaration.modifiers}")
-                    },
+                    ),
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
                     annotatedSerializer = annotatedConverter,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null, // TODO: handle nullability
                 )
-                    .also { Logger.warn("resolvedType.isError -> $it") }
             }
 
             else -> {

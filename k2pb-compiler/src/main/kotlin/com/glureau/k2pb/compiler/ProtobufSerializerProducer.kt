@@ -16,7 +16,6 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
 
     fun buildFileSpecs(moduleName: String): List<CodeFile> {
         val fileSpecs = protobufAggregator.messages
-            .onEach { Logger.warn("GREG - buildFileSpecs $moduleName - $it") }
             .map {
                 val builder = FileSpec.builder(it.serializerClassName())
                 builder.addMessageNode(it)

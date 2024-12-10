@@ -13,7 +13,7 @@ val kspVersion: String by project
 
 dependencies {
 
-    implementation(project(":annotations"))
+    implementation(project(":k2pb-annotations"))
     implementation("com.squareup:kotlinpoet:1.10.2") {
         exclude(module = "kotlin-reflect")
     }

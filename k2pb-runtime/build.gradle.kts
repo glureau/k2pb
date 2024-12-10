@@ -51,7 +51,7 @@ kotlin {
         }
         commonMain {
             dependencies {
-                api(project(":annotations"))
+                api(project(":k2pb-annotations"))
             }
         }
         commonTest.dependencies {

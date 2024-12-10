@@ -51,7 +51,7 @@ kotlin {
         }
         commonMain {
             dependencies {
-                //api(project(":annotations"))
+                //api(project(":k2pb-annotations"))
                 api(project(":k2pb-runtime"))
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
             }

@@ -37,7 +37,7 @@ kotlin {
 }
 
 dependencies {
-    add("kspJvm", project(":compiler"))
+    add("kspJvm", project(":k2pb-compiler"))
 }
 
 task("runProtoc", type = Exec::class) {

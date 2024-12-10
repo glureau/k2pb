@@ -10,7 +10,7 @@ class NumberManager(private val startAt: Int = 1) {
     fun resolve(name: String, annotatedNumber: Int?): Int {
         numberByName[name]?.let {
             if (annotatedNumber != null && it != annotatedNumber) {
-                Logger.warn("Field $name is already assigned with a different number. Original=$it, Annotated=$annotatedNumber")
+                Logger.error("Field $name is already assigned with a different number. Original=$it, Annotated=$annotatedNumber")
             }
             return it
         }

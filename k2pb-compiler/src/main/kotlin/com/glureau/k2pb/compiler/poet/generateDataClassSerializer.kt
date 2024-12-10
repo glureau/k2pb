@@ -23,7 +23,6 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
     addStatement("if ($instanceName == null) return")
 
     messageNode.fields.forEach {
-        Logger.warn("data class encode: ${messageNode.name} / ${it.name} => ${(it as? TypedField)?.nullabilitySubField}")
         addStatement("")
         addStatement("// Encode ${it.name}")
         encodeField(instanceName, it)

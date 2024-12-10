@@ -1,3 +1,5 @@
+import java.net.URI
+
 buildscript {
     val kotlinVersion: String by project
     repositories {
@@ -39,13 +41,11 @@ subprojects {
     apply(plugin = "maven-publish")
     publishing {
         repositories {
-            if (localProperties.getProperty("REPOSITORY_URL") != null) {
-                maven {
-                    url = uri(localProperties.getProperty("REPOSITORY_URL"))
-                    credentials {
-                        username = localProperties.getProperty("REPOSITORY_USERNAME")
-                        password = localProperties.getProperty("REPOSITORY_PASSWORD")
-                    }
+            maven {
+                url = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                credentials {
+                    username = System.getenv("SONATYPE_USER")
+                    password = System.getenv("SONATYPE_PASSWORD")
                 }
             }
         }

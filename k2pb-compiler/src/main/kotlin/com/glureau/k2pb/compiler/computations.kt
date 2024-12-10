@@ -60,27 +60,18 @@ fun computeImports(
         }
     }.distinct()
 
-    Logger.warn("All type references: $allTypeReferences")
-    Logger.warn("Local references: $locallyDeclaredReferences")
-
     return (allTypeReferences - locallyDeclaredReferences.toSet())
-        .onEach { string -> Logger.warn("Resolving: $string") }
         .mapNotNull { TypeResolver.qualifiedNameToProtobufName[it] }
-        .onEach { string -> Logger.warn("resolved references: $string") }
         .map { importResolver.resolve(it) }
         .distinct()
 }
 
 fun FieldInterface.resolvedExternalTypes(): List<String> {
-    Logger.warn("--------------------")
-    Logger.warn("RESOLVING FIELD INTERFACE $this")
     return when (this) {
         is TypedField -> {
             if (this.annotatedSerializer.customSerializerType() != null) {
-                Logger.warn("RESOLVING CUSTOM STRING CONVERTER - skipping resolution")
                 emptyList()
             } else {
-                Logger.warn("RESOLVING - no annotated serializer ${this.name}")
                 this.type.resolvedExternalTypes()
             }
         }
@@ -92,18 +83,15 @@ fun FieldInterface.resolvedExternalTypes(): List<String> {
 fun FieldType.resolvedExternalTypes(): List<String> {
     return when (this) {
         is ListType -> {
-            Logger.warn("RESOLVING LIST OF ${this.repeatedType}")
             repeatedType.resolvedExternalTypes()
         }
 
         is MapType -> {
-            Logger.warn("RESOLVING MAP OF ${this.keyType} => ${this.valueType}")
             keyType.resolvedExternalTypes() + valueType.resolvedExternalTypes()
         }
 
         is ScalarFieldType -> emptyList()
         is ReferenceType -> {
-            Logger.warn("RESOLVING REFERENCE OF $this")
             if (this.inlineAnnotatedSerializer.customSerializerType() != null) {
                 emptyList()
             } else {

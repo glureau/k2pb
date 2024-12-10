@@ -26,7 +26,7 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                     // TODO: this could be an option instead of default behavior,
                     //  also it may be useless given originalFile should be null for classes coming from other libs...
                     if (!messageNode.originalFile.filePath.contains(moduleName)) {
-                        Logger.warn(
+                        Logger.info(
                             "Skipping message from other module (current module = $moduleName): " +
                                     "${messageNode.name} // ${messageNode.originalFile.filePath}"
                         )
@@ -43,10 +43,7 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                             imports = computeImports(
                                 messageNodes = listOf(messageNode),
                                 enumNodes = listOf(),
-                                locallyDeclaredReferences = messageNode.declaredReferences.also {
-                                    Logger.warn("Declared references for ${messageNode}: $it")
-                                    Logger.warn("TypeResolver.qualifiedNameToProtobufName ${TypeResolver.qualifiedNameToProtobufName}")
-                                },
+                                locallyDeclaredReferences = messageNode.declaredReferences,
                                 importResolver = importResolver
                             )
                         )
@@ -63,7 +60,7 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                 // TODO: this could be an option instead of default behavior,
                 //  also it may be useless given originalFile should be null for classes coming from other libs...
                 if (!enumNode.originalFile.filePath.contains(moduleName)) {
-                    Logger.warn(
+                    Logger.info(
                         "Skipping message from other module (current module = $moduleName): " +
                                 "${enumNode.name} // ${enumNode.originalFile.filePath}"
                     )
