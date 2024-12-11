@@ -177,8 +177,6 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             */
         }
 
-        //val replacement = sharedOptions.replace(prop.type.toString())
-        // TODO: Handle all serializers... eventually remove the replacement via options
         val annotatedConverter = prop.annotations
             .firstOrNull { it.shortName.asString() == ProtoStringConverter::class.simpleName }
             ?.getArg<KSType?>(ProtoStringConverter::converter)

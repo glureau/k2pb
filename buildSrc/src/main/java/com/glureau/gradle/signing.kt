@@ -2,9 +2,11 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
+import java.io.File
 import java.net.URI
 
 private fun Project.signPublicationsIfKeyPresent(publication: MavenPublication) {
@@ -15,7 +17,6 @@ private fun Project.signPublicationsIfKeyPresent(publication: MavenPublication) 
         extensions.configure<SigningExtension>("signing") {
             useInMemoryPgpKeys(signingKey, signingKeyPassphrase)
             sign(publication)
-            println("Configured signing for ${publication.name}")
         }
     }
 }
@@ -24,11 +25,19 @@ fun Project.setupPublishing() {
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
 
+    if (tasks.findByName("javadocJar") == null) {
+        tasks.register("javadocJar", Jar::class.java) {
+            group = "documentation"
+            description = "Assembles an empty Javadoc JAR for Maven publication."
+            archiveClassifier.set("javadoc")
+            from(emptyList<File>()) // Nothing to feed for now...
+        }
+    }
+
     extensions.configure(PublishingExtension::class.java) {
         afterEvaluate {
             publications.filterIsInstance<MavenPublication>()
                 .forEach { p ->
-                    println("SIGNATURE - ${p.name} - ${p.groupId}:${p.artifactId}:${p.version}")
                     signPublicationsIfKeyPresent(p)
                     p.pom {
                         name.set(project.name)
@@ -55,6 +64,9 @@ fun Project.setupPublishing() {
                             url.set("https://github.com/glureau/k2pb/tree/master")
                         }
                     }
+                    if (plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+                        p.artifact(tasks.named("javadocJar"))
+                    }
                 }
         }
         repositories {
@@ -68,12 +80,10 @@ fun Project.setupPublishing() {
         }
     }
     afterEvaluate {
+        val docTasks = tasks.toList().filter { task -> task.name == "javadocJar" }
         val signTasks = tasks.toList().filterIsInstance<Sign>()
-        tasks.toList()
-            .filter { it is AbstractPublishToMaven }
-            .forEach {
-                println("Task ${this.name} depends on signing - $signTasks")
-                it.dependsOn(signTasks)
-            }
+        val publicationTasks = tasks.toList().filter { it is AbstractPublishToMaven }
+        signTasks.forEach { it.dependsOn(docTasks) }
+        publicationTasks.forEach { it.dependsOn(signTasks) }
     }
 }
