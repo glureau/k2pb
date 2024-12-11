@@ -44,7 +44,7 @@ java {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "k2dp-compiler"
+            artifactId = "k2pb-compiler"
             from(components["java"])
         }
     }
