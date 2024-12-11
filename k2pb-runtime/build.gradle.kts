@@ -1,7 +1,6 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
-    id("maven-publish")
 }
 
 android {
@@ -44,6 +43,7 @@ kotlin {
     macosArm64()
     macosX64()
 
+    withSourcesJar()
 
     sourceSets {
         all {
@@ -76,3 +76,5 @@ kotlin {
 rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
     rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "18.13.0"
 }*/
+
+setupPublishing()

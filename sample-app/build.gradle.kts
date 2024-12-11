@@ -1,10 +1,6 @@
-import javax.script.ScriptEngineManager
-
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("org.ajoberstar.git-publish")
-    id("org.ajoberstar.grgit")
     id("com.google.devtools.ksp")
     //id("com.glureau.k2pb") version "0.1.0"
 }

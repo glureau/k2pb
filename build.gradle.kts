@@ -11,24 +11,14 @@ buildscript {
     }
 }
 
-val localProperties = java.util.Properties().apply {
-    val file = File(rootProject.rootDir, "local.properties")
-    if (file.exists()) {
-        load(java.io.FileInputStream(file))
-    }
-}
-
 plugins {
-    id("maven-publish")
-    id("org.ajoberstar.git-publish") version "4.2.0"
-    id("org.ajoberstar.grgit") version "5.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
     id("com.android.library") version "7.3.0" apply false
 }
 
 allprojects {
     group = "com.glureau.k2pb"
-    version = "1.0.0"
+    version = "0.9.0"
 
     repositories {
         mavenLocal()
@@ -36,57 +26,3 @@ allprojects {
         google()
     }
 }
-
-subprojects {
-    apply(plugin = "maven-publish")
-    publishing {
-        repositories {
-            maven {
-                url = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = System.getenv("SONATYPE_USER")
-                    password = System.getenv("SONATYPE_PASSWORD")
-                }
-            }
-        }
-    }
-
-}
-
-val gitUser = System.getenv("GIT_USER")
-val gitPassword = System.getenv("GIT_PASSWORD")
-if (gitUser != null && gitPassword != null) {
-    System.setProperty("org.ajoberstar.grgit.auth.username", gitUser)
-    System.setProperty("org.ajoberstar.grgit.auth.password", gitPassword)
-}
-
-tasks.create<Delete>("cleanMavenLocalArtifacts") {
-    delete = setOf("$buildDir/mvn-repo/")
-}
-
-tasks.create<Sync>("copyMavenLocalArtifacts") {
-    group = "publishing"
-    dependsOn(":compiler:publishToMavenLocal", ":annotations:publishToMavenLocal", ":gradle-plugin:publishToMavenLocal")
-
-    val userHome = System.getProperty("user.home")
-    val groupDir = project.group.toString().replace('.', '/')
-    val localRepository = "$userHome/.m2/repository/$groupDir/"
-
-    from(localRepository) {
-        include("*/${project.version}/**")
-    }
-
-    into("$buildDir/mvn-repo/$groupDir/")
-}
-
-gitPublish {
-    repoUri.set("git@github.com:glureau/K2PB.git")
-    branch.set("mvn-repo")
-    contents.from("$buildDir/mvn-repo")
-    preserve { include("**") }
-    val head = grgit.head()
-    commitMessage.set("${head.abbreviatedId}: ${project.version} : ${head.fullMessage}")
-}
-tasks["copyMavenLocalArtifacts"].dependsOn("cleanMavenLocalArtifacts")
-tasks["gitPublishCopy"].dependsOn("copyMavenLocalArtifacts")
-

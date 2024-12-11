@@ -4,3 +4,4 @@ local.properties
 .gradle
 ./lib/
 .kotlin/
+kotlin-js-store/
