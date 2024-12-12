@@ -1,12 +1,12 @@
 package com.glureau.sample
 
+import com.glureau.k2pb.annotation.ProtoConverter
 import com.glureau.k2pb.annotation.ProtoMessage
-import com.glureau.k2pb.annotation.ProtoStringConverter
 import com.glureau.k2pb.serializers.datetime.InstantIsoDateTimeOffsetConverter
 import kotlinx.datetime.Instant
 
 @ProtoMessage(name = "KtxClasses")
 data class KtxClasses(
-    @ProtoStringConverter(InstantIsoDateTimeOffsetConverter::class)
+    @ProtoConverter(InstantIsoDateTimeOffsetConverter::class)
     val instant: Instant,
 )

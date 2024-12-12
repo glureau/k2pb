@@ -3,6 +3,7 @@ syntax = "proto3";
 
 message NullableBigDecimalValueClassHolder {
   string nullableBdValue = 1;
+  bool isNullableBdValueNull = 2;
 }
 
 File: k2pb/EnumHolder.proto

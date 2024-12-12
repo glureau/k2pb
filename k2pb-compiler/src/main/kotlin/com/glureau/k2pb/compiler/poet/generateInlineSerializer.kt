@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.poet
 
+import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
@@ -27,7 +28,7 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
             "$instanceName.${inlinedField.name}",
             inlinedField.type,
             tag = null,
-            inlinedField.annotatedSerializer,
+            inlinedField.annotatedConverter,
             inlinedField.nullabilitySubField
         )
     }
@@ -42,8 +43,10 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
     var localVar: String? = null
     if (inlinedField !is TypedField) TODO()
 
-    if (inlinedField.type is ReferenceType && inlinedField.annotatedSerializer != null) {
-        localVar = decodeInLocalVar(inlinedField.name, inlinedField.annotatedSerializer)
+    if (inlinedField.type is ReferenceType && inlinedField.annotatedConverter != null) {
+        inlinedField.annotatedConverter.customConverterType()?.let {
+            localVar = decodeInLocalVar(inlinedField.name, inlinedField.annotatedConverter, it)
+        }
     }
 
     addCode("return %T(", messageNode.asClassName())
@@ -60,7 +63,7 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
     if (readCodeBlock != null) {
         addCode(readCodeBlock)
     } else {
-        decodeReferenceType("oot", inlinedField.type as ReferenceType, inlinedField.annotatedSerializer)
+        decodeReferenceType("oot", inlinedField.type as ReferenceType, inlinedField.annotatedConverter)
     }
     if (!inlinedField.type.isNullable) {
         addCode(")")

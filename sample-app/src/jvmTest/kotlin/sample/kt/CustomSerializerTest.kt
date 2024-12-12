@@ -35,7 +35,7 @@ class CustomSerializerTest : BaseEncodingTest() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalHolder(null),
             protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
-                //.setBd(null) // <- NPE
+                //.setBd(null) // <- NPE in protoc generated java code, but default Java is null anyway
                 .setIsBdNull(true)
                 .build()
         )

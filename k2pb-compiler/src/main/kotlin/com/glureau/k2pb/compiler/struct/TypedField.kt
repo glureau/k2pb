@@ -15,7 +15,7 @@ data class TypedField(
     override val name: String,
     override val protoNumber: Int,
     private val annotatedName: String?,
-    val annotatedSerializer: KSType? = null,
+    val annotatedConverter: KSType? = null,
     val nullabilitySubField: NullabilitySubField?,
 ) : FieldInterface {
     val resolvedName = annotatedName ?: name
@@ -25,7 +25,7 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     appendComment(indentLevel, field.comment)
 
     append(indentation(indentLevel))
-    appendFieldType(field.type, field.annotatedSerializer)
+    appendFieldType(field.type, field.annotatedConverter)
     append(" ")
     append(field.resolvedName)
     append(" = ")
@@ -52,7 +52,7 @@ fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
             "$instanceName.${field.name}",
             field.type,
             tag,
-            field.annotatedSerializer,
+            field.annotatedConverter,
             field.nullabilitySubField
         )
 
@@ -60,7 +60,7 @@ fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
             field.name,
             field.type,
             tag,
-            field.annotatedSerializer,
+            field.annotatedConverter,
             field.nullabilitySubField
         )
     }
@@ -79,7 +79,7 @@ fun FunSpec.Builder.decodeTypedFieldVariableDefinition(field: TypedField) {
         is ScalarFieldType -> decodeScalarTypeVariableDefinition(
             field.name,
             field.type,
-            field.annotatedSerializer,
+            field.annotatedConverter,
             field.nullabilitySubField
         )
     }
@@ -91,12 +91,12 @@ fun FunSpec.Builder.decodeTypedField(field: TypedField) {
         is MapType -> decodeMapType(field.name, field.type)
 
         is ReferenceType -> {
-            decodeReferenceType(field.name, field.type, field.annotatedSerializer)
+            decodeReferenceType(field.name, field.type, field.annotatedConverter)
             beginControlFlow("?.let")
             addStatement("${field.name} = it")
             endControlFlow()
         }
 
-        is ScalarFieldType -> decodeScalarType(field.name, field.type, field.annotatedSerializer)
+        is ScalarFieldType -> decodeScalarType(field.name, field.type, field.annotatedConverter)
     }
 }

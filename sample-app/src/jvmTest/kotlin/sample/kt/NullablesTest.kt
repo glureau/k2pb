@@ -1,13 +1,17 @@
 package sample.kt
 
+import NullableBigDecimalValueClassHolderOuterClass
 import NullableNativeTypeEventOuterClass
 import NullableValueClassHolderOuterClass
+import com.glureau.sample.NullableBigDecimalValueClass
+import com.glureau.sample.NullableBigDecimalValueClassHolder
 import com.glureau.sample.NullableNativeTypeEvent
 import com.glureau.sample.NullableValueClassHolder
 import com.glureau.sample.lib.ValueClassFromLib
 import com.google.protobuf.kotlin.toByteStringUtf8
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
+import java.math.BigDecimal
 
 class NullablesTest : BaseEncodingTest() {
 
@@ -133,26 +137,56 @@ class NullablesTest : BaseEncodingTest() {
 
 
     @Test
-    fun nullableValueClass() {
+    fun nullableValueClassHolder_withData() {
         assertCompatibleSerialization(
             ktInstance = NullableValueClassHolder(ValueClassFromLib("42")),
             protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("42")
                 .build()
         )
+    }
+
+    @Test
+    fun nullableValueClassHolder_withNull() {
         assertCompatibleSerialization(
             ktInstance = NullableValueClassHolder(null),
             protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
-                .setValueClassFromLib("")
+                //.setValueClassFromLib("") // not required as it's protobuf default value
                 .setIsValueClassFromLibNull(true)
                 .build()
         )
+    }
+
+    @Test
+    fun nullableValueClassHolder_withDefaults() {
         assertCompatibleSerialization(
             ktInstance = NullableValueClassHolder(ValueClassFromLib("")),
             protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("")
-                .setIsValueClassFromLibNull(false)
+                //.setIsValueClassFromLibNull(false) // not required as it's protobuf default value
                 .build()
-        ) // Default value are still serialized on K2PB today
+        )
+    }
+
+    @Test
+    fun nullableBigDecimalValueClassHolder_withData() {
+        assertCompatibleSerialization(
+            ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(BigDecimal("42.42"))),
+            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+                .setNullableBdValue("42.42")
+                // .setIsNullableBdValueNull(false) // not required as it's protobuf default value
+                .build()
+        )
+    }
+
+    @Test
+    fun nullableBigDecimalValueClassHolder_withNull() {
+        assertCompatibleSerialization(
+            ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(null)),
+            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+                //.setNullableBdValue(null) // <- NPE in protoc generated java code, but default Java is null anyway
+                .setIsNullableBdValueNull(true)
+                .build()
+        )
     }
 }

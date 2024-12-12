@@ -12,9 +12,10 @@ public interface DelegateProtoSerializer {
     public fun <T : Any> ProtobufReader.decode(instanceClass: KClass<T>): T?
 }
 
-public interface CustomConverter<Data : Any, Output : Any> {
+public interface CustomConverter<Data : Any?, Output : Any?> {
     public fun encode(value: Data): Output
     public fun decode(data: Output): Data?
 }
 
-public interface CustomStringConverter<T : Any> : CustomConverter<T, String>
+public interface StringConverter<T : Any> : CustomConverter<T, String>
+public interface NullableStringConverter<T : Any> : CustomConverter<T, String?>

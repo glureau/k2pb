@@ -1,12 +1,11 @@
 package com.glureau.k2pb.annotation
 
 import com.glureau.k2pb.CustomConverter
-import com.glureau.k2pb.CustomStringConverter
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.PROPERTY)
-public annotation class ProtoStringConverter(
-    val converter: KClass<out CustomStringConverter<*>>,
+public annotation class ProtoConverter(
+    val converter: KClass<out CustomConverter<*, *>>,
 )
 
 @Target(AnnotationTarget.PROPERTY)

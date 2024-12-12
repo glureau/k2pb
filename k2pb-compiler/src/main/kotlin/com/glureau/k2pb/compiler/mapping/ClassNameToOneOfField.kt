@@ -9,24 +9,23 @@ import java.util.Locale
 fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: Map<ClassName, Int>) =
     listOf(
         OneOfField(
-        comment = null,
-        name = fieldName.replaceFirstChar { it.lowercase(Locale.US) },
-        protoNumber = 1,
-        fields = subclassesWithProtoNumber.map { (childClassName, number) ->
-            TypedField(
-                comment = null,
-                type = ReferenceType(
-                    className = childClassName,
-                    name = childClassName.canonicalName,
-                    isNullable = false,
-                    isEnum = false,
-                ),
-                name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
-                protoNumber = number,
-                annotatedName = null,
-                //annotatedNumber = null,
-                annotatedSerializer = null,
-                nullabilitySubField = null,
-            )
-        }
-    ))
+            comment = null,
+            name = fieldName.replaceFirstChar { it.lowercase(Locale.US) },
+            protoNumber = 1,
+            fields = subclassesWithProtoNumber.map { (childClassName, number) ->
+                TypedField(
+                    comment = null,
+                    type = ReferenceType(
+                        className = childClassName,
+                        name = childClassName.canonicalName,
+                        isNullable = false,
+                        isEnum = false,
+                    ),
+                    name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
+                    protoNumber = number,
+                    annotatedName = null,
+                    annotatedConverter = null,
+                    nullabilitySubField = null,
+                )
+            }
+        ))

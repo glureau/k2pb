@@ -1,18 +1,15 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.CustomStringConverter
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
-import com.glureau.k2pb.compiler.mapping.customSerializerType
+import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
-import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ReferenceType(
@@ -62,7 +59,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
         addStatement("val $encodedTmpName = %T().encode($fieldAccess)", annSerializer.toClassName())
-        annSerializer.customSerializerType()?.let { customType ->
+        annSerializer.customConverterType()?.let { customType ->
             if (tag != null) {
                 /* TODO: custom string converter nullability */
                 addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
@@ -90,8 +87,9 @@ fun FunSpec.Builder.encodeReferenceType(
         val condition = mutableListOf<String>()
         if (isInlineEnum) condition += "$fieldName != ${type.className}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
         if (inlinedType is ScalarFieldType) condition += inlinedType.shouldEncodeDefault(fieldName + "." + type.inlineName)
+        val checkNullability = type.isNullable || inlinedType.isNullable
 
-        if (nullabilitySubField != null) {
+        if (checkNullability) {
             beginControlFlow("if ($fieldName != null)")
         }
 
@@ -110,14 +108,16 @@ fun FunSpec.Builder.encodeReferenceType(
             endControlFlow() // if (condition)
         }
 
-        if (nullabilitySubField != null) {
-            endControlFlow() // if (nullabilitySubField)
-            beginControlFlow("else")
-            addStatement(
-                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
-                ProtoIntegerTypeDefault
-            )
-            endControlFlow() // else
+        if (checkNullability) {
+            endControlFlow() // if (checkNullability)
+            if (nullabilitySubField != null) {
+                beginControlFlow("else")
+                addStatement(
+                    "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+                    ProtoIntegerTypeDefault
+                )
+                endControlFlow() // else
+            }
         }
     } ?: run {
         if (type.isNullable) {
@@ -182,12 +182,9 @@ fun FunSpec.Builder.decodeReferenceType(
     fieldAnnotatedSerializer: KSType?,
 ) {
     (fieldAnnotatedSerializer ?: fieldType.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
-        // TODO use the CustomStringConverter extension
-        val parents = (annotatedSerializer.declaration as KSClassDeclaration)
-            .superTypes
-            .map { it.resolve().toClassName() }
-        if (parents.contains(CustomStringConverter::class.asClassName())) {
-            val decodedTmpName = decodeInLocalVar(fieldName, annotatedSerializer)
+        val customSerializerType = annotatedSerializer.customConverterType()
+        if (customSerializerType != null) {
+            val decodedTmpName = decodeInLocalVar(fieldName, annotatedSerializer, customSerializerType)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
                     addStatement("${fieldType.className}($decodedTmpName) /* P */")
@@ -217,11 +214,12 @@ fun FunSpec.Builder.decodeReferenceType(
 
 fun FunSpec.Builder.decodeInLocalVar(
     fieldName: String,
-    annotatedSerializer: KSType
+    annotatedSerializer: KSType,
+    encodedType: ScalarFieldType,
 ): String {
     val decodedTmpName = "${fieldName.replace(".", "_")}Decoded"
     addStatement(
-        "val $decodedTmpName = %T().decode(${ScalarFieldType.String.readMethod()})",
+        "val $decodedTmpName = %T().decode(${encodedType.readMethod()})",
         annotatedSerializer.toClassName()
     )
     return decodedTmpName

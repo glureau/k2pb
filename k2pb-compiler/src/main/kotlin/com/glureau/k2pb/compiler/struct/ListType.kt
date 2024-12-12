@@ -1,12 +1,10 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.ProtoIntegerType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.asClassName
 
 data class ListType(val repeatedType: FieldType, override val isNullable: Boolean) : FieldType
 
@@ -26,7 +24,7 @@ fun FunSpec.Builder.encodeListType(
     tag: Int,
     nullabilitySubField: NullabilitySubField?
 ) {
-    if (nullabilitySubField != null) {
+    if (listType.isNullable) {
         beginControlFlow("if ($instanceName.$fieldName != null)")
     }
 
@@ -40,6 +38,7 @@ fun FunSpec.Builder.encodeListType(
                     addStatement("")
                     endControlFlow() // forEach
                 }
+
                 else -> {
                     beginControlFlow("%M($tag)", writeMessageExt)
                     beginControlFlow("$instanceName.$fieldName.forEach /* scalar */")
@@ -69,15 +68,16 @@ fun FunSpec.Builder.encodeListType(
         }
     }
 
-
-    if (nullabilitySubField != null) {
+    if (listType.isNullable) {
         endControlFlow() // if
-        beginControlFlow("else")
-        addStatement(
-            "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
-            ProtoIntegerTypeDefault
-        )
-        endControlFlow() // else
+        if (nullabilitySubField != null) {
+            beginControlFlow("else")
+            addStatement(
+                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+                ProtoIntegerTypeDefault
+            )
+            endControlFlow() // else
+        }
     }
 }
 

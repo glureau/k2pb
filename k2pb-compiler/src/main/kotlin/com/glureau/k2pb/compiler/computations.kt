@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.mapping.customSerializerType
+import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.FieldInterface
 import com.glureau.k2pb.compiler.struct.FieldType
@@ -69,7 +69,7 @@ fun computeImports(
 fun FieldInterface.resolvedExternalTypes(): List<String> {
     return when (this) {
         is TypedField -> {
-            if (this.annotatedSerializer.customSerializerType() != null) {
+            if (this.annotatedConverter.customConverterType() != null) {
                 emptyList()
             } else {
                 this.type.resolvedExternalTypes()
@@ -92,7 +92,7 @@ fun FieldType.resolvedExternalTypes(): List<String> {
 
         is ScalarFieldType -> emptyList()
         is ReferenceType -> {
-            if (this.inlineAnnotatedSerializer.customSerializerType() != null) {
+            if (this.inlineAnnotatedSerializer.customConverterType() != null) {
                 emptyList()
             } else {
                 this.inlineOf?.resolvedExternalTypes() ?: listOf(this.name)

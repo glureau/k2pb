@@ -1,8 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.CustomStringConverter
+import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
-import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -232,17 +231,9 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     annotatedSerializer: KSType?,
     nullabilitySubField: NullabilitySubField?
 ) {
-    annotatedSerializer?.let { annSerializer ->
-        val parents = (annSerializer.declaration as KSClassDeclaration)
-            .superTypes
-            .map { it.resolve().toClassName() }
-        if (parents.contains(CustomStringConverter::class.asClassName())) {
-            addStatement("var $fieldName: String? = null")
-        } else {
-            TODO("Not supported yet")
-        }
-        // TODO: Support nullability subfield with annotated serializer
-
+    annotatedSerializer.customConverterType()?.let { customSerializerType ->
+        // TODO: String should be derived from customSerializerType
+        addStatement("var $fieldName: String? = null")
     } ?: run {
         addStatement("var $fieldName: %T? = null", type.kotlinClass)
         if (nullabilitySubField != null) {
