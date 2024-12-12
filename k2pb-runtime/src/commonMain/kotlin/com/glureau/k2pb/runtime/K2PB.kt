@@ -11,7 +11,7 @@ import com.glureau.k2pb.runtime.ktx.ProtobufReaderImpl
 import com.glureau.k2pb.runtime.ktx.ProtobufWriterImpl
 import kotlin.reflect.KClass
 
-public class K2PB internal constructor(config: K2PBConfig = K2PBConfig()) {
+public class K2PB internal constructor(private val config: K2PBConfig = K2PBConfig()) {
     private val delegated = ConfiguredProtoSerializer(config)
 
     public fun <T : Any> encodeToByteArray(any: T, klass: KClass<T>): ByteArray {
@@ -31,6 +31,10 @@ public class K2PB internal constructor(config: K2PBConfig = K2PBConfig()) {
         with(delegated) {
             return reader.decode(klass) as? T
         }
+    }
+
+    public fun getRegisteredChildrenFor(parent: KClass<*>): List<KClass<*>> {
+        return config.polymorphics[parent]?.toList() ?: emptyList()
     }
 }
 
