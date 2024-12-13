@@ -1,6 +1,5 @@
 package com.glureau.k2pb.compiler.poet
 
-import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
@@ -18,7 +17,7 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     addStatement("// If $instanceName is null, nothing to encode")
     addStatement("if ($instanceName == null) return")
 
@@ -27,20 +26,21 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
         addStatement("// Encode ${it.name}")
         encodeField(instanceName, it)
     }
+    return this
 }
 
 fun FunSpec.Builder.generateDataClassSerializerDecode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     messageNode.fields.forEach {
         decodeFieldVariableDefinition(it)
     }
     addStatement("")
 
     if (messageNode.isInlineClass) {
-        return
+        return this
     }
 
     beginControlFlow("while (!eof)")
@@ -114,4 +114,5 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
         }
     }
     addStatement(")")
+    return this
 }

@@ -16,7 +16,7 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     addStatement("if ($instanceName == null) return")
     require(messageNode.fields.size == 1) { "Only one field is allowed in an inline class: $messageNode" }
     val inlinedField = messageNode.fields.first()
@@ -32,13 +32,14 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
             inlinedField.nullabilitySubField
         )
     }
+    return this
 }
 
 fun FunSpec.Builder.generateInlineSerializerDecode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     val inlinedField = messageNode.fields.first()
     var localVar: String? = null
     if (inlinedField !is TypedField) TODO()
@@ -82,4 +83,5 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
      */
     addCode(")")
 
+    return this
 }

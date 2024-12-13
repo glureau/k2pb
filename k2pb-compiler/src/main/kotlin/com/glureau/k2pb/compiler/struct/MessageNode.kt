@@ -1,25 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.DelegateProtoSerializer
-import com.glureau.k2pb.ProtoSerializer
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.compiler.poet.generateDataClassSerializerDecode
-import com.glureau.k2pb.compiler.poet.generateDataClassSerializerEncode
-import com.glureau.k2pb.compiler.poet.generateInlineSerializerDecode
-import com.glureau.k2pb.compiler.poet.generateInlineSerializerEncode
-import com.glureau.k2pb.compiler.poet.generateObjectSerializerDecode
-import com.glureau.k2pb.compiler.poet.generateObjectSerializerEncode
-import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerDecode
-import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerEncode
 import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
 
 data class MessageNode(
     override val packageName: String,
@@ -63,64 +45,3 @@ data class MessageNode(
 
 fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))
 fun Node.serializerClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Serializer")
-
-fun FileSpec.Builder.addMessageNode(messageNode: MessageNode) {
-    addFileComment("Generated from ${messageNode.originalFile?.filePath}")
-    val className = messageNode.asClassName()
-    val instanceName = "instance"
-    val protoSerializerName = "protoSerializer"
-    addType(
-        TypeSpec
-            .classBuilder(messageNode.serializerClassName())
-            .addModifiers(KModifier.INTERNAL)
-            .addSuperinterface(ProtoSerializer::class.asClassName().parameterizedBy(className))
-            .addFunction(
-                FunSpec.builder("encode")
-                    .receiver(ProtobufWriter::class.asClassName())
-                    .addModifiers(KModifier.OVERRIDE)
-                    .addParameter(instanceName, className.copy(nullable = true))
-                    .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
-                    .apply {
-                        when {
-                            messageNode.isObject ->
-                                generateObjectSerializerEncode(messageNode, instanceName, protoSerializerName)
-
-                            messageNode.isPolymorphic ->
-                                generatePolymorphicSerializerEncode(messageNode, instanceName, protoSerializerName)
-
-                            messageNode.isInlineClass ->
-                                generateInlineSerializerEncode(messageNode, instanceName, protoSerializerName)
-
-                            else ->
-                                generateDataClassSerializerEncode(messageNode, instanceName, protoSerializerName)
-                        }
-                    }
-                    .build()
-            )
-
-            .addFunction(
-                FunSpec.builder("decode")
-                    .receiver(ProtobufReader::class.asClassName())
-                    .addModifiers(KModifier.OVERRIDE)
-                    .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
-                    .returns(className.copy(nullable = true))
-                    .apply {
-                        when {
-                            messageNode.isObject ->
-                                generateObjectSerializerDecode(messageNode, instanceName, protoSerializerName)
-
-                            messageNode.isPolymorphic ->
-                                generatePolymorphicSerializerDecode(messageNode, instanceName, protoSerializerName)
-
-                            messageNode.isInlineClass ->
-                                generateInlineSerializerDecode(messageNode, instanceName, protoSerializerName)
-
-                            else ->
-                                generateDataClassSerializerDecode(messageNode, instanceName, protoSerializerName)
-                        }
-                    }
-                    .build()
-            )
-            .build()
-    )
-}

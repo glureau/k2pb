@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.struct.addEnumNode
-import com.glureau.k2pb.compiler.struct.addMessageNode
+import com.glureau.k2pb.compiler.codegen.generateEnumSerializerType
+import com.glureau.k2pb.compiler.codegen.generateMessageSerializerType
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.serializerClassName
 import com.squareup.kotlinpoet.ClassName
@@ -18,12 +18,12 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
         val fileSpecs = protobufAggregator.messages
             .map {
                 val builder = FileSpec.builder(it.serializerClassName())
-                builder.addMessageNode(it)
+                builder.generateMessageSerializerType(it)
                 CodeFile(builder.build(), false)
             } + protobufAggregator.enums
             .map {
                 val builder = FileSpec.builder(it.serializerClassName())
-                builder.addEnumNode(it)
+                builder.generateEnumSerializerType(it)
                 CodeFile(builder.build(), false)
             }
 

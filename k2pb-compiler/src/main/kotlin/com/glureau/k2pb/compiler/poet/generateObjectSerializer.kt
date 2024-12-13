@@ -8,14 +8,16 @@ fun FunSpec.Builder.generateObjectSerializerEncode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     // Nothing to do, dummy class for simple implementation
+    return this
 }
 
 fun FunSpec.Builder.generateObjectSerializerDecode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     addStatement("return %T", messageNode.asClassName())
+    return this
 }

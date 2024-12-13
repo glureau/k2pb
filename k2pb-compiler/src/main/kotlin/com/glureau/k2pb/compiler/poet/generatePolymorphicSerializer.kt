@@ -9,19 +9,21 @@ fun FunSpec.Builder.generatePolymorphicSerializerEncode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     addStatement("if ($instanceName == null) return")
     messageNode.fields.forEach {
         encodeField(instanceName, it)
     }
+    return this
 }
 
 fun FunSpec.Builder.generatePolymorphicSerializerDecode(
     messageNode: MessageNode,
     instanceName: String,
     protoSerializerName: String
-) {
+): FunSpec.Builder {
     messageNode.fields.forEach { f ->
         decodeField(f)
     }
+    return this
 }
