@@ -3,7 +3,6 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.codegen.generateEnumSerializerType
 import com.glureau.k2pb.compiler.codegen.generateMessageSerializerType
 import com.glureau.k2pb.compiler.codegen.generateObjectSerializerType
-import com.glureau.k2pb.compiler.codegen.generateSerializerType
 import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.ObjectNode

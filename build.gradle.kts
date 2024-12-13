@@ -1,5 +1,3 @@
-import java.net.URI
-
 buildscript {
     val kotlinVersion: String by project
     repositories {
