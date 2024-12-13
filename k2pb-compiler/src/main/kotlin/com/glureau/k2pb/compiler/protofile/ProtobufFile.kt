@@ -1,4 +1,8 @@
-package com.glureau.k2pb.compiler.struct
+package com.glureau.k2pb.compiler.protofile
+
+import com.glureau.k2pb.compiler.struct.EnumNode
+import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.ProtoSyntax
 
 data class ProtobufFile(
     val path: String,

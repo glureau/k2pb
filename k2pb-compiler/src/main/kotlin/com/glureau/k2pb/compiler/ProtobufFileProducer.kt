@@ -3,7 +3,7 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.ProtoSyntax
-import com.glureau.k2pb.compiler.struct.ProtobufFile
+import com.glureau.k2pb.compiler.protofile.ProtobufFile
 
 class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
     fun buildFiles(moduleName: String): Sequence<ProtobufFile> {

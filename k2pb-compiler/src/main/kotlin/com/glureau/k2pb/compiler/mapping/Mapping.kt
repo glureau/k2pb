@@ -22,7 +22,6 @@ import com.glureau.k2pb.compiler.struct.NumberManager
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
-import com.glureau.k2pb.compiler.struct.appendLineWithIndent
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -382,17 +381,6 @@ fun KSClassDeclaration.protobufName(): String {
     val p = parent as? KSClassDeclaration
     return ((if (p != null) p.protobufName() + "." else null) ?: "") +
             simpleName.asString()
-}
-
-fun StringBuilder.appendComment(indentLevel: Int, comment: String?) {
-    if (!comment.isNullOrBlank()) {
-        comment.split("\n")
-            .dropWhile { it.isBlank() }
-            .dropLastWhile { it.isBlank() }
-            .forEach {
-                appendLineWithIndent(indentLevel, "// $it")
-            }
-    }
 }
 
 val KSClassDeclaration.serialName: String

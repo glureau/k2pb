@@ -8,13 +8,6 @@ sealed interface FieldInterface {
     val protoNumber: Int
 }
 
-fun StringBuilder.appendField(indentLevel: Int, field: FieldInterface, numberManager: NumberManager) {
-    when (field) {
-        is TypedField -> appendTypedField(indentLevel, field)
-        is OneOfField -> appendOneOfField(indentLevel, field, numberManager)
-    }
-}
-
 fun FunSpec.Builder.encodeField(instanceName: String, field: FieldInterface) {
     when (field) {
         is TypedField -> encodeTypedField(instanceName, field)

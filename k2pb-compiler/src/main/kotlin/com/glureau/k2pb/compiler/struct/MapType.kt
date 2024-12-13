@@ -2,6 +2,7 @@ package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
+import com.glureau.k2pb.compiler.protofile.appendFieldType
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 
@@ -11,14 +12,6 @@ data class MapType(
     override val isNullable: Boolean = false
 ) : FieldType
 
-fun StringBuilder.appendMapType(type: MapType) {
-    append("map<")
-    appendFieldType(type.keyType, null)
-    append(", ")
-    appendFieldType(type.valueType, null)
-    append(">")
-}
-
 fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
     append(
         "Map<${appendKotlinDefinition(type.keyType)}, ${appendKotlinDefinition(type.valueType)}>"
@@ -26,8 +19,8 @@ fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
     )
 }
 
-fun FunSpec.Builder.encodeMapType(fieldName: String, type: MapType, tag: Int) {
-    beginControlFlow("instance.${fieldName}.forEach")
+fun FunSpec.Builder.encodeMapType(instanceName: String, fieldName: String, type: MapType, tag: Int) {
+    beginControlFlow("$instanceName.${fieldName}.forEach")
     beginControlFlow("%M($tag)", writeMessageExt)
     addCode(type.keyType.write("it.key", 1))
     addCode(type.valueType.write("it.value", 2))

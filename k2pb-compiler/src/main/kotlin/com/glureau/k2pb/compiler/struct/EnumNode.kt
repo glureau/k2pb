@@ -4,15 +4,6 @@ import com.glureau.k2pb.DelegateProtoSerializer
 import com.glureau.k2pb.ProtoSerializer
 import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.compiler.mapping.appendComment
-import com.glureau.k2pb.compiler.poet.generateDataClassSerializerDecode
-import com.glureau.k2pb.compiler.poet.generateDataClassSerializerEncode
-import com.glureau.k2pb.compiler.poet.generateInlineSerializerDecode
-import com.glureau.k2pb.compiler.poet.generateInlineSerializerEncode
-import com.glureau.k2pb.compiler.poet.generateObjectSerializerDecode
-import com.glureau.k2pb.compiler.poet.generateObjectSerializerEncode
-import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerDecode
-import com.glureau.k2pb.compiler.poet.generatePolymorphicSerializerEncode
 import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -32,14 +23,6 @@ data class EnumNode(
     override val generatesNow: Boolean get() = true
 }
 
-fun StringBuilder.appendEnumNode(indentLevel: Int, enumNode: EnumNode) {
-    appendComment(indentLevel, enumNode.comment)
-    appendLineWithIndent(indentLevel, "enum ${enumNode.name.substringAfterLast(".")} {")
-    enumNode.entries.forEach {
-        appendEnumEntry(indentLevel + 1, it)
-    }
-    appendLineWithIndent(indentLevel, "}")
-}
 fun FileSpec.Builder.addEnumNode(enumNode: EnumNode) {
     addFileComment("Generated from ${enumNode.originalFile?.filePath}")
     val className = enumNode.asClassName()
@@ -70,7 +53,11 @@ fun FileSpec.Builder.addEnumNode(enumNode: EnumNode) {
                     .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
                     .returns(className.copy(nullable = true))
                     .apply {
-                        addStatement("return %T.entries.getOrNull(%L)", enumNode.asClassName(), ScalarFieldType.Int.readMethodNoTag())
+                        addStatement(
+                            "return %T.entries.getOrNull(%L)",
+                            enumNode.asClassName(),
+                            ScalarFieldType.Int.readMethodNoTag()
+                        )
                     }
                     .build()
             )

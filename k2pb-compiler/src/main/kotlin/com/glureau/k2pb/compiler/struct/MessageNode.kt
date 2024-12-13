@@ -4,7 +4,6 @@ import com.glureau.k2pb.DelegateProtoSerializer
 import com.glureau.k2pb.ProtoSerializer
 import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.compiler.mapping.appendComment
 import com.glureau.k2pb.compiler.poet.generateDataClassSerializerDecode
 import com.glureau.k2pb.compiler.poet.generateDataClassSerializerEncode
 import com.glureau.k2pb.compiler.poet.generateInlineSerializerDecode
@@ -18,7 +17,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
@@ -61,23 +59,6 @@ data class MessageNode(
         }
     val nestedNodes: MutableList<Node> = mutableListOf()
 
-}
-
-fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) {
-    appendComment(indentLevel, messageNode.comment)
-    appendLineWithIndent(indentLevel, "message ${messageNode.name.substringAfterLast(".")} {")
-    messageNode.fields.forEach {
-        appendField(indentLevel + 1, it, messageNode.numberManager)
-    }
-    messageNode.nestedNodes
-        //.filter { it.generatesNow }
-        .forEach {
-            when (it) {
-                is MessageNode -> appendMessageNode(indentLevel + 1, it)
-                is EnumNode -> appendEnumNode(indentLevel + 1, it)
-            }
-        }
-    appendLineWithIndent(indentLevel, "}")
 }
 
 fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))

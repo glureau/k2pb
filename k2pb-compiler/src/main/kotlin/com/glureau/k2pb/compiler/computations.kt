@@ -9,7 +9,7 @@ import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.OneOfField
-import com.glureau.k2pb.compiler.struct.ProtobufFile
+import com.glureau.k2pb.compiler.protofile.ProtobufFile
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField

@@ -25,23 +25,15 @@ data class OneOfField(
     val fields: List<FieldInterface>,
 ) : FieldInterface
 
-fun StringBuilder.appendOneOfField(indentLevel: Int, field: OneOfField, numberManager: NumberManager) {
-    appendLineWithIndent(indentLevel, "oneof ${field.name.substringAfterLast(".").decapitalizeUS()} {")
-    field.fields.forEach { subclass ->
-        appendField(indentLevel + 1, subclass, numberManager)
-    }
-    appendLineWithIndent(indentLevel, "}")
-}
-
 fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfField) {
-    beginControlFlow("when (instance)")
+    beginControlFlow("when ($instanceName)")
     oneOfField.fields.forEach { subclass ->
         subclass as TypedField
         subclass.type as ReferenceType
         beginControlFlow("is %T ->", subclass.type.className)
         beginControlFlow("%M(%L)", writeMessageExt, subclass.protoNumber)
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(instance, %T::class)", subclass.type.className)
+        addStatement("encode($instanceName, %T::class)", subclass.type.className)
         endControlFlow()
         endControlFlow()
         endControlFlow()
