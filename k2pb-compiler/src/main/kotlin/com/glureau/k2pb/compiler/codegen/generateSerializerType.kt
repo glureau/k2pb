@@ -16,8 +16,8 @@ import com.squareup.kotlinpoet.asClassName
 
 fun FileSpec.Builder.generateSerializerType(
     node: Node,
-    encodeContent: FunSpec.Builder.(instanceName: String) -> FunSpec.Builder,
-    decodeContent: FunSpec.Builder.(instanceName: String) -> FunSpec.Builder,
+    encodeContent: FunSpec.Builder.(instanceName: String, protoSerializerName: String) -> FunSpec.Builder,
+    decodeContent: FunSpec.Builder.(instanceName: String, protoSerializerName: String) -> FunSpec.Builder,
 ) {
     addFileComment("Generated from ${node.originalFile?.filePath}")
     val className = node.asClassName()
@@ -34,7 +34,7 @@ fun FileSpec.Builder.generateSerializerType(
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter(instanceName, className.copy(nullable = true))
                     .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
-                    .encodeContent(instanceName)
+                    .encodeContent(instanceName, protoSerializerName)
                     .build()
             )
 
@@ -44,7 +44,7 @@ fun FileSpec.Builder.generateSerializerType(
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
                     .returns(className.copy(nullable = true))
-                    .decodeContent(instanceName)
+                    .decodeContent(instanceName, protoSerializerName)
                     .build()
             )
             .build()

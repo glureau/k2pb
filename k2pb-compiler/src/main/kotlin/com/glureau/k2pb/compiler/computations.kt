@@ -1,6 +1,7 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.mapping.customConverterType
+import com.glureau.k2pb.compiler.protofile.ProtobufFile
 import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.FieldInterface
 import com.glureau.k2pb.compiler.struct.FieldType
@@ -8,8 +9,8 @@ import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.Node
+import com.glureau.k2pb.compiler.struct.ObjectNode
 import com.glureau.k2pb.compiler.struct.OneOfField
-import com.glureau.k2pb.compiler.protofile.ProtobufFile
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
@@ -17,12 +18,13 @@ import com.google.devtools.ksp.symbol.KSFile
 
 
 val ProtobufFile.dependencies: List<KSFile>
-    get() = (messages.flatMap { it.dependencies } + enums.mapNotNull { it.originalFile }).distinct()
+    get() = nodes.mapNotNull { it.originalFile }.distinct()
 
 internal val Node.declaredReferences: List<String>
     get() = when (this) {
         is MessageNode -> this.nestedNodes.flatMap { it.declaredReferences } + this.qualifiedName
         is EnumNode -> listOf(this.qualifiedName)
+        is ObjectNode -> emptyList()
     }
 
 fun interface ImportResolver {
@@ -37,26 +39,23 @@ private fun collectNodes(
     return messageNodes.flatMap { it.nestedNodes } + enumNodes
 }
 
-private fun MessageNode.allNodes(): List<Node> {
+private fun Node.allNodes(): List<Node> {
     return this.nestedNodes.flatMap {
-        when (it) {
-            is MessageNode -> it.allNodes()
-            is EnumNode -> listOf(it)
-        }
+        it.allNodes()
     } + this
 }
 
 fun computeImports(
-    messageNodes: List<MessageNode>,
-    enumNodes: List<EnumNode>,
+    nodes: List<Node>,
     importResolver: ImportResolver,
     locallyDeclaredReferences: List<String>,
 ): List<String> {
-    val allNodes = messageNodes.flatMap { it.allNodes() } + enumNodes
+    val allNodes = nodes.flatMap { it.allNodes() }
     val allTypeReferences = allNodes.flatMap { node ->
         when (node) {
             is MessageNode -> node.fields.flatMap { it.resolvedExternalTypes() }
             is EnumNode -> listOf(node.name)
+            is ObjectNode -> emptyList()
         }
     }.distinct()
 

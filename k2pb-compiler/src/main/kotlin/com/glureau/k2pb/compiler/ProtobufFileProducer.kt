@@ -1,9 +1,9 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.struct.EnumNode
-import com.glureau.k2pb.compiler.struct.MessageNode
-import com.glureau.k2pb.compiler.struct.ProtoSyntax
 import com.glureau.k2pb.compiler.protofile.ProtobufFile
+import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.Node
+import com.glureau.k2pb.compiler.struct.ProtoSyntax
 
 class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
     fun buildFiles(moduleName: String): Sequence<ProtobufFile> {
@@ -12,103 +12,61 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
         }
 
         // TODO: warning, import computation is slightly correlated to this split logic (1 class by file)
-        val updatedMessages = updateMessageForNesting(aggregator.messages, aggregator.enums)
+        val updatedMessages = updateMessageForNesting(aggregator.nodes)
         return sequence {
-            updatedMessages.filter { !it.isInlineClass }
-                .forEach { messageNode ->
-                    if (messageNode.originalFile == null) {
+            updatedMessages
+                .filterNot { it is MessageNode && it.isInlineClass } // Skip inline classes, to be challenged...
+                .forEach { node ->
+                    if (node.originalFile == null) {
                         Logger.info(
-                            "No original file for ${messageNode.name} " +
+                            "No original file for ${node.name} " +
                                     "(possibly coming from another module/library), skipping generation..."
                         )
                         return@forEach
                     }
                     // TODO: this could be an option instead of default behavior,
                     //  also it may be useless given originalFile should be null for classes coming from other libs...
-                    if (!messageNode.originalFile.filePath.contains(moduleName)) {
+                    if (!node.originalFile!!.filePath.contains(moduleName)) {
                         Logger.info(
                             "Skipping message from other module (current module = $moduleName): " +
-                                    "${messageNode.name} // ${messageNode.originalFile.filePath}"
+                                    "${node.name} // ${node.originalFile!!.filePath}"
                         )
                         return@forEach
                     }
 
+                    val imports = computeImports(
+                        nodes = listOf(node),
+                        locallyDeclaredReferences = node.declaredReferences,
+                        importResolver = importResolver
+                    )
+
                     yield(
                         ProtobufFile(
-                            path = "k2pb/${messageNode.name}",
+                            path = "k2pb/${node.name}",
                             packageName = null,
                             syntax = ProtoSyntax.v3,
-                            messages = listOf(messageNode),
-                            enums = emptyList(),
-                            imports = computeImports(
-                                messageNodes = listOf(messageNode),
-                                enumNodes = listOf(),
-                                locallyDeclaredReferences = messageNode.declaredReferences,
-                                importResolver = importResolver
-                            )
+                            nodes = listOf(node),
+                            imports = imports
                         )
                     )
                 }
-            aggregator.enums.forEach { enumNode ->
-                if (enumNode.originalFile == null) {
-                    Logger.info(
-                        "No original file for ${enumNode.name} " +
-                                "(possibly coming from another module/library), skipping generation..."
-                    )
-                    return@forEach
-                }
-                // TODO: this could be an option instead of default behavior,
-                //  also it may be useless given originalFile should be null for classes coming from other libs...
-                if (!enumNode.originalFile.filePath.contains(moduleName)) {
-                    Logger.info(
-                        "Skipping message from other module (current module = $moduleName): " +
-                                "${enumNode.name} // ${enumNode.originalFile.filePath}"
-                    )
-                    return@forEach
-                }
-
-                if (enumNode.name.contains(".")) return@forEach // Skip nested enums
-                yield(
-                    ProtobufFile(
-                        path = "k2pb/${enumNode.name}",
-                        packageName = null,
-                        syntax = ProtoSyntax.v3,
-                        messages = emptyList(),
-                        enums = listOf(enumNode),
-                        imports = computeImports(
-                            messageNodes = listOf(),
-                            enumNodes = listOf(enumNode),
-                            locallyDeclaredReferences = enumNode.declaredReferences,
-                            importResolver = importResolver,
-                        )
-                    )
-                )
-            }
         }
     }
 }
 
-private fun updateMessageForNesting(messages: List<MessageNode>, enums: MutableList<EnumNode>): List<MessageNode> {
-    val parentNameChildMessages = messages.associateBy { it.name }
-    val updatedMessages = mutableListOf<MessageNode>()
-    messages.sortedBy { it.name }
+private fun updateMessageForNesting(nodes: List<Node>): List<Node> {
+    val parentNameChildNodes = nodes.associateBy { it.name }
+    val updatedNodes = mutableListOf<Node>()
+    nodes.sortedBy { it.name }
         .forEach {
             val parentName = it.name.substringBeforeLast(".")
             if (parentName == it.name) {
                 // No parent, this is a root message
-                updatedMessages += it
+                updatedNodes += it
             } else {
-                parentNameChildMessages[parentName]?.nestedNodes?.add(it)
+                parentNameChildNodes[parentName]?.nestedNodes?.add(it)
                     ?: error("Parent message not found for ${it.name}")
             }
         }
-    enums.forEach {
-        val parentName = it.name.substringBeforeLast(".")
-        if (parentName != it.name) {
-            parentNameChildMessages[parentName]?.nestedNodes?.add(it)
-                ?: error("Parent message not found for enum ${it.name}")
-        }
-    }
-
-    return updatedMessages
+    return updatedNodes
 }

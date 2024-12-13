@@ -79,12 +79,11 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                         className to number
                     }
 
-                    protobufAggregator.recordMessageNode(
+                    protobufAggregator.recordNode(
                         MessageNode(
                             packageName = parent.packageName,
                             qualifiedName = parent.canonicalName,
                             name = parent.simpleName,
-                            isObject = false,
                             isPolymorphic = true,
                             isSealed = false,
                             explicitGenerationRequested = true,

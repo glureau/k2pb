@@ -7,7 +7,6 @@ data class MessageNode(
     override val packageName: String,
     override val qualifiedName: String,
     override val name: String,
-    val isObject: Boolean,
     val isPolymorphic: Boolean,
     // if not sealed, the generation is done in final module
     // if sealed, the generation is done in the current module
@@ -29,7 +28,7 @@ data class MessageNode(
         get() = explicitGenerationRequested ||
                 !isPolymorphic ||
                 isSealed
-
+/*
     val dependencies: List<KSFile>
         get() {
             val result = mutableListOf<KSFile>()
@@ -39,8 +38,7 @@ data class MessageNode(
             }
             return result
         }
-    val nestedNodes: MutableList<Node> = mutableListOf()
-
+*/
 }
 
 fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))

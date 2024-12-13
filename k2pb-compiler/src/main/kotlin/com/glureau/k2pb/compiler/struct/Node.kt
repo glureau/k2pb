@@ -8,4 +8,6 @@ sealed class Node {
     abstract val name: String
     abstract val originalFile: KSFile?
     abstract val generatesNow: Boolean
+
+    val nestedNodes: MutableList<Node> = mutableListOf()
 }

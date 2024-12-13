@@ -2,6 +2,11 @@ package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.codegen.generateEnumSerializerType
 import com.glureau.k2pb.compiler.codegen.generateMessageSerializerType
+import com.glureau.k2pb.compiler.codegen.generateObjectSerializerType
+import com.glureau.k2pb.compiler.codegen.generateSerializerType
+import com.glureau.k2pb.compiler.struct.EnumNode
+import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.ObjectNode
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.serializerClassName
 import com.squareup.kotlinpoet.ClassName
@@ -15,15 +20,14 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
     )
 
     fun buildFileSpecs(moduleName: String): List<CodeFile> {
-        val fileSpecs = protobufAggregator.messages
+        val fileSpecs = protobufAggregator.nodes
             .map {
                 val builder = FileSpec.builder(it.serializerClassName())
-                builder.generateMessageSerializerType(it)
-                CodeFile(builder.build(), false)
-            } + protobufAggregator.enums
-            .map {
-                val builder = FileSpec.builder(it.serializerClassName())
-                builder.generateEnumSerializerType(it)
+                when (it) {
+                    is MessageNode -> builder.generateMessageSerializerType(it)
+                    is EnumNode -> builder.generateEnumSerializerType(it)
+                    is ObjectNode -> builder.generateObjectSerializerType(it)
+                }
                 CodeFile(builder.build(), false)
             }
 
@@ -31,8 +35,7 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
             return emptyList()
         }
 
-        val packages = protobufAggregator.messages.map { it.packageName } +
-                protobufAggregator.enums.map { it.packageName }
+        val packages = protobufAggregator.nodes.map { it.packageName }
         // Find the common package
         val commonPackage = packages.reduce { acc, s -> acc.commonPrefixWith(s) }
 
@@ -47,42 +50,45 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                     FunSpec.builder("register${cleanModuleName}Serializers")
                         .receiver(ClassName("com.glureau.k2pb.runtime", "K2PBConfig"))
                         .apply {
-                            protobufAggregator.messages.forEach {
+                            protobufAggregator.nodes.forEach {
                                 val className = it.asClassName()
                                 val serializerClassName = it.serializerClassName()
-                                if (it.isPolymorphic) {
-                                    /*
-                                    addStatement(
-                                        "registerPolymorphicParent(%T::class)",
-                                        it.asClassName(),
-                                    )
-                                    */
-                                    addStatement(
-                                        "registerSerializer(%T::class, %T())",
-                                        className,
-                                        serializerClassName
-                                    )
-                                } else {
-                                    addStatement(
-                                        "registerSerializer(%T::class, %T())",
-                                        className,
-                                        serializerClassName
-                                    )
+                                when (it) {
+                                    is MessageNode -> {
+                                        if (it.isPolymorphic) {
+                                            addStatement(
+                                                "registerSerializer(%T::class, %T())",
+                                                className,
+                                                serializerClassName
+                                            )
+                                        } else {
+                                            addStatement(
+                                                "registerSerializer(%T::class, %T())",
+                                                className,
+                                                serializerClassName
+                                            )
+                                        }
+                                        it.superTypes.forEach { s ->
+                                            addStatement("registerPolymorphicChild(%T::class, %T::class)", s, className)
+                                        }
+                                    }
+
+                                    is EnumNode -> {
+                                        addStatement(
+                                            "registerSerializer(%T::class, %T())",
+                                            className,
+                                            serializerClassName
+                                        )
+                                    }
+
+                                    is ObjectNode -> {
+                                        addStatement(
+                                            "registerSerializer(%T::class, %T())",
+                                            className,
+                                            serializerClassName
+                                        )
+                                    }
                                 }
-                                it.superTypes.forEach { s ->
-                                    addStatement(
-                                        "registerPolymorphicChild(%T::class, %T::class)",
-                                        s,
-                                        className
-                                    )
-                                }
-                            }
-                            protobufAggregator.enums.forEach { enum ->
-                                addStatement(
-                                    "registerSerializer(%T::class, %T())",
-                                    enum.asClassName(),
-                                    enum.serializerClassName()
-                                )
                             }
                         }
                         .build())

@@ -11,8 +11,6 @@ import com.glureau.k2pb.compiler.capitalizeUS
 import com.glureau.k2pb.compiler.decapitalizeUS
 import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.sharedOptions
-import com.glureau.k2pb.compiler.struct.EnumEntry
-import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.FieldType
 import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
@@ -52,44 +50,21 @@ val KSClassDeclaration.isEnum: Boolean
 
 fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration) {
     when {
-        declaration.isSealed || declaration.isAbstractClass -> recordMessageNode(declaration.abstractToMessageNode())
+        declaration.isSealed || declaration.isAbstractClass -> recordNode(declaration.abstractToMessageNode())
 
-        declaration.isDataClass -> recordMessageNode(declaration.dataClassToMessageNode())
-        declaration.isObject -> recordMessageNode(declaration.objectToMessageNode())
-        declaration.isEnum -> recordEnumNode(declaration.toProtobufEnumNode())
+        declaration.isDataClass -> recordNode(declaration.dataClassToMessageNode())
+        declaration.isObject -> recordNode(declaration.mapObjectNode())
+        declaration.isEnum -> recordNode(declaration.mapEnumNode())
         declaration.isInlineClass -> {
-            recordMessageNode(declaration.dataClassToMessageNode())
+            recordNode(declaration.dataClassToMessageNode())
         }
 
         declaration.isClass -> {
-            recordMessageNode(declaration.dataClassToMessageNode())
+            recordNode(declaration.dataClassToMessageNode())
         }
 
         else -> error("Unsupported class kind: ${declaration.simpleName.asString()} ${declaration.classKind} with modifiers: ${declaration.modifiers}")
     }
-}
-
-private fun KSClassDeclaration.toProtobufEnumNode(): EnumNode {
-    val numberManager = NumberManager(0)
-    val entries = declarations.toList()
-        .filterIsInstance<KSClassDeclaration>()
-        .filter { it.classKind == ClassKind.ENUM_ENTRY }
-        .map { entry ->
-            val name = entry.serialName
-            EnumEntry(
-                name = name,
-                comment = entry.docString,
-                number = numberManager.resolve(name, entry.protoNumber), // proto3: enum starts at 0
-            )
-        }
-    return EnumNode(
-        packageName = this.packageName.asString(),
-        qualifiedName = qualifiedName!!.asString(),
-        name = protobufName(),
-        comment = docString,
-        entries = entries,
-        originalFile = containingFile,
-    )
 }
 
 private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
@@ -111,7 +86,6 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
         comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText" else "",
-        isObject = false,
         isPolymorphic = true,
         isSealed = modifiers.contains(Modifier.SEALED),
         sealedSubClasses = subclasses.map { it.toClassName() },
@@ -232,7 +206,6 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        isObject = false,
         isPolymorphic = false,
         isSealed = false,
         explicitGenerationRequested = false,
@@ -274,7 +247,6 @@ private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
     packageName = this.packageName.asString(),
     qualifiedName = qualifiedName!!.asString(),
     name = protobufName(),
-    isObject = true,
     // `object` can be serialized, also as the data is static, fields are not serialized
     isPolymorphic = false,
     isSealed = false,

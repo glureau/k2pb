@@ -1,15 +1,13 @@
 package com.glureau.k2pb.compiler.protofile
 
-import com.glureau.k2pb.compiler.struct.EnumNode
-import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.ProtoSyntax
 
 data class ProtobufFile(
     val path: String,
     val packageName: String? = null,
     val syntax: ProtoSyntax = ProtoSyntax.v3,
-    val messages: List<MessageNode>,
-    val enums: List<EnumNode>,
+    val nodes: List<Node>,
     val imports: List<String>,
 ) {
 
@@ -26,8 +24,6 @@ data class ProtobufFile(
 
         if (packageName != null) appendLine("package $packageName;\n")
 
-        messages.forEach { appendMessageNode(0, it) }
-
-        enums.forEach { appendEnumNode(0, it) }
+        nodes.forEach { appendNode(0, it) }
     }
 }

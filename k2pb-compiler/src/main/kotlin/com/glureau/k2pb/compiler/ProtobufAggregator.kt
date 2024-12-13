@@ -1,31 +1,25 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.Node
 
 class ProtobufAggregator {
-    internal val messages = mutableListOf<MessageNode>()
-    internal val enums = mutableListOf<EnumNode>()
+    internal val nodes = mutableListOf<Node>()
 
     private val qualifiedNameSet = mutableSetOf<String>()
 
-    fun recordMessageNode(it: MessageNode) {
-        messages += it
-        require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
-        qualifiedNameSet += it.qualifiedName
-        //if (it.isInlineClass) return // Ignore inlined class, for protobuf imports
-        TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
-    }
-
-    fun recordEnumNode(it: EnumNode) {
-        enums += it
-        require(qualifiedNameSet.contains(it.qualifiedName).not()) { "Duplicated qualified name: ${it.qualifiedName}" }
-        qualifiedNameSet += it.qualifiedName
-        TypeResolver.qualifiedNameToProtobufName[it.qualifiedName] = it.name
+    fun recordNode(node: Node) {
+        nodes += node
+        require(
+            qualifiedNameSet.contains(node.qualifiedName).not()
+        ) { "Duplicated qualified name: ${node.qualifiedName}" }
+        qualifiedNameSet += node.qualifiedName
+        TypeResolver.qualifiedNameToProtobufName[node.qualifiedName] = node.name
     }
 
     fun unknownReferences(): Set<String> {
-        val references: Set<String> = messages
+        val references: Set<String> = nodes
+            .filterIsInstance<MessageNode>()
             .flatMap { it.fields }
             .flatMap { it.resolvedExternalTypes() }
             .toSet()

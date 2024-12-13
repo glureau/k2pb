@@ -204,8 +204,7 @@ enum AnEnum {
 File: k2pb/ObjectClass.proto
 syntax = "proto3";
 
-message ObjectClass {
-}
+message ObjectClass { }
 
 File: k2pb/BarEvent.proto
 syntax = "proto3";
