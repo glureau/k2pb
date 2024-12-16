@@ -32,13 +32,6 @@ fun interface ImportResolver {
     fun resolve(protobufName: String): String
 }
 
-private fun collectNodes(
-    messageNodes: List<MessageNode>,
-    enumNodes: List<EnumNode>,
-): List<Node> {
-    return messageNodes.flatMap { it.nestedNodes } + enumNodes
-}
-
 private fun Node.allNodes(): List<Node> {
     return this.nestedNodes.flatMap {
         it.allNodes()
@@ -54,12 +47,15 @@ fun computeImports(
     val allTypeReferences = allNodes.flatMap { node ->
         when (node) {
             is MessageNode -> node.fields.flatMap { it.resolvedExternalTypes() }
-            is EnumNode -> listOf(node.name)
+            is EnumNode -> emptyList()
             is ObjectNode -> emptyList()
         }
     }.distinct()
+    val selfRef = nodes.map { it.qualifiedName }
 
     return (allTypeReferences - locallyDeclaredReferences.toSet())
+        // Filtering out self references, hypothesis: qfn <=> nesting in same file...
+        .filter { selfRef.none { sr -> it.startsWith("$sr.") } }
         .mapNotNull { TypeResolver.qualifiedNameToProtobufName[it] }
         .map { importResolver.resolve(it) }
         .distinct()
