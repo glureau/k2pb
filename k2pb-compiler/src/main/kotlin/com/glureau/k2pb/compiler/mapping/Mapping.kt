@@ -20,6 +20,7 @@ import com.glureau.k2pb.compiler.struct.NumberManager
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
+import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -210,7 +211,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         isSealed = false,
         explicitGenerationRequested = false,
         isInlineClass = this.isInlineClass,
-        superTypes = this.superTypes.map { it.resolve().toClassName() }
+        superTypes = this.getAllSuperTypes().map { it.toClassName() }
             .filterNot { it.canonicalName == "kotlin.Any" }
             .toList(),
         comment = docString, // because it's a data class
@@ -228,7 +229,6 @@ private fun TypedField.useNullabilitySubField(): Boolean =
             (type is ReferenceType && type.inlineAnnotatedSerializer is NullableStringConverter<*>)
 
 private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberManager): TypedField {
-    Logger.warn("NSF : $name ${useNullabilitySubField()} $type")
     return if (useNullabilitySubField()) {
         val nullFieldName = "is" + name.capitalizeUS() + "Null"
         copy(
@@ -242,22 +242,6 @@ private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberMana
         this
     }
 }
-
-private fun KSClassDeclaration.objectToMessageNode(): MessageNode = MessageNode(
-    packageName = this.packageName.asString(),
-    qualifiedName = qualifiedName!!.asString(),
-    name = protobufName(),
-    // `object` can be serialized, also as the data is static, fields are not serialized
-    isPolymorphic = false,
-    isSealed = false,
-    explicitGenerationRequested = false,
-    isInlineClass = false,
-    superTypes = emptyList(),
-    comment = docString,
-    fields = emptyList(),
-    originalFile = containingFile,
-    sealedSubClasses = emptyList(),
-)
 
 private fun KSTypeReference.toProtobufFieldType(): FieldType {
     val declaration = this.resolve().declaration
@@ -327,8 +311,7 @@ private fun mapQfnToFieldType(
                 )
             } else {
                 val isEnum = typeDecl?.isEnum == true
-                val converter = type?.annotations?.customConverter()
-                Logger.warn("OHIAFLKN - $type - $converter")
+                // val converter = type?.annotations?.customConverter()
                 ReferenceType(
                     className = typeDecl?.toClassName() ?: error("No type for $qfn"),
                     name = qfn,

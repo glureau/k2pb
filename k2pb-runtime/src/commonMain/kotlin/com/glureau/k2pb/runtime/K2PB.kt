@@ -45,46 +45,40 @@ public fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
 }
 
 public class K2PBConfig internal constructor() {
-    @PublishedApi
     internal val serializers: MutableMap<KClass<*>, ProtoSerializer<*>> = mutableMapOf()
 
-    @PublishedApi
-    internal val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
+    private val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
 
-    @PublishedApi
     internal val polymorphics: MutableMap<KClass<*>, MutableList<KClass<*>>> = mutableMapOf()
 
-    @PublishedApi
-    internal val polymorphicDefinitions: MutableMap<KClass<*>, Map<KClass<*>, Int>> = mutableMapOf()
+    //private val polymorphicDefinitions: MutableMap<KClass<*>, Map<KClass<*>, Int>> = mutableMapOf()
 
-    public inline fun registerSerializer(kClass: KClass<*>, serializer: ProtoSerializer<*>) {
+    public fun registerSerializer(kClass: KClass<*>, serializer: ProtoSerializer<*>) {
         serializers[kClass] = serializer
     }
 
-    public inline fun registerConverter(kClass: KClass<*>, converter: CustomConverter<*, *>) {
+    @Deprecated("Not used YET")
+    public fun registerConverter(kClass: KClass<*>, converter: CustomConverter<*, *>) {
         converters[kClass] = converter
     }
 
-    public inline fun registerPolymorphicParent(kClass: KClass<*>) {
+    public fun registerPolymorphicParent(kClass: KClass<*>) {
         polymorphics += kClass to mutableListOf()
     }
 
-    public inline fun registerPolymorphicChild(parentKClass: KClass<*>, childKClass: KClass<*>) {
+    public fun registerPolymorphicChild(parentKClass: KClass<*>, childKClass: KClass<*>) {
         polymorphics.getOrPut(parentKClass, { mutableListOf() }).add(childKClass)
     }
-
-    public inline fun registerPolymorphicDefinition(parentKClass: KClass<*>, children: Map<KClass<*>, Int>) {
-        polymorphicDefinitions += parentKClass to children
-        /*children.keys.all {
-            it.qualifiedName == "a"
+    /*
+        public fun registerPolymorphicDefinition(parentKClass: KClass<*>, children: Map<KClass<*>, Int>) {
+            polymorphicDefinitions += parentKClass to children
         }*/
-    }
 
     public fun verify() {
         polymorphics.forEach { (parent, children) ->
             children.forEach { child ->
                 if (!serializers.containsKey(child)) {
-                    throw IllegalArgumentException("Missing serializer for polymorphic child: $child")
+                    throw IllegalArgumentException("Missing serializer for polymorphic parent: $parent, child: $child")
                 }
             }
         }

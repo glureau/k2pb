@@ -41,7 +41,6 @@ fun FunSpec.Builder.encodeReferenceType(
         addStatement("val $encodedTmpName = %T().encode($fieldAccess)", annSerializer.toClassName())
         annSerializer.customConverterType()?.let { customType ->
             if (tag != null) {
-                /* TODO: custom string converter nullability */
                 addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
             } else {
                 addCode(customType.safeWriteMethodNoTag(encodedTmpName, null, forceEncodeDefault))
