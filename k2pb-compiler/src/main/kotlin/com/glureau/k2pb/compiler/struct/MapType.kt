@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.CodeBlock
@@ -21,11 +22,24 @@ fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
 fun FunSpec.Builder.encodeMapType(instanceName: String, fieldName: String, type: MapType, tag: Int) {
     beginControlFlow("$instanceName.${fieldName}.forEach")
     beginControlFlow("%M($tag)", writeMessageExt)
-    addCode(type.keyType.write("it.key", 1))
+    if (type.keyType.useEnumAsKey()) {
+        addCode(
+            CodeBlock.of(
+                "writeInt(it.key.ordinal, 1, %T)\n",
+                ProtoIntegerTypeDefault
+            )
+        )
+    } else {
+        addCode(type.keyType.write("it.key", 1))
+    }
     addCode(type.valueType.write("it.value", 2))
     endControlFlow() // writeMessage of the item
     endControlFlow() // forEach
 }
+
+// Enum not supported for keys, what we can do is use the enum ordinal in a best-effort approach,
+// also it doesn't offer the same guarantees...
+internal fun FieldType.useEnumAsKey(): Boolean = this is ReferenceType && this.isEnum
 
 private fun FieldType.write(name: String, tag: Int): CodeBlock =
     when (this) {
@@ -47,9 +61,20 @@ fun FunSpec.Builder.decodeMapTypeVariableDefinition(fieldName: String, type: Map
 
 fun FunSpec.Builder.decodeMapType(fieldName: String, type: MapType) {
     beginControlFlow("%M()", readMessageExt)
+    /// TODO: We may write it differently so that we can swap the key and value... (warning on perf tho)
     addStatement("readTag()") // Should be 1
     addCode("val key = ")
-    addCode(type.keyType.readNoTag())
+    if (type.keyType.useEnumAsKey()) {
+        addCode(
+            CodeBlock.of(
+                "%T.entries[readInt(%T)]",
+                (type.keyType as ReferenceType).className,
+                ProtoIntegerTypeDefault
+            )
+        )
+    } else {
+        addCode(type.keyType.readNoTag())
+    }
     addStatement("")
 
     addStatement("readTag()") // Should be 2
