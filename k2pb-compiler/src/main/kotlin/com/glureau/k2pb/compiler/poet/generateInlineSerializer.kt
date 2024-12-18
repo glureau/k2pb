@@ -42,7 +42,7 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
 ): FunSpec.Builder {
     val inlinedField = messageNode.fields.first()
     var localVar: String? = null
-    if (inlinedField !is TypedField) TODO()
+    if (inlinedField !is TypedField) TODO("Doesn't support inlinedField $inlinedField")
 
     if (inlinedField.type is ReferenceType && inlinedField.annotatedConverter != null) {
         inlinedField.annotatedConverter.customConverterType()?.let {
@@ -55,7 +55,7 @@ fun FunSpec.Builder.generateInlineSerializerDecode(
     val readCodeBlock = when (inlinedField.type) {
         is ScalarFieldType -> inlinedField.type.readMethodNoTag()
         is ReferenceType -> localVar?.let { CodeBlock.of(it) }
-        else -> TODO()
+        else -> TODO("Does not support inlined field of type ${inlinedField.type}")
     }
     addCode("${inlinedField.name} = ")
     if (!inlinedField.type.isNullable) {

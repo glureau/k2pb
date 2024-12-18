@@ -69,7 +69,6 @@ fun ProtobufAggregator.recordKSClassDeclaration(declaration: KSClassDeclaration)
 }
 
 private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
-    Logger.warn("Recording of abstract class is not supported yet: ${qualifiedName!!.asString()}")
     val subclasses = getSealedSubclasses().toList()
     val possibleValuesText = if (subclasses.isNotEmpty()) {
         "Possible values are:\n" +

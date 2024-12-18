@@ -18,5 +18,8 @@ fun StringBuilder.appendKotlinDefinition(type: FieldType): String {
 fun FieldType.readNoTag(): CodeBlock =
     when (this) {
         is ScalarFieldType -> readMethodNoTag()
-        else -> TODO()
+// TODO: improve this very basic implementation that uses requireNotNul...
+        is ReferenceType -> CodeBlock.of("with(protoSerializer) { requireNotNull(decode(%T::class)) }", className)
+
+        else -> TODO("Doesn't support readNoTag on $this")
     }

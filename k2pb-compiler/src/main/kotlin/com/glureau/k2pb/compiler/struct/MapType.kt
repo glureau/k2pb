@@ -2,7 +2,6 @@ package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
-import com.glureau.k2pb.compiler.protofile.appendFieldType
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 
@@ -31,7 +30,14 @@ fun FunSpec.Builder.encodeMapType(instanceName: String, fieldName: String, type:
 private fun FieldType.write(name: String, tag: Int): CodeBlock =
     when (this) {
         is ScalarFieldType -> safeWriteMethod(name, tag, null, true)
-        else -> TODO()
+        is ReferenceType -> CodeBlock.of(
+            "writeMessage(%L) { with(protoSerializer) { encode(%L, %T::class) } }\n",
+            tag,
+            name,
+            className
+        )
+
+        else -> CodeBlock.of("Map key or value cannot be a reference type name=$name, tag=$tag")
     }
 
 fun FunSpec.Builder.decodeMapTypeVariableDefinition(fieldName: String, type: MapType) {
