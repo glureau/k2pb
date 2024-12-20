@@ -319,6 +319,14 @@ message CommentedClass {
   string fieldWithComment = 1;
 }
 
+File: k2pb/UuidsHolder.proto
+syntax = "proto3";
+
+message UuidsHolder {
+  string uuidAsString = 1;
+  bytes uuidAsBytes = 2;
+}
+
 File: k2pb/User.proto
 syntax = "proto3";
 

@@ -30,6 +30,12 @@ dependencies {
     testImplementation("com.approvaltests:approvaltests:18.4.0")
 }
 
+kotlin.sourceSets.main {
+    languageSettings {
+        optIn("kotlin.uuid.ExperimentalUuidApi")
+    }
+}
+
 sourceSets.main {
     java.srcDirs("src/main/kotlin")
 }

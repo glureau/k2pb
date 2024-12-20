@@ -17,5 +17,5 @@ public interface CustomConverter<Data : Any?, Output : Any?> {
     public fun decode(data: Output): Data?
 }
 
-public interface StringConverter<T : Any> : CustomConverter<T, String>
 public interface NullableStringConverter<T : Any> : CustomConverter<T, String?>
+public interface NullableByteArrayConverter<T : Any> : CustomConverter<T, ByteArray?>

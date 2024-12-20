@@ -1,7 +1,6 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.NullableStringConverter
-import com.glureau.k2pb.StringConverter
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoName
 import com.glureau.k2pb.annotation.ProtoNumber
@@ -142,7 +141,6 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         val annotatedConverter = prop.annotations.customConverter()
         val annotatedDerivedType = when (annotatedConverter) {
             is NullableStringConverter<*> -> ScalarFieldType.StringNullable
-            is StringConverter<*> -> ScalarFieldType.String
             else -> null
         }
         val annotatedNumber = prop.protoNumberInternal

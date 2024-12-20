@@ -1,0 +1,58 @@
+package sample.kt
+
+import com.glureau.sample.UuidsHolder
+import com.google.protobuf.ByteString
+import com.google.protobuf.kotlin.toByteString
+import org.junit.Test
+import sample.kt.tools.BaseEncodingTest
+import uuidsHolder
+import java.nio.ByteBuffer
+import java.util.UUID
+import kotlin.uuid.Uuid
+
+class UuidConvertersTest : BaseEncodingTest() {
+    @Test
+    fun data() {
+        assertCompatibleSerialization(
+            ktInstance = UuidsHolder(
+                uuidAsString = Uuid.parse("1c92e771-b29e-453a-b4f9-e984aa78d5f0"),
+                uuidAsBytes = Uuid.parse("aa92e771-b29e-453a-b4f9-e984aa78d5aa")
+            ),
+            protocInstance = uuidsHolder {
+                uuidAsString = "1c92e771-b29e-453a-b4f9-e984aa78d5f0"
+                uuidAsBytes = uuidToByteString("aa92e771-b29e-453a-b4f9-e984aa78d5aa")
+            }
+        )
+    }
+
+    @Test
+    fun `zeroes are always encoded`() {
+        assertCompatibleSerialization(
+            ktInstance = UuidsHolder(
+                uuidAsString = Uuid.NIL,
+                uuidAsBytes = Uuid.NIL,
+            ),
+            protocInstance = uuidsHolder {
+                uuidAsString = "00000000-0000-0000-0000-000000000000"
+                uuidAsBytes = UUIDfromLongs(0, 0)
+            }
+        )
+    }
+
+    private fun uuidToByteString(uuidStr: String): ByteString {
+        val uuid = UUID.fromString(uuidStr)
+        val bb = ByteBuffer.wrap(ByteArray(16))
+        bb.putLong(uuid.mostSignificantBits)
+        bb.putLong(uuid.leastSignificantBits)
+        return bb.array().toByteString()
+    }
+
+    private fun UUIDfromLongs(mostSignificantBits: Long, leastSignificantBits: Long): ByteString {
+        val bb = ByteBuffer.wrap(ByteArray(16))
+        bb.putLong(mostSignificantBits)
+        bb.putLong(leastSignificantBits)
+        val uuid = UUID.nameUUIDFromBytes(bb.array())
+        return bb.array().toByteString()
+    }
+
+}

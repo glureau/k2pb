@@ -17,6 +17,7 @@ kotlin {
     sourceSets {
         all {
             languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
         }
         commonMain {
             dependencies {
