@@ -30,7 +30,13 @@ fun FunSpec.Builder.encodeReferenceType(
     forceEncodeDefault: Boolean = false,
 ) {
     (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
-        val fieldAccess = fieldName + (type.inlineName?.let { ".$it" } ?: "")
+        val fieldAccess = buildString {
+            append(fieldName)
+            if (type.inlineName != null) {
+                if (type.isNullable == true) append("?")
+                append(".${type.inlineName}")
+            }
+        }
 
         val checkNullability =
             type.isNullable || (type.inlineOf as? ReferenceType)?.isNullable == true
@@ -38,7 +44,7 @@ fun FunSpec.Builder.encodeReferenceType(
             beginControlFlow("if ($fieldAccess != null)")
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
-        addStatement("val $encodedTmpName = %T().encode($fieldAccess)", annSerializer.toClassName())
+        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "") })", annSerializer.toClassName())
         annSerializer.customConverterType()?.let { customType ->
             if (tag != null) {
                 addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))

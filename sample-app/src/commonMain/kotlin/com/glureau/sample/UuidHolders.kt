@@ -14,6 +14,15 @@ data class UuidsHolder(
     val bytesValueClass: UuidBytesValueClass,
 )
 
+@ProtoMessage
+data class NullableUuidsHolder(
+    @ProtoConverter(UuidStringConverter::class) val uuidAsString: Uuid?,
+    @ProtoConverter(UuidBytesConverter::class) val uuidAsBytes: Uuid?,
+    val stringValueClass: UuidStringValueClass?,
+    val bytesValueClass: UuidBytesValueClass?,
+)
+
+
 @JvmInline
 @ProtoMessage
 value class UuidStringValueClass(

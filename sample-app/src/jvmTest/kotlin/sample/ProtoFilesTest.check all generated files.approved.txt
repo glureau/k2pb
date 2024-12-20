@@ -100,6 +100,20 @@ message DataClassFromLib {
   int32 myInt = 1;
 }
 
+File: k2pb/NullableUuidsHolder.proto
+syntax = "proto3";
+
+message NullableUuidsHolder {
+  string uuidAsString = 1;
+  bool isUuidAsStringNull = 2;
+  bytes uuidAsBytes = 3;
+  bool isUuidAsBytesNull = 4;
+  string stringValueClass = 5;
+  bool isStringValueClassNull = 6;
+  bytes bytesValueClass = 7;
+  bool isBytesValueClassNull = 8;
+}
+
 File: k2pb/WithNestClassA.proto
 syntax = "proto3";
 
