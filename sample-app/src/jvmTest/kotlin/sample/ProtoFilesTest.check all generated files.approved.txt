@@ -325,6 +325,8 @@ syntax = "proto3";
 message UuidsHolder {
   string uuidAsString = 1;
   bytes uuidAsBytes = 2;
+  string stringValueClass = 3;
+  bytes bytesValueClass = 4;
 }
 
 File: k2pb/User.proto

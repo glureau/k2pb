@@ -1,5 +1,7 @@
 package sample.kt
 
+import com.glureau.sample.UuidBytesValueClass
+import com.glureau.sample.UuidStringValueClass
 import com.glureau.sample.UuidsHolder
 import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteString
@@ -13,14 +15,23 @@ import kotlin.uuid.Uuid
 class UuidConvertersTest : BaseEncodingTest() {
     @Test
     fun data() {
+        println(Uuid.random())
         assertCompatibleSerialization(
             ktInstance = UuidsHolder(
                 uuidAsString = Uuid.parse("1c92e771-b29e-453a-b4f9-e984aa78d5f0"),
-                uuidAsBytes = Uuid.parse("aa92e771-b29e-453a-b4f9-e984aa78d5aa")
+                uuidAsBytes = Uuid.parse("aa92e771-b29e-453a-b4f9-e984aa78d5aa"),
+                stringValueClass = UuidStringValueClass(
+                    uuidAsString = Uuid.parse("30dd3f74-5281-4f41-86b9-b7499c3a82ce")
+                ),
+                bytesValueClass = UuidBytesValueClass(
+                    uuidAsString = Uuid.parse("5513e592-65d1-4197-aeea-723bbc1cd14d")
+                ),
             ),
             protocInstance = uuidsHolder {
                 uuidAsString = "1c92e771-b29e-453a-b4f9-e984aa78d5f0"
                 uuidAsBytes = uuidToByteString("aa92e771-b29e-453a-b4f9-e984aa78d5aa")
+                stringValueClass = "30dd3f74-5281-4f41-86b9-b7499c3a82ce"
+                bytesValueClass = uuidToByteString("5513e592-65d1-4197-aeea-723bbc1cd14d")
             }
         )
     }
@@ -31,10 +42,18 @@ class UuidConvertersTest : BaseEncodingTest() {
             ktInstance = UuidsHolder(
                 uuidAsString = Uuid.NIL,
                 uuidAsBytes = Uuid.NIL,
+                stringValueClass = UuidStringValueClass(
+                    uuidAsString = Uuid.NIL,
+                ),
+                bytesValueClass = UuidBytesValueClass(
+                    uuidAsString = Uuid.NIL,
+                ),
             ),
             protocInstance = uuidsHolder {
                 uuidAsString = "00000000-0000-0000-0000-000000000000"
                 uuidAsBytes = UUIDfromLongs(0, 0)
+                stringValueClass = "00000000-0000-0000-0000-000000000000"
+                bytesValueClass = UUIDfromLongs(0, 0)
             }
         )
     }
