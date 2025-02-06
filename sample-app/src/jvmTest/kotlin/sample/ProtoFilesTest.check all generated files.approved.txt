@@ -1,27 +1,42 @@
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalValueClassHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AbstractClass.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "NullableBigDecimalValueClassHolderProto";
+option java_outer_classname = "AbstractClassProto";
 
-message NullableBigDecimalValueClassHolder {
-  string nullableBdValue = 1;
-  bool isNullableBdValueNull = 2;
+import "com/glureau/k2pb_sample/AbstractSubClass.proto";
+
+message AbstractClass {
+  oneof abstractClass {
+    AbstractSubClass abstractSubClass = 1;
+  }
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AbstractSubClass.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "AbstractSubClassProto";
+
+message AbstractSubClass {
+  int32 foo = 1;
+  string bar = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnEnum.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
 option java_package = "com.glureau.custom.javapackage";
-option java_outer_classname = "EnumHolderProto";
+option java_outer_classname = "AnEnumProto";
 
-import "com/glureau/k2pb_sample/AnEnum.proto";
-
-message EnumHolder {
-  AnEnum value = 1;
+enum AnEnum {
+  AnEnum_A = 0;
+  AnEnum_B = 1;
+  AnEnum_C = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnnotatedClass.proto
@@ -38,90 +53,28 @@ message AnnotatedClass {
   string d = 5;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestClassB.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BarEvent.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "WithNestClassBProto";
+option java_outer_classname = "BarEventProto";
 
-message WithNestClassB {
-  WithNestClassB.NestedClass b = 1;
-  message NestedClass {
-    WithNestClassB.NestedClass.NestedEnum nestedEnum = 1;
-    enum NestedEnum {
-      A = 0;
-      B = 1;
-      C = 2;
-    }
-  }
+import "com/glureau/k2pb_sample/CommonClass.proto";
+
+message BarEvent {
+  CommonClass common = 1;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BigDecimalHolder.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "MultiModuleProto";
+option java_outer_classname = "BigDecimalHolderProto";
 
-import "com/glureau/k2pb_sample/DataClassFromLib.proto";
-
-message MultiModule {
-  DataClassFromLib dataClassFromLib = 1;
-  string valueClassFromLib = 2;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AbstractSubClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "AbstractSubClassProto";
-
-message AbstractSubClass {
-  int32 foo = 1;
-  string bar = 2;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestedEnum.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "WithNestedEnumProto";
-
-message WithNestedEnum {
-  WithNestedEnum.NestedEnum enum = 1;
-  enum NestedEnum {
-    A = 0;
-    B = 1;
-    C = 2;
-  }
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ValueClassOfEnumHolder.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_package = "com.glureau.custom.javapackage";
-option java_outer_classname = "ValueClassOfEnumHolderProto";
-
-import "com/glureau/k2pb_sample/AnEnum.proto";
-
-message ValueClassOfEnumHolder {
-  AnEnum value = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/TransientField.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "TransientFieldProto";
-
-message TransientField {
-  string fieldSerialized = 1;
+message BigDecimalHolder {
+  string bd = 1;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BigDecimalValueClassHolder.proto
@@ -133,6 +86,48 @@ option java_outer_classname = "BigDecimalValueClassHolderProto";
 
 message BigDecimalValueClassHolder {
   string bdValue = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CollectionType.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "CollectionTypeProto";
+
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
+
+message CollectionType {
+  repeated int32 integerList = 1;
+  repeated string stringList = 2;
+  repeated int32 maybeIntegerList = 3;
+  bool isMaybeIntegerListNull = 4;
+  map<string, int32> mapStringInt = 5;
+  repeated DataClassFromLib dataClassList = 6;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommentedClass.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "CommentedClassProto";
+
+//  This class has kdoc comment.
+message CommentedClass {
+  //  This field has kdoc comment.
+  string fieldWithComment = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommonClass.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "CommonClassProto";
+
+message CommonClass {
+  string id = 1;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DataClassFromLib.proto
@@ -147,36 +142,282 @@ message DataClassFromLib {
   int32 myInt = 1;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableUuidsHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumClass.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "NullableUuidsHolderProto";
+option java_outer_classname = "EnumClassProto";
 
-message NullableUuidsHolder {
-  string uuidAsString = 1;
-  bool isUuidAsStringNull = 2;
-  bytes uuidAsBytes = 3;
-  bool isUuidAsBytesNull = 4;
-  string stringValueClass = 5;
-  bool isStringValueClassNull = 6;
-  bytes bytesValueClass = 7;
-  bool isBytesValueClassNull = 8;
+enum EnumClass {
+  A = 0;
+  B = 1;
+  C = 2;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestClassA.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumHolder.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "WithNestClassAProto";
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "EnumHolderProto";
 
-message WithNestClassA {
-  WithNestClassA.NestedClass a = 1;
-  message NestedClass {
-    string nested = 1;
-  }
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message EnumHolder {
+  AnEnum value = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/FooEvent.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "FooEventProto";
+
+import "com/glureau/k2pb_sample/CommonClass.proto";
+
+message FooEvent {
+  CommonClass common = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/InlinedCollection.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "InlinedCollectionProto";
+
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message InlinedCollection {
+  repeated string valueClassList = 1;
+  repeated AnEnum valueClassOfEnumList = 2;
+  repeated AnEnum valueClassOfNullableEnumList = 3;
+  repeated string valueClassOfNullableStringList = 4;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClasses.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "KtxClassesProto";
+
+message KtxClasses {
+  string instant = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationAddFieldAfter.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationAddFieldAfterProto";
+
+import "com/glureau/k2pb_sample/MigrationData.proto";
+
+message MigrationAddFieldAfter {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+  string d = 4;
+  MigrationData e = 5;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationAddFieldAfterNullable.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationAddFieldAfterNullableProto";
+
+import "com/glureau/k2pb_sample/MigrationData.proto";
+
+message MigrationAddFieldAfterNullable {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+  bool isCNull = 4;
+  string d = 5;
+  bool isDNull = 6;
+  MigrationData e = 7;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationAddFieldBefore.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationAddFieldBeforeProto";
+
+message MigrationAddFieldBefore {
+  string a = 1;
+  string b = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationData.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationDataProto";
+
+message MigrationData {
+  string a = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationMoveDataAfter.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationMoveDataAfterProto";
+
+import "com/glureau/k2pb_sample/MigrationNewDataHolder.proto";
+
+message MigrationMoveDataAfter {
+  MigrationNewDataHolder dataHolder = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationMoveDataBefore.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationMoveDataBeforeProto";
+
+import "com/glureau/k2pb_sample/MigrationData.proto";
+
+message MigrationMoveDataBefore {
+  MigrationData data = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationNewDataHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationNewDataHolderProto";
+
+import "com/glureau/k2pb_sample/MigrationData.proto";
+
+message MigrationNewDataHolder {
+  MigrationData data = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRemoveFieldAfter.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRemoveFieldAfterProto";
+
+message MigrationRemoveFieldAfter {
+  string a = 1;
+  int32 c = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRemoveFieldBefore.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRemoveFieldBeforeProto";
+
+message MigrationRemoveFieldBefore {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRenameClassAfter.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRenameClassAfterProto";
+
+message MigrationRenameClassAfter {
+  string a = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRenameClassBefore.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRenameClassBeforeProto";
+
+message MigrationRenameClassBefore {
+  string a = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRenameFieldAfter.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRenameFieldAfterProto";
+
+message MigrationRenameFieldAfter {
+  string a = 1;
+  string renamedB = 2;
+  int32 c = 3;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRenameFieldBefore.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRenameFieldBeforeProto";
+
+message MigrationRenameFieldBefore {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRenameSubClassAfter.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRenameSubClassAfterProto";
+
+import "com/glureau/k2pb_sample/MigrationRenameClassAfter.proto";
+
+message MigrationRenameSubClassAfter {
+  MigrationRenameClassAfter sub = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MigrationRenameSubClassBefore.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MigrationRenameSubClassBeforeProto";
+
+import "com/glureau/k2pb_sample/MigrationRenameClassBefore.proto";
+
+message MigrationRenameSubClassBefore {
+  MigrationRenameClassBefore sub = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MultiModuleProto";
+
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
+
+message MultiModule {
+  DataClassFromLib dataClassFromLib = 1;
+  string valueClassFromLib = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NativeTypeEvent.proto
@@ -199,6 +440,30 @@ message NativeTypeEvent {
   bytes byteArray = 10;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableBigDecimalHolderProto";
+
+message NullableBigDecimalHolder {
+  string bd = 1;
+  bool isBdNull = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalValueClassHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableBigDecimalValueClassHolderProto";
+
+message NullableBigDecimalValueClassHolder {
+  string nullableBdValue = 1;
+  bool isNullableBdValueNull = 2;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableInlinedCollection.proto
 syntax = "proto3";
 
@@ -217,116 +482,6 @@ message NullableInlinedCollection {
   bool isValueClassOfNullableEnumListNull = 6;
   repeated string valueClassOfNullableStringList = 7;
   bool isValueClassOfNullableStringListNull = 8;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BigDecimalHolder.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "BigDecimalHolderProto";
-
-message BigDecimalHolder {
-  string bd = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AbstractClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "AbstractClassProto";
-
-import "com/glureau/k2pb_sample/AbstractSubClass.proto";
-
-message AbstractClass {
-  oneof abstractClass {
-    AbstractSubClass abstractSubClass = 1;
-  }
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommonClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "CommonClassProto";
-
-message CommonClass {
-  string id = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "EnumClassProto";
-
-enum EnumClass {
-  A = 0;
-  B = 1;
-  C = 2;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClasses.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "KtxClassesProto";
-
-message KtxClasses {
-  string instant = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/FooEvent.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "FooEventProto";
-
-import "com/glureau/k2pb_sample/CommonClass.proto";
-
-message FooEvent {
-  CommonClass common = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnEnum.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_package = "com.glureau.custom.javapackage";
-option java_outer_classname = "AnEnumProto";
-
-enum AnEnum {
-  AnEnum_A = 0;
-  AnEnum_B = 1;
-  AnEnum_C = 2;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ObjectClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "ObjectClassProto";
-
-message ObjectClass { }
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BarEvent.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "BarEventProto";
-
-import "com/glureau/k2pb_sample/CommonClass.proto";
-
-message BarEvent {
-  CommonClass common = 1;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableNativeTypeEvent.proto
@@ -359,16 +514,120 @@ message NullableNativeTypeEvent {
   bool isByteArrayNull = 20;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableUuidsHolder.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "NullableBigDecimalHolderProto";
+option java_outer_classname = "NullableUuidsHolderProto";
 
-message NullableBigDecimalHolder {
-  string bd = 1;
-  bool isBdNull = 2;
+message NullableUuidsHolder {
+  string uuidAsString = 1;
+  bool isUuidAsStringNull = 2;
+  bytes uuidAsBytes = 3;
+  bool isUuidAsBytesNull = 4;
+  string stringValueClass = 5;
+  bool isStringValueClassNull = 6;
+  bytes bytesValueClass = 7;
+  bool isBytesValueClassNull = 8;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableValueClassHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableValueClassHolderProto";
+
+message NullableValueClassHolder {
+  string valueClassFromLib = 1;
+  bool isValueClassFromLibNull = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ObjectClass.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "ObjectClassProto";
+
+message ObjectClass { }
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/StandardClass.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "StandardClassProto";
+
+message StandardClass {
+  string eventUUID = 1;
+  bytes bytes = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/TransientField.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "TransientFieldProto";
+
+message TransientField {
+  string fieldSerialized = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/User.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "UserProto";
+
+import "com/glureau/k2pb_sample/Vehicle.proto";
+
+message User {
+  string name = 1;
+  Vehicle vehicle = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/UuidsHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "UuidsHolderProto";
+
+message UuidsHolder {
+  string uuidAsString = 1;
+  bytes uuidAsBytes = 2;
+  string stringValueClass = 3;
+  bytes bytesValueClass = 4;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ValueClassList.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "ValueClassListProto";
+
+message ValueClassList {
+  repeated string valueClassFromLibs = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ValueClassOfEnumHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "ValueClassOfEnumHolderProto";
+
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message ValueClassOfEnumHolder {
+  AnEnum value = 1;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/Vehicle.proto
@@ -395,114 +654,52 @@ message Vehicle {
   }
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/InlinedCollection.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestClassA.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "InlinedCollectionProto";
+option java_outer_classname = "WithNestClassAProto";
 
-import "com/glureau/k2pb_sample/AnEnum.proto";
-
-message InlinedCollection {
-  repeated string valueClassList = 1;
-  repeated AnEnum valueClassOfEnumList = 2;
-  repeated AnEnum valueClassOfNullableEnumList = 3;
-  repeated string valueClassOfNullableStringList = 4;
+message WithNestClassA {
+  WithNestClassA.NestedClass a = 1;
+  message NestedClass {
+    string nested = 1;
+  }
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CollectionType.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestClassB.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "CollectionTypeProto";
+option java_outer_classname = "WithNestClassBProto";
 
-import "com/glureau/k2pb_sample/DataClassFromLib.proto";
-
-message CollectionType {
-  repeated int32 integerList = 1;
-  repeated string stringList = 2;
-  repeated int32 maybeIntegerList = 3;
-  bool isMaybeIntegerListNull = 4;
-  map<string, int32> mapStringInt = 5;
-  repeated DataClassFromLib dataClassList = 6;
+message WithNestClassB {
+  WithNestClassB.NestedClass b = 1;
+  message NestedClass {
+    WithNestClassB.NestedClass.NestedEnum nestedEnum = 1;
+    enum NestedEnum {
+      A = 0;
+      B = 1;
+      C = 2;
+    }
+  }
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ValueClassList.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestedEnum.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_package = "com.glureau.custom.javapackage";
-option java_outer_classname = "ValueClassListProto";
+option java_outer_classname = "WithNestedEnumProto";
 
-message ValueClassList {
-  repeated string valueClassFromLibs = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableValueClassHolder.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "NullableValueClassHolderProto";
-
-message NullableValueClassHolder {
-  string valueClassFromLib = 1;
-  bool isValueClassFromLibNull = 2;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommentedClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "CommentedClassProto";
-
-//  This class has kdoc comment.
-message CommentedClass {
-  //  This field has kdoc comment.
-  string fieldWithComment = 1;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/UuidsHolder.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "UuidsHolderProto";
-
-message UuidsHolder {
-  string uuidAsString = 1;
-  bytes uuidAsBytes = 2;
-  string stringValueClass = 3;
-  bytes bytesValueClass = 4;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/User.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "UserProto";
-
-import "com/glureau/k2pb_sample/Vehicle.proto";
-
-message User {
-  string name = 1;
-  Vehicle vehicle = 2;
-}
-
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/StandardClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "StandardClassProto";
-
-message StandardClass {
-  string eventUUID = 1;
-  bytes bytes = 2;
+message WithNestedEnum {
+  WithNestedEnum.NestedEnum enum = 1;
+  enum NestedEnum {
+    A = 0;
+    B = 1;
+    C = 2;
+  }
 }
 

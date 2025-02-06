@@ -1,20 +1,13 @@
 package sample.kt.tools
 
-import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.decodeFromByteArray
 import com.glureau.k2pb.runtime.encodeToByteArray
-import com.glureau.sample.lib.registerSampleLibSerializers
-import com.glureau.sample.registerSampleAppSerializers
 import com.google.protobuf.GeneratedMessage
 import org.junit.Assert
+import sample.serializer
 import kotlin.test.assertContentEquals
 
 abstract class BaseEncodingTest {
-
-    val serializer = K2PB {
-        registerSampleLibSerializers()
-        registerSampleAppSerializers()
-    }
 
     @OptIn(ExperimentalStdlibApi::class)
     inline fun <reified Kt : Any> assertCompatibleSerialization(

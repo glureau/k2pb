@@ -15,7 +15,9 @@ class ProtoFilesTest {
         val generatedDir = File(resourcePath)
         println(generatedDir.absolutePath)
         var allMarkdownGenerated = ""
-        generatedDir.onEachFile { file ->
+        val files = mutableListOf<File>()
+        generatedDir.onEachFile { files += it }
+        files.sorted().forEach { file ->
             println("Testing ${file.absolutePath}")
             allMarkdownGenerated += "File: " + file.absolutePath.substringAfter("$resourcePath/") + "\n" + file.readText() + "\n"
         }
