@@ -5,12 +5,17 @@ import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.asClassName
 
 data class MapType(
     val keyType: FieldType,
     val valueType: FieldType,
     override val isNullable: Boolean = false
-) : FieldType
+) : FieldType {
+    override val typeName: TypeName = Map::class.asClassName().parameterizedBy(keyType.typeName, valueType.typeName)
+}
 
 fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
     append(
@@ -48,7 +53,7 @@ private fun FieldType.write(name: String, tag: Int): CodeBlock =
             "writeMessage(%L) { with(protoSerializer) { encode(%L, %T::class) } }\n",
             tag,
             name,
-            className
+            typeName
         )
 
         else -> CodeBlock.of("Map key or value cannot be a reference type name=$name, tag=$tag")
@@ -68,7 +73,7 @@ fun FunSpec.Builder.decodeMapType(fieldName: String, type: MapType) {
         addCode(
             CodeBlock.of(
                 "%T.entries[readInt(%T)]",
-                (type.keyType as ReferenceType).className,
+                (type.keyType as ReferenceType).typeName,
                 ProtoIntegerTypeDefault
             )
         )

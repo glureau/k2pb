@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ScalarFieldType(
-    val kotlinClass: ClassName,
+    override val typeName: ClassName,
     val protoType: ScalarType,
     val shouldEncodeDefault: (fieldName: String) -> String,
     val defaultValue: String,
@@ -55,7 +55,7 @@ data class ScalarFieldType(
 
     companion object {
         val String = ScalarFieldType(
-            kotlinClass = kotlin.String::class.asClassName(),
+            typeName = kotlin.String::class.asClassName(),
             shouldEncodeDefault = { "$it != \"\"" },
             defaultValue = "\"\"",
             protoType = ScalarType.string,
@@ -66,7 +66,7 @@ data class ScalarFieldType(
         )
         val StringNullable = String.copy(isNullable = true)
         val Int = ScalarFieldType(
-            kotlinClass = kotlin.Int::class.asClassName(),
+            typeName = kotlin.Int::class.asClassName(),
             shouldEncodeDefault = { "$it != 0" },
             defaultValue = "0",
             protoType = ScalarType.int32,
@@ -79,7 +79,7 @@ data class ScalarFieldType(
         )
         val IntNullable = Int.copy(isNullable = true)
         val Char = ScalarFieldType(
-            kotlinClass = kotlin.Char::class.asClassName(),
+            typeName = kotlin.Char::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.toChar()" },
             defaultValue = "0.toChar()",
             protoType = ScalarType.int32,
@@ -92,7 +92,7 @@ data class ScalarFieldType(
         )
         val CharNullable = Char.copy(isNullable = true)
         val Short = ScalarFieldType(
-            kotlinClass = kotlin.Short::class.asClassName(),
+            typeName = kotlin.Short::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.toShort()" },
             defaultValue = "0.toShort()",
             protoType = ScalarType.int32,
@@ -105,7 +105,7 @@ data class ScalarFieldType(
         )
         val ShortNullable = Short.copy(isNullable = true)
         val Byte = ScalarFieldType(
-            kotlinClass = kotlin.Byte::class.asClassName(),
+            typeName = kotlin.Byte::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.toByte()" },
             defaultValue = "0.toByte()",
             protoType = ScalarType.int32,
@@ -118,7 +118,7 @@ data class ScalarFieldType(
         )
         val ByteNullable = Byte.copy(isNullable = true)
         val Long = ScalarFieldType(
-            kotlinClass = kotlin.Long::class.asClassName(),
+            typeName = kotlin.Long::class.asClassName(),
             shouldEncodeDefault = { "$it != 0L" },
             defaultValue = "0L",
             protoType = ScalarType.int64,
@@ -131,7 +131,7 @@ data class ScalarFieldType(
         )
         val LongNullable = Long.copy(isNullable = true)
         val Float = ScalarFieldType(
-            kotlinClass = kotlin.Float::class.asClassName(),
+            typeName = kotlin.Float::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.0f" },
             defaultValue = "0.0f",
             protoType = ScalarType.float,
@@ -142,7 +142,7 @@ data class ScalarFieldType(
         )
         val FloatNullable = Float.copy(isNullable = true)
         val Double = ScalarFieldType(
-            kotlinClass = kotlin.Double::class.asClassName(),
+            typeName = kotlin.Double::class.asClassName(),
             shouldEncodeDefault = { "$it != 0.0" },
             defaultValue = "0.0",
             protoType = ScalarType.double,
@@ -153,7 +153,7 @@ data class ScalarFieldType(
         )
         val DoubleNullable = Double.copy(isNullable = true)
         val Boolean = ScalarFieldType(
-            kotlinClass = kotlin.Boolean::class.asClassName(),
+            typeName = kotlin.Boolean::class.asClassName(),
             shouldEncodeDefault = { "$it != false" },
             defaultValue = "false",
             protoType = ScalarType.bool,
@@ -169,7 +169,7 @@ data class ScalarFieldType(
         )
         val BooleanNullable = Boolean.copy(isNullable = true)
         val ByteArray = ScalarFieldType(
-            kotlinClass = kotlin.ByteArray::class.asClassName(),
+            typeName = kotlin.ByteArray::class.asClassName(),
             shouldEncodeDefault = { "$it.isNotEmpty()" },
             defaultValue = "byteArrayOf()",
             protoType = ScalarType.bytes,
@@ -214,7 +214,7 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
         // TODO: String should be derived from customSerializerType
         addStatement("var $fieldName: String? = null")
     } ?: run {
-        addStatement("var $fieldName: %T? = null", type.kotlinClass)
+        addStatement("var $fieldName: %T? = null", type.typeName)
         if (nullabilitySubField != null) {
             addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
         }

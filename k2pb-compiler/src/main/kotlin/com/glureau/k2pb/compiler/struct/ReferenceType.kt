@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ReferenceType(
-    val className: ClassName,
+    override val typeName: ClassName,
     val name: String,
     override val isNullable: Boolean,
     val isEnum: Boolean,
@@ -70,7 +70,7 @@ fun FunSpec.Builder.encodeReferenceType(
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
         val isInlinedInt = (inlinedType as? ScalarFieldType)?.protoType == ScalarType.int32
         val condition = mutableListOf<String>()
-        if (isInlineEnum) condition += "$fieldName != ${type.className}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
+        if (isInlineEnum) condition += "$fieldName != ${type.typeName}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
         if (inlinedType is ScalarFieldType) condition += inlinedType.shouldEncodeDefault(fieldName + "." + type.inlineName)
         val checkNullability = type.isNullable || inlinedType.isNullable
 
@@ -86,7 +86,7 @@ fun FunSpec.Builder.encodeReferenceType(
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode(${fieldName}, %T::class) /* FF */", type.className)
+        addStatement("encode(${fieldName}, %T::class) /* FF */", type.typeName)
         endControlFlow()
 
         if (!forceEncodeDefault && condition.isNotEmpty()) {
@@ -125,7 +125,7 @@ fun FunSpec.Builder.encodeReferenceType(
         beginControlFlow("with(protoSerializer)")
         addStatement(
             "encode(${fieldName}, %T::class)",
-            type.className
+            type.typeName
         )
         endControlFlow() // with
 
@@ -155,7 +155,7 @@ fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
     type: ReferenceType,
     nullabilitySubField: NullabilitySubField?
 ) {
-    addStatement("var $fieldName: %T? = null", type.className)
+    addStatement("var $fieldName: %T? = null", type.typeName)
     nullabilitySubField?.let {
         addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
     }
@@ -172,9 +172,9 @@ fun FunSpec.Builder.decodeReferenceType(
             val decodedTmpName = decodeInLocalVar(fieldName, annotatedSerializer, customSerializerType)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
-                    addStatement("${fieldType.className}($decodedTmpName) /* P */")
+                    addStatement("${fieldType.typeName}($decodedTmpName) /* P */")
                 } else {
-                    addStatement("$decodedTmpName?.let { ${fieldType.className}($decodedTmpName) } /* O */")
+                    addStatement("$decodedTmpName?.let { ${fieldType.typeName}($decodedTmpName) } /* O */")
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.
@@ -189,7 +189,7 @@ fun FunSpec.Builder.decodeReferenceType(
             beginControlFlow("%M", readMessageExt)
         }
         beginControlFlow("with(protoSerializer) {")
-        addStatement("decode(%T::class)", fieldType.className)
+        addStatement("decode(%T::class)", fieldType.typeName)
         endControlFlow()
         if (useReadMessage) {
             endControlFlow()

@@ -165,7 +165,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     name = propName,
                     annotatedName = prop.serialName,
                     type = annotatedDerivedType ?: ReferenceType(
-                        className = prop.type.resolve().toClassName(),
+                        typeName = prop.type.resolve().toClassName(),
                         name = prop.type.toString(),
                         isNullable = prop.type.resolve().isMarkedNullable,
                         isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
@@ -298,7 +298,7 @@ private fun mapQfnToFieldType(
                 val inlinedFieldType = inlined.type.toProtobufFieldType()
                 val inlineAnnotatedSerializer = inlined.annotations.customConverter()
                 ReferenceType(
-                    className = type.toClassName(),
+                    typeName = type.toClassName(),
                     name = qfn,
                     isNullable = type.isMarkedNullable == true,// inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
@@ -310,7 +310,7 @@ private fun mapQfnToFieldType(
                 val isEnum = typeDecl?.isEnum == true
                 // val converter = type?.annotations?.customConverter()
                 ReferenceType(
-                    className = typeDecl?.toClassName() ?: error("No type for $qfn"),
+                    typeName = typeDecl?.toClassName() ?: error("No type for $qfn"),
                     name = qfn,
                     isNullable = type.isMarkedNullable == true,
                     isEnum = isEnum,

@@ -47,17 +47,29 @@ interface MigrationAddFieldAfterProtoConstructor {
         c: Int?,
         d: String?,
         e: MigrationData?
-    ) = MigrationAddFieldAfter(
-        a = requireNotNull(a),
-        b = requireNotNull(b),
-        c = requireNotNull(c),
-        d = requireNotNull(d),
-        e = requireNotNull(e),
-    )
+    ): MigrationAddFieldAfter
+}
+
+object DefaultMigrationAddFieldAfterProtoConstructor : MigrationAddFieldAfterProtoConstructor {
+    override fun invoke(
+        a: String?,
+        b: String?,
+        c: Int?,
+        d: String?,
+        e: MigrationData?
+    ) =
+        MigrationAddFieldAfter(
+            a = requireNotNull(a),
+            b = requireNotNull(b),
+            c = requireNotNull(c),
+            d = requireNotNull(d),
+            e = requireNotNull(e),
+        )
+
 }
 
 fun main() {
-    val res: MigrationAddFieldAfter = object : MigrationAddFieldAfterProtoConstructor {}(null, null, null, null, null)
+    val res: MigrationAddFieldAfter = DefaultMigrationAddFieldAfterProtoConstructor(null, null, null, null, null)
     // OR
     val reS: MigrationAddFieldAfter = MigrationAddFieldAfterCtor(null, null, null, null, null)
 }

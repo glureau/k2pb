@@ -1,6 +1,5 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.compiler.decapitalizeUS
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.FunSpec
@@ -30,10 +29,10 @@ fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfFiel
     oneOfField.fields.forEach { subclass ->
         subclass as TypedField
         subclass.type as ReferenceType
-        beginControlFlow("is %T ->", subclass.type.className)
+        beginControlFlow("is %T ->", subclass.type.typeName)
         beginControlFlow("%M(%L)", writeMessageExt, subclass.protoNumber)
         beginControlFlow("with(protoSerializer)")
-        addStatement("encode($instanceName, %T::class)", subclass.type.className)
+        addStatement("encode($instanceName, %T::class)", subclass.type.typeName)
         endControlFlow()
         endControlFlow()
         endControlFlow()
@@ -54,7 +53,7 @@ fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
     oneOfField.fields.forEach { subclass ->
         subclass as TypedField
         subclass.type as ReferenceType
-        addStatement("%L -> decode(%T::class)", subclass.protoNumber, subclass.type.className)
+        addStatement("%L -> decode(%T::class)", subclass.protoNumber, subclass.type.typeName)
     }
     addStatement("else -> error(\"Ignoring unknown tag: \$oneOfTag\")")
     endControlFlow()
