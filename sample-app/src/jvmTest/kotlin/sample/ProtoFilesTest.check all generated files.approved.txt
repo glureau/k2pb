@@ -1,18 +1,29 @@
-File: k2pb/NullableBigDecimalValueClassHolder.proto
+File: k2pb/AbstractClass.proto
 syntax = "proto3";
 
-message NullableBigDecimalValueClassHolder {
-  string nullableBdValue = 1;
-  bool isNullableBdValueNull = 2;
+import "AbstractSubClass.proto";
+
+message AbstractClass {
+  oneof abstractClass {
+    AbstractSubClass abstractSubClass = 1;
+  }
 }
 
-File: k2pb/EnumHolder.proto
+File: k2pb/AbstractSubClass.proto
 syntax = "proto3";
 
-import "AnEnum.proto";
+message AbstractSubClass {
+  int32 foo = 1;
+  string bar = 2;
+}
 
-message EnumHolder {
-  AnEnum value = 1;
+File: k2pb/AnEnum.proto
+syntax = "proto3";
+
+enum AnEnum {
+  AnEnum_A = 0;
+  AnEnum_B = 1;
+  AnEnum_C = 2;
 }
 
 File: k2pb/AnnotatedClass.proto
@@ -25,19 +36,238 @@ message AnnotatedClass {
   string d = 5;
 }
 
-File: k2pb/WithNestClassB.proto
+File: k2pb/BarEvent.proto
 syntax = "proto3";
 
-message WithNestClassB {
-  WithNestClassB.NestedClass b = 1;
-  message NestedClass {
-    WithNestClassB.NestedClass.NestedEnum nestedEnum = 1;
-    enum NestedEnum {
-      A = 0;
-      B = 1;
-      C = 2;
-    }
-  }
+import "CommonClass.proto";
+
+message BarEvent {
+  CommonClass common = 1;
+}
+
+File: k2pb/BigDecimalHolder.proto
+syntax = "proto3";
+
+message BigDecimalHolder {
+  string bd = 1;
+}
+
+File: k2pb/BigDecimalValueClassHolder.proto
+syntax = "proto3";
+
+message BigDecimalValueClassHolder {
+  string bdValue = 1;
+}
+
+File: k2pb/CollectionType.proto
+syntax = "proto3";
+
+import "DataClassFromLib.proto";
+
+message CollectionType {
+  repeated int32 integerList = 1;
+  repeated string stringList = 2;
+  repeated int32 maybeIntegerList = 3;
+  bool isMaybeIntegerListNull = 4;
+  map<string, int32> mapStringInt = 5;
+  repeated DataClassFromLib dataClassList = 6;
+}
+
+File: k2pb/CommentedClass.proto
+syntax = "proto3";
+
+//  This class has kdoc comment.
+message CommentedClass {
+  //  This field has kdoc comment.
+  string fieldWithComment = 1;
+}
+
+File: k2pb/CommonClass.proto
+syntax = "proto3";
+
+message CommonClass {
+  string id = 1;
+}
+
+File: k2pb/DataClassFromLib.proto
+syntax = "proto3";
+
+message DataClassFromLib {
+  int32 myInt = 1;
+}
+
+File: k2pb/EnumClass.proto
+syntax = "proto3";
+
+enum EnumClass {
+  A = 0;
+  B = 1;
+  C = 2;
+}
+
+File: k2pb/EnumHolder.proto
+syntax = "proto3";
+
+import "AnEnum.proto";
+
+message EnumHolder {
+  AnEnum value = 1;
+}
+
+File: k2pb/FooEvent.proto
+syntax = "proto3";
+
+import "CommonClass.proto";
+
+message FooEvent {
+  CommonClass common = 1;
+}
+
+File: k2pb/InlinedCollection.proto
+syntax = "proto3";
+
+import "AnEnum.proto";
+
+message InlinedCollection {
+  repeated string valueClassList = 1;
+  repeated AnEnum valueClassOfEnumList = 2;
+  repeated AnEnum valueClassOfNullableEnumList = 3;
+  repeated string valueClassOfNullableStringList = 4;
+}
+
+File: k2pb/KtxClasses.proto
+syntax = "proto3";
+
+message KtxClasses {
+  string instant = 1;
+}
+
+File: k2pb/MigrationAddFieldAfter.proto
+syntax = "proto3";
+
+message MigrationAddFieldAfter {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+}
+
+File: k2pb/MigrationAddFieldAfterNullable.proto
+syntax = "proto3";
+
+message MigrationAddFieldAfterNullable {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+  bool isCNull = 4;
+}
+
+File: k2pb/MigrationAddFieldBefore.proto
+syntax = "proto3";
+
+message MigrationAddFieldBefore {
+  string a = 1;
+  string b = 2;
+}
+
+File: k2pb/MigrationData.proto
+syntax = "proto3";
+
+message MigrationData {
+  string a = 1;
+}
+
+File: k2pb/MigrationMoveDataAfter.proto
+syntax = "proto3";
+
+import "MigrationNewDataHolder.proto";
+
+message MigrationMoveDataAfter {
+  MigrationNewDataHolder dataHolder = 1;
+}
+
+File: k2pb/MigrationMoveDataBefore.proto
+syntax = "proto3";
+
+import "MigrationData.proto";
+
+message MigrationMoveDataBefore {
+  MigrationData data = 1;
+}
+
+File: k2pb/MigrationNewDataHolder.proto
+syntax = "proto3";
+
+import "MigrationData.proto";
+
+message MigrationNewDataHolder {
+  MigrationData data = 1;
+}
+
+File: k2pb/MigrationRemoveFieldAfter.proto
+syntax = "proto3";
+
+message MigrationRemoveFieldAfter {
+  string a = 1;
+  int32 c = 2;
+}
+
+File: k2pb/MigrationRemoveFieldBefore.proto
+syntax = "proto3";
+
+message MigrationRemoveFieldBefore {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+}
+
+File: k2pb/MigrationRenameClassAfter.proto
+syntax = "proto3";
+
+message MigrationRenameClassAfter {
+  string a = 1;
+}
+
+File: k2pb/MigrationRenameClassBefore.proto
+syntax = "proto3";
+
+message MigrationRenameClassBefore {
+  string a = 1;
+}
+
+File: k2pb/MigrationRenameFieldAfter.proto
+syntax = "proto3";
+
+message MigrationRenameFieldAfter {
+  string a = 1;
+  string renamedB = 2;
+  int32 c = 3;
+}
+
+File: k2pb/MigrationRenameFieldBefore.proto
+syntax = "proto3";
+
+message MigrationRenameFieldBefore {
+  string a = 1;
+  string b = 2;
+  int32 c = 3;
+}
+
+File: k2pb/MigrationRenameSubClassAfter.proto
+syntax = "proto3";
+
+import "MigrationRenameClassAfter.proto";
+
+message MigrationRenameSubClassAfter {
+  MigrationRenameClassAfter sub = 1;
+}
+
+File: k2pb/MigrationRenameSubClassBefore.proto
+syntax = "proto3";
+
+import "MigrationRenameClassBefore.proto";
+
+message MigrationRenameSubClassBefore {
+  MigrationRenameClassBefore sub = 1;
 }
 
 File: k2pb/MultiModule.proto
@@ -48,80 +278,6 @@ import "DataClassFromLib.proto";
 message MultiModule {
   DataClassFromLib dataClassFromLib = 1;
   string valueClassFromLib = 2;
-}
-
-File: k2pb/AbstractSubClass.proto
-syntax = "proto3";
-
-message AbstractSubClass {
-  int32 foo = 1;
-  string bar = 2;
-}
-
-File: k2pb/WithNestedEnum.proto
-syntax = "proto3";
-
-message WithNestedEnum {
-  WithNestedEnum.NestedEnum enum = 1;
-  enum NestedEnum {
-    A = 0;
-    B = 1;
-    C = 2;
-  }
-}
-
-File: k2pb/ValueClassOfEnumHolder.proto
-syntax = "proto3";
-
-import "AnEnum.proto";
-
-message ValueClassOfEnumHolder {
-  AnEnum value = 1;
-}
-
-File: k2pb/TransientField.proto
-syntax = "proto3";
-
-message TransientField {
-  string fieldSerialized = 1;
-}
-
-File: k2pb/BigDecimalValueClassHolder.proto
-syntax = "proto3";
-
-message BigDecimalValueClassHolder {
-  string bdValue = 1;
-}
-
-File: k2pb/DataClassFromLib.proto
-syntax = "proto3";
-
-message DataClassFromLib {
-  int32 myInt = 1;
-}
-
-File: k2pb/NullableUuidsHolder.proto
-syntax = "proto3";
-
-message NullableUuidsHolder {
-  string uuidAsString = 1;
-  bool isUuidAsStringNull = 2;
-  bytes uuidAsBytes = 3;
-  bool isUuidAsBytesNull = 4;
-  string stringValueClass = 5;
-  bool isStringValueClassNull = 6;
-  bytes bytesValueClass = 7;
-  bool isBytesValueClassNull = 8;
-}
-
-File: k2pb/WithNestClassA.proto
-syntax = "proto3";
-
-message WithNestClassA {
-  WithNestClassA.NestedClass a = 1;
-  message NestedClass {
-    string nested = 1;
-  }
 }
 
 File: k2pb/NativeTypeEvent.proto
@@ -140,6 +296,22 @@ message NativeTypeEvent {
   bytes byteArray = 10;
 }
 
+File: k2pb/NullableBigDecimalHolder.proto
+syntax = "proto3";
+
+message NullableBigDecimalHolder {
+  string bd = 1;
+  bool isBdNull = 2;
+}
+
+File: k2pb/NullableBigDecimalValueClassHolder.proto
+syntax = "proto3";
+
+message NullableBigDecimalValueClassHolder {
+  string nullableBdValue = 1;
+  bool isNullableBdValueNull = 2;
+}
+
 File: k2pb/NullableInlinedCollection.proto
 syntax = "proto3";
 
@@ -154,79 +326,6 @@ message NullableInlinedCollection {
   bool isValueClassOfNullableEnumListNull = 6;
   repeated string valueClassOfNullableStringList = 7;
   bool isValueClassOfNullableStringListNull = 8;
-}
-
-File: k2pb/BigDecimalHolder.proto
-syntax = "proto3";
-
-message BigDecimalHolder {
-  string bd = 1;
-}
-
-File: k2pb/AbstractClass.proto
-syntax = "proto3";
-
-import "AbstractSubClass.proto";
-
-message AbstractClass {
-  oneof abstractClass {
-    AbstractSubClass abstractSubClass = 1;
-  }
-}
-
-File: k2pb/CommonClass.proto
-syntax = "proto3";
-
-message CommonClass {
-  string id = 1;
-}
-
-File: k2pb/EnumClass.proto
-syntax = "proto3";
-
-enum EnumClass {
-  A = 0;
-  B = 1;
-  C = 2;
-}
-
-File: k2pb/KtxClasses.proto
-syntax = "proto3";
-
-message KtxClasses {
-  string instant = 1;
-}
-
-File: k2pb/FooEvent.proto
-syntax = "proto3";
-
-import "CommonClass.proto";
-
-message FooEvent {
-  CommonClass common = 1;
-}
-
-File: k2pb/AnEnum.proto
-syntax = "proto3";
-
-enum AnEnum {
-  AnEnum_A = 0;
-  AnEnum_B = 1;
-  AnEnum_C = 2;
-}
-
-File: k2pb/ObjectClass.proto
-syntax = "proto3";
-
-message ObjectClass { }
-
-File: k2pb/BarEvent.proto
-syntax = "proto3";
-
-import "CommonClass.proto";
-
-message BarEvent {
-  CommonClass common = 1;
 }
 
 File: k2pb/NullableNativeTypeEvent.proto
@@ -255,12 +354,82 @@ message NullableNativeTypeEvent {
   bool isByteArrayNull = 20;
 }
 
-File: k2pb/NullableBigDecimalHolder.proto
+File: k2pb/NullableUuidsHolder.proto
 syntax = "proto3";
 
-message NullableBigDecimalHolder {
-  string bd = 1;
-  bool isBdNull = 2;
+message NullableUuidsHolder {
+  string uuidAsString = 1;
+  bool isUuidAsStringNull = 2;
+  bytes uuidAsBytes = 3;
+  bool isUuidAsBytesNull = 4;
+  string stringValueClass = 5;
+  bool isStringValueClassNull = 6;
+  bytes bytesValueClass = 7;
+  bool isBytesValueClassNull = 8;
+}
+
+File: k2pb/NullableValueClassHolder.proto
+syntax = "proto3";
+
+message NullableValueClassHolder {
+  string valueClassFromLib = 1;
+  bool isValueClassFromLibNull = 2;
+}
+
+File: k2pb/ObjectClass.proto
+syntax = "proto3";
+
+message ObjectClass { }
+
+File: k2pb/StandardClass.proto
+syntax = "proto3";
+
+message StandardClass {
+  string eventUUID = 1;
+  bytes bytes = 2;
+}
+
+File: k2pb/TransientField.proto
+syntax = "proto3";
+
+message TransientField {
+  string fieldSerialized = 1;
+}
+
+File: k2pb/User.proto
+syntax = "proto3";
+
+import "Vehicle.proto";
+
+message User {
+  string name = 1;
+  Vehicle vehicle = 2;
+}
+
+File: k2pb/UuidsHolder.proto
+syntax = "proto3";
+
+message UuidsHolder {
+  string uuidAsString = 1;
+  bytes uuidAsBytes = 2;
+  string stringValueClass = 3;
+  bytes bytesValueClass = 4;
+}
+
+File: k2pb/ValueClassList.proto
+syntax = "proto3";
+
+message ValueClassList {
+  repeated string valueClassFromLibs = 1;
+}
+
+File: k2pb/ValueClassOfEnumHolder.proto
+syntax = "proto3";
+
+import "AnEnum.proto";
+
+message ValueClassOfEnumHolder {
+  AnEnum value = 1;
 }
 
 File: k2pb/Vehicle.proto
@@ -283,81 +452,40 @@ message Vehicle {
   }
 }
 
-File: k2pb/InlinedCollection.proto
+File: k2pb/WithNestClassA.proto
 syntax = "proto3";
 
-import "AnEnum.proto";
-
-message InlinedCollection {
-  repeated string valueClassList = 1;
-  repeated AnEnum valueClassOfEnumList = 2;
-  repeated AnEnum valueClassOfNullableEnumList = 3;
-  repeated string valueClassOfNullableStringList = 4;
+message WithNestClassA {
+  WithNestClassA.NestedClass a = 1;
+  message NestedClass {
+    string nested = 1;
+  }
 }
 
-File: k2pb/CollectionType.proto
+File: k2pb/WithNestClassB.proto
 syntax = "proto3";
 
-import "DataClassFromLib.proto";
-
-message CollectionType {
-  repeated int32 integerList = 1;
-  repeated string stringList = 2;
-  repeated int32 maybeIntegerList = 3;
-  bool isMaybeIntegerListNull = 4;
-  map<string, int32> mapStringInt = 5;
-  repeated DataClassFromLib dataClassList = 6;
+message WithNestClassB {
+  WithNestClassB.NestedClass b = 1;
+  message NestedClass {
+    WithNestClassB.NestedClass.NestedEnum nestedEnum = 1;
+    enum NestedEnum {
+      A = 0;
+      B = 1;
+      C = 2;
+    }
+  }
 }
 
-File: k2pb/ValueClassList.proto
+File: k2pb/WithNestedEnum.proto
 syntax = "proto3";
 
-message ValueClassList {
-  repeated string valueClassFromLibs = 1;
-}
-
-File: k2pb/NullableValueClassHolder.proto
-syntax = "proto3";
-
-message NullableValueClassHolder {
-  string valueClassFromLib = 1;
-  bool isValueClassFromLibNull = 2;
-}
-
-File: k2pb/CommentedClass.proto
-syntax = "proto3";
-
-//  This class has kdoc comment.
-message CommentedClass {
-  //  This field has kdoc comment.
-  string fieldWithComment = 1;
-}
-
-File: k2pb/UuidsHolder.proto
-syntax = "proto3";
-
-message UuidsHolder {
-  string uuidAsString = 1;
-  bytes uuidAsBytes = 2;
-  string stringValueClass = 3;
-  bytes bytesValueClass = 4;
-}
-
-File: k2pb/User.proto
-syntax = "proto3";
-
-import "Vehicle.proto";
-
-message User {
-  string name = 1;
-  Vehicle vehicle = 2;
-}
-
-File: k2pb/StandardClass.proto
-syntax = "proto3";
-
-message StandardClass {
-  string eventUUID = 1;
-  bytes bytes = 2;
+message WithNestedEnum {
+  WithNestedEnum.NestedEnum enum = 1;
+  enum NestedEnum {
+    A = 0;
+    B = 1;
+    C = 2;
+  }
 }
 
