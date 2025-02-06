@@ -16,7 +16,7 @@ fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: Map<Cla
                 TypedField(
                     comment = null,
                     type = ReferenceType(
-                        className = childClassName,
+                        typeName = childClassName,
                         name = childClassName.canonicalName,
                         isNullable = false,
                         isEnum = false,

@@ -4,6 +4,8 @@ import com.glureau.k2pb.DelegateProtoSerializer
 import com.glureau.k2pb.ProtoSerializer
 import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.compiler.poet.addConstructorTypes
+import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.serializerClassName
@@ -23,9 +25,11 @@ fun FileSpec.Builder.generateSerializerType(
     val className = node.asClassName()
     val instanceName = "instance"
     val protoSerializerName = "protoSerializer"
+    val serializerClassName = node.serializerClassName()
+
     addType(
         TypeSpec
-            .classBuilder(node.serializerClassName())
+            .classBuilder(serializerClassName)
             .addModifiers(KModifier.INTERNAL)
             .addSuperinterface(ProtoSerializer::class.asClassName().parameterizedBy(className))
             .addFunction(
@@ -47,6 +51,11 @@ fun FileSpec.Builder.generateSerializerType(
                     .decodeContent(instanceName, protoSerializerName)
                     .build()
             )
+            .also {
+                if (node is MessageNode) {
+                    it.addConstructorTypes(node, className, serializerClassName)
+                }
+            }
             .build()
     )
 }
