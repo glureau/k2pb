@@ -1,6 +1,5 @@
 package sample.kt
 
-import com.glureau.k2pb.ProtoConstructor
 import com.glureau.k2pb.runtime.decodeFromByteArray
 import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.sample.MigrationAddFieldAfter
@@ -29,13 +28,20 @@ class MigrationTest {
     @Test
     fun `add a field`() {
         assertMigration(
-            MigrationAddFieldBefore("a", "b"),
+            old = MigrationAddFieldBefore("a", "b"),
             // No custom constructor => protobuf defaults are used for scalar fields, null for other messages/classes
-            MigrationAddFieldAfterNullable("a", "b", 0, "", null)
+            expected = MigrationAddFieldAfterNullable("a", "b", 0, "", null)
         )
         assertMigration(
-            MigrationAddFieldBefore("a", "b"),
-            MigrationAddFieldAfter("a", "b", 33, "hardcoded in migration", MigrationData("hardcoded here too"))
+            old = MigrationAddFieldBefore("a", "b"),
+            /** custom constructor [com.glureau.sample.MigrationAddFieldAfterSC] */
+            expected = MigrationAddFieldAfter(
+                a = "a",
+                b = "b",
+                c = 33, // provided by custom constructor
+                d = "hardcoded in migration", // provided by custom constructor
+                e = MigrationData("hardcoded here too") // provided by custom constructor
+            )
         )
     }
 }
@@ -75,6 +81,7 @@ fun main() {
     val reS: MigrationAddFieldAfter = MigrationAddFieldAfterCtor(null, null, null, null, null)
 }
 
+/*
 object MigrationAddFieldAfter : ProtoConstructor<MigrationAddFieldAfter> {
     override fun create(parameters: Map<String, Any?>): MigrationAddFieldAfter =
         MigrationAddFieldAfter(
@@ -85,6 +92,7 @@ object MigrationAddFieldAfter : ProtoConstructor<MigrationAddFieldAfter> {
             e = MigrationData("hardcoded in migration")
         )
 }
+*/
 
 object MigrationAddFieldAfterCtor : MigrationAddFieldAfterProtoConstructor {
     override fun invoke(

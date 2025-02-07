@@ -1,6 +1,5 @@
 package com.glureau.k2pb.annotation
 
-import com.glureau.k2pb.ProtoConstructor
 import kotlin.reflect.KClass
 
 /**
@@ -9,7 +8,5 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.CLASS)
 public annotation class ProtoMessage(
     val name: String = "",
-    // Using ProtoConstructor::class here means that no constructor has been set
-    // (Kotlin annotations are not supporting nullability)
-    val constructor: KClass<ProtoConstructor<*>> = ProtoConstructor::class,
+    val constructor: KClass<*> = Any::class,
 )
