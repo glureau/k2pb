@@ -1,6 +1,7 @@
 package com.glureau.sample.lib
 
 import com.glureau.k2pb.annotation.ProtoMessage
+import kotlin.jvm.JvmInline
 
 @ProtoMessage
 @JvmInline

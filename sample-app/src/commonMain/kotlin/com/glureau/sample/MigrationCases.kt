@@ -1,6 +1,7 @@
 package com.glureau.sample
 
 import com.glureau.k2pb.annotation.ProtoMessage
+//import com.glureau.sample.MigrationAddFieldAfterNullableSerializer
 
 @ProtoMessage
 data class MigrationData(val a: String)
@@ -13,11 +14,15 @@ data class MigrationAddFieldBefore(val a: String, val b: String)
 data class MigrationAddFieldAfterNullable(
     val a: String,
     val b: String,
-    val c: Int? = null,
-    val d: String? = null,
+    val c: Int,
+    val d: String,
     val e: MigrationData? = null
 )
+/*
+object MigrationAddFieldAfterNullableSC : MigrationAddFieldAfterNullableSerializer.Constructor {
 
+}
+*/
 @ProtoMessage
 data class MigrationAddFieldAfter(
     val a: String,

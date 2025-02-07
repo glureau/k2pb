@@ -9,9 +9,9 @@ import com.glureau.sample.NullableNativeTypeEvent
 import com.glureau.sample.NullableValueClassHolder
 import com.glureau.sample.lib.ValueClassFromLib
 import com.google.protobuf.kotlin.toByteStringUtf8
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
-import java.math.BigDecimal
 
 class NullablesTest : BaseEncodingTest() {
 
@@ -171,8 +171,8 @@ class NullablesTest : BaseEncodingTest() {
     @Test
     fun nullableBigDecimalValueClassHolder_withData() {
         assertCompatibleSerialization(
-            ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(BigDecimal("42.42"))),
-            protocInstance = NullableBigDecimalValueClassHolderProto.NullableBigDecimalValueClassHolder.newBuilder()
+            ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(BigDecimal.parseString("42.42"))),
+            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
                 .setNullableBdValue("42.42")
                 // .setIsNullableBdValueNull(false) // not required as it's protobuf default value
                 .build()

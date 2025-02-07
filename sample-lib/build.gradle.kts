@@ -1,6 +1,5 @@
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
     id("com.glureau.k2pb") version "0.9.10-SNAPSHOT"
 }
@@ -21,9 +20,11 @@ kotlin {
     jvm {
         withJava()
     }
+    iosX64()
 
     sourceSets {
         commonMain {
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(project(":k2pb-runtime"))
             }
@@ -45,11 +46,11 @@ kotlin {
 }
 
 dependencies {
-    add("kspJvm", project(":k2pb-compiler"))
+    add("kspCommonMainMetadata", project(":k2pb-compiler"))
 }
 
 task("runProtoc", type = Exec::class) {
-    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/"
+    val dirPath = "build/generated/ksp/metadata/commonMain/resources/k2pb/"
     // The official gradle plugin doesn't support KMP yet: https://github.com/google/protobuf-gradle-plugin/issues/497
     // So we are assuming protoc is locally installed for now.
     // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)
@@ -72,7 +73,8 @@ task("runProtoc", type = Exec::class) {
         println("Running protoc:\n------\n${cmd.joinToString(" ")}\n------")
         commandLine(cmd)
     }
-    dependsOn("compileKotlinJvm")
+    dependsOn("kspCommonMainKotlinMetadata")
 }
 
+tasks["compileKotlinJvm"].dependsOn("kspCommonMainKotlinMetadata")
 tasks["compileTestKotlinJvm"].dependsOn("runProtoc")
