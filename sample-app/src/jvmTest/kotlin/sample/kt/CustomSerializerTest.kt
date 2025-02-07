@@ -4,16 +4,16 @@ import BigDecimalHolderOuterClass
 import NullableBigDecimalHolderOuterClass
 import com.glureau.sample.BigDecimalHolder
 import com.glureau.sample.NullableBigDecimalHolder
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
-import java.math.BigDecimal
 
 class CustomSerializerTest : BaseEncodingTest() {
 
     @Test
     fun checkCustomSerializer() {
         assertCompatibleSerialization(
-            ktInstance = BigDecimalHolder(BigDecimal("42.42")),
+            ktInstance = BigDecimalHolder(BigDecimal.parseString("42.42")),
             protocInstance = BigDecimalHolderOuterClass.BigDecimalHolder.newBuilder()
                 .setBd("42.42")
                 .build()
@@ -23,7 +23,7 @@ class CustomSerializerTest : BaseEncodingTest() {
     @Test
     fun defaultValues() {
         assertCompatibleSerialization(
-            ktInstance = NullableBigDecimalHolder(BigDecimal("0.0")),
+            ktInstance = NullableBigDecimalHolder(BigDecimal.parseString("0.0")),
             protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
                 .setBd("0.0")
                 .build()

@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.poet
 
+import com.glureau.k2pb.compiler.poet.returnBuildIt
 import com.glureau.k2pb.compiler.struct.FieldType
 import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
@@ -107,6 +108,12 @@ fun TypeSpec.Builder.addConstructorTypes(node: MessageNode, className: ClassName
                 .addFunction(
                     buildInvokeFunction(node, className)
                         .addModifiers(KModifier.OVERRIDE)
+                        // Having only a return statement in the function body means that KotlinPoet will
+                        // try to replace a body block by '=' and the statement.
+                        // Unfortunately if some parenthesis are used, it ends with a compilation error.
+                        // [ksp] java.lang.IllegalStateException: Can't close a statement that hasn't been opened (closing » is not preceded by an
+                        // opening «).
+                        // So a temporary solution, adding a comment to ensure this method has a body block
                         .addStatement("// Patch KotlinPoet")
                         .returnBuildIt(node)
                         .build()

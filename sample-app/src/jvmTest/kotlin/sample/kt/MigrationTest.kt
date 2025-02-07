@@ -30,7 +30,8 @@ class MigrationTest {
     fun `add a field`() {
         assertMigration(
             MigrationAddFieldBefore("a", "b"),
-            MigrationAddFieldAfterNullable("a", "b", 0, "")
+            // No custom constructor => protobuf defaults are used for scalar fields, null for other messages/classes
+            MigrationAddFieldAfterNullable("a", "b", 0, "", null)
         )
         assertMigration(
             MigrationAddFieldBefore("a", "b"),

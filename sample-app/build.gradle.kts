@@ -1,6 +1,5 @@
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
     //id("com.glureau.k2pb") version "0.1.0"
 }
@@ -13,6 +12,7 @@ kotlin {
     jvm {
         withJava()
     }
+    iosX64()
 
     sourceSets {
         all {
@@ -20,6 +20,7 @@ kotlin {
             languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
         }
         commonMain {
+            this.kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(project(":k2pb-annotations"))
                 implementation(project(":k2pb-runtime"))
@@ -27,6 +28,7 @@ kotlin {
                 implementation(project(":sample-lib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation("com.ionspin.kotlin:bignum:0.3.10")
             }
         }
         val jvmTest by getting {
@@ -41,25 +43,25 @@ kotlin {
             java.sourceSets {
                 getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
             }
-            kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
+            kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin") // protoc generated files
         }
     }
 }
 
 dependencies {
-    add("kspJvm", project(":k2pb-compiler"))
+    add("kspCommonMainMetadata", project(":k2pb-compiler"))
 }
 
 task("copyProtoFiles", type = Copy::class) {
-    from(rootDir.absolutePath + "/sample-lib/build/generated/ksp/jvm/jvmMain/resources/k2pb/")
-    into("build/generated/ksp/jvm/jvmMain/resources/k2pb/")
-    dependsOn(":sample-lib:kspKotlinJvm") // files should be generated before copying
+    from(rootDir.absolutePath + "/sample-lib/build/generated/ksp/metadata/commonMain/resources/k2pb/")
+    into("build/generated/ksp/metadata/commonMain/resources/k2pb/")
+    dependsOn(":sample-lib:kspCommonMainKotlinMetadata") // files should be generated before copying
     dependsOn(":sample-app:jvmProcessResources") // And are required by gradle at this point?
 }
 
 task("runProtoc", type = Exec::class) {
     dependsOn("copyProtoFiles")
-    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/"
+    val dirPath = "build/generated/ksp/metadata/commonMain/resources/k2pb/"
     // The official gradle plugin doesn't support KMP yet: https://github.com/google/protobuf-gradle-plugin/issues/497
     // So we are assuming protoc is locally installed for now.
     // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)
@@ -69,9 +71,9 @@ task("runProtoc", type = Exec::class) {
         File("$buildDir/generated/ksp/jvm/jvmTest/kotlin").mkdirs()
         File("$buildDir/generated/ksp/jvm/jvmTest/java").mkdirs()
         // Copy files from sample-lib, as protoc requires every files to be present in the same directory
-        File("$rootDir/sample-lib/build/generated/ksp/jvm/jvmMain/resources/k2pb/")
+        File("$rootDir/sample-lib/build/generated/ksp/metadata/commonMain/resources/k2pb/")
             .listFiles().forEach {
-                it.copyTo(File("$buildDir/generated/ksp/jvm/jvmMain/resources/k2pb/${it.name}"), true)
+                it.copyTo(File("$buildDir/generated/ksp/metadata/commonMain/resources/k2pb/${it.name}"), true)
             }
         val protoFiles = fileTree(dirPath) {
             include("**/*.proto")
@@ -86,7 +88,8 @@ task("runProtoc", type = Exec::class) {
         println("Running protoc: $cmd")
         commandLine(cmd)
     }
-    dependsOn("compileKotlinJvm")
+    dependsOn("kspCommonMainKotlinMetadata")
 }
 
+tasks["compileKotlinJvm"].dependsOn("kspCommonMainKotlinMetadata")
 tasks["compileTestKotlinJvm"].dependsOn("runProtoc")

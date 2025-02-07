@@ -3,7 +3,9 @@ package com.glureau.sample
 import com.glureau.k2pb.NullableStringConverter
 import com.glureau.k2pb.annotation.ProtoConverter
 import com.glureau.k2pb.annotation.ProtoMessage
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import kotlin.jvm.JvmInline
 
 
 class BigDecimalConverter : NullableStringConverter<BigDecimal> {
