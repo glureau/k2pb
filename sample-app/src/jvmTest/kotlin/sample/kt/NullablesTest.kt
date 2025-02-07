@@ -172,7 +172,7 @@ class NullablesTest : BaseEncodingTest() {
     fun nullableBigDecimalValueClassHolder_withData() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(BigDecimal.parseString("42.42"))),
-            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+            protocInstance = NullableBigDecimalValueClassHolderProto.NullableBigDecimalValueClassHolder.newBuilder()
                 .setNullableBdValue("42.42")
                 // .setIsNullableBdValueNull(false) // not required as it's protobuf default value
                 .build()

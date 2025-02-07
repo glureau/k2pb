@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.poet
 
+import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.poet.returnBuildIt
 import com.glureau.k2pb.compiler.struct.FieldType
 import com.glureau.k2pb.compiler.struct.ListType
@@ -73,11 +74,15 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
     endControlFlow() // when (tag)
     endControlFlow() // while (!eof)
 
-    addStatement("return DefaultConstructor(")
+    if (messageNode.customConstructor != null) {
+        addStatement("return %T(", messageNode.customConstructor)
+    } else{
+        addStatement("return DefaultConstructor(")
+    }
     messageNode.fields.forEach { f ->
-        addStatement("${f.name} = ${f.name},")
+        addStatement("  ${f.name} = ${f.name},")
         if (f is TypedField && f.nullabilitySubField != null) {
-            addStatement("${f.nullabilitySubField.fieldName} = ${f.nullabilitySubField.fieldName},")
+            addStatement("  ${f.nullabilitySubField.fieldName} = ${f.nullabilitySubField.fieldName},")
         }
     }
     addStatement(")")

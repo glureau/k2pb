@@ -1,7 +1,6 @@
 package com.glureau.sample
 
 import com.glureau.k2pb.annotation.ProtoMessage
-//import com.glureau.sample.MigrationAddFieldAfterNullableSerializer
 
 @ProtoMessage
 data class MigrationData(val a: String)
@@ -10,20 +9,16 @@ data class MigrationData(val a: String)
 @ProtoMessage
 data class MigrationAddFieldBefore(val a: String, val b: String)
 
-@ProtoMessage
+@ProtoMessage(constructor = Any::class)
 data class MigrationAddFieldAfterNullable(
     val a: String,
     val b: String,
     val c: Int,
-    val d: String,
-    val e: MigrationData? = null
+    val d: String?,
+    val e: MigrationData?
 )
-/*
-object MigrationAddFieldAfterNullableSC : MigrationAddFieldAfterNullableSerializer.Constructor {
 
-}
-*/
-@ProtoMessage
+@ProtoMessage(constructor = MigrationAddFieldAfterSC::class)
 data class MigrationAddFieldAfter(
     val a: String,
     val b: String,
@@ -31,6 +26,24 @@ data class MigrationAddFieldAfter(
     val d: String,
     val e: MigrationData
 )
+
+object MigrationAddFieldAfterSC : MigrationAddFieldAfterSerializer.Constructor {
+    override fun invoke(
+        a: String?,
+        b: String?,
+        c: Int?,
+        d: String?,
+        e: MigrationData?
+    ): MigrationAddFieldAfter? = MigrationAddFieldAfter(
+        a = requireNotNull(a), // Throwing will cancel the deserialization call entirely
+        b = b ?: "", // Providing a default value avoid full cancellation, but better to follow Protobuf scalar defaults
+        // Here we allow to not follow protobuf defaults, exposing a different interpretation if protoc classes are used
+        // Quite often it may be required, and the code using protoc classes may have to re-implement those edge cases.
+        c = c ?: 33,
+        d = d ?: "hardcoded in migration",
+        e = MigrationData("hardcoded here too")
+    )
+}
 
 // Remove a field
 @ProtoMessage

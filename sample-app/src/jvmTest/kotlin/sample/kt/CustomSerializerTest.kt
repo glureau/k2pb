@@ -13,7 +13,7 @@ class CustomSerializerTest : BaseEncodingTest() {
     @Test
     fun checkCustomSerializer() {
         assertCompatibleSerialization(
-            ktInstance = BigDecimalHolder(BigDecimal("42.42")),
+            ktInstance = BigDecimalHolder(BigDecimal.parseString("42.42")),
             protocInstance = BigDecimalHolderProto.BigDecimalHolder.newBuilder()
                 .setBd("42.42")
                 .build()
@@ -24,8 +24,8 @@ class CustomSerializerTest : BaseEncodingTest() {
     fun defaultValues() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalHolder(BigDecimal.parseString("0.0")),
-            protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
-                .setBd("0.0")
+            protocInstance = NullableBigDecimalHolderProto.NullableBigDecimalHolder.newBuilder()
+                .setBd("0")
                 .build()
         )
     }

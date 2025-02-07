@@ -19,6 +19,7 @@ data class MessageNode(
     val fields: List<FieldInterface>,
     override val originalFile: KSFile?,
     val sealedSubClasses: List<ClassName>,
+    val customConstructor: ClassName?,
 ) : Node() {
     val numberManager = NumberManager()
 

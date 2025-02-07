@@ -28,6 +28,7 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
+import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
@@ -84,20 +85,21 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText" else "",
         isPolymorphic = true,
         isSealed = modifiers.contains(Modifier.SEALED),
-        sealedSubClasses = subclasses.map { it.toClassName() },
         explicitGenerationRequested = false,
+        isInlineClass = false,
         superTypes = emptyList(),
+        comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText" else "",
         fields = if (sharedOptions.useKspPolymorphism)
             classNamesToOneOfField(
                 fieldName = protobufName(),
                 subclassesWithProtoNumber = sealedSubclassWithIndex
             )
         else emptyList(),
-        isInlineClass = false,
         originalFile = containingFile,
+        sealedSubClasses = subclasses.map { it.toClassName() },
+        customConstructor = this.customConstructor,
     )
 }
 
@@ -215,6 +217,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         fields = fields.toList(),
         originalFile = containingFile,
         sealedSubClasses = emptyList(),
+        customConstructor = this.customConstructor,
     )
 }
 
@@ -351,6 +354,12 @@ private val KSAnnotated.serialNameInternal: String?
                 ?.getArg<String>(ProtoMessage::name)
                 ?.takeIf { it.isNotBlank() }
 
+private val KSAnnotated.customConstructor: ClassName?
+    get() = annotations.toList()
+        .firstOrNull { it.shortName.asString() == ProtoMessage::class.simpleName }
+        ?.getArg<KSType>(ProtoMessage::constructor)
+        ?.toClassName()
+        ?.takeIf { it != ANY }
 
 val KSClassDeclaration.protoNumber: Int?
     get() = protoNumberInternal

@@ -49,7 +49,7 @@ internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWr
     }
 
     override fun writeString(value: String, tag: Int) {
-        val bytes = value.encodeToByteArray() // TODO: this Ktx encoding can replace some chars, UTF-8 limitation
+        val bytes = value.encodeToByteArray()
         writeBytes(bytes, tag)
     }
 
