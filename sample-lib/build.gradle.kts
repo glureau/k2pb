@@ -69,7 +69,7 @@ task("runProtoc", type = Exec::class) {
             "--java_out=build/generated/ksp/jvm/jvmTest/java",
             *protoFiles.map { it.absolutePath.substringAfter(dirPath) }.toTypedArray()
         )
-        println("Running protoc: $cmd")
+        println("Running protoc:\n------\n${cmd.joinToString(" ")}\n------")
         commandLine(cmd)
     }
     dependsOn("compileKotlinJvm")
