@@ -17,6 +17,12 @@ class K2PBGradlePlugin : Plugin<Project> {
             k2pbExt.protoPackageName?.let { protoPackageName ->
                 kspExt.arg("com.glureau.k2pb.protoPackageName", protoPackageName)
             }
+            k2pbExt.javaPackage?.let { javaPackage ->
+                kspExt.arg("com.glureau.k2pb.javaPackage", javaPackage)
+            }
+            k2pbExt.javaOuterClassnameSuffix?.let { javaOuterClassnameSuffix ->
+                kspExt.arg("com.glureau.k2pb.javaOuterClassnameSuffix", javaOuterClassnameSuffix)
+            }
         }
     }
 }

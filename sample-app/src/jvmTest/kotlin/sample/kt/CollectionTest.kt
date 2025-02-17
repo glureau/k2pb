@@ -1,10 +1,10 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.AnEnumOuterClass
-import com.glureau.k2pb_sample.CollectionTypeOuterClass
-import com.glureau.k2pb_sample.InlinedCollectionOuterClass
-import com.glureau.k2pb_sample.dataClassFromLib
-import com.glureau.k2pb_sample.valueClassList
+import com.glureau.custom.javapackage.AnEnumProto
+import com.glureau.custom.javapackage.dataClassFromLib
+import com.glureau.custom.javapackage.valueClassList
+import com.glureau.k2pb_sample.CollectionTypeProto
+import com.glureau.k2pb_sample.InlinedCollectionProto
 import com.glureau.sample.CollectionType
 import com.glureau.sample.InlinedCollection
 import com.glureau.sample.lib.AnEnum
@@ -45,7 +45,7 @@ class CollectionTest : BaseEncodingTest() {
                 ),
                 dataClassList = listOf(DataClassFromLib(33), DataClassFromLib(34)),
             ),
-            protocInstance = CollectionTypeOuterClass.CollectionType.newBuilder()
+            protocInstance = CollectionTypeProto.CollectionType.newBuilder()
                 // Randomized order => preserve proto number sorting in serialization
                 .addIntegerList(1)
                 .addDataClassList(
@@ -84,7 +84,7 @@ class CollectionTest : BaseEncodingTest() {
                 ),
                 dataClassList = listOf(DataClassFromLib(0)),
             ),
-            protocInstance = CollectionTypeOuterClass.CollectionType.newBuilder()
+            protocInstance = CollectionTypeProto.CollectionType.newBuilder()
                 .addIntegerList(0)
                 .addIntegerList(0)
                 .addIntegerList(0)
@@ -128,14 +128,14 @@ class CollectionTest : BaseEncodingTest() {
                     NullableValueClassFromLib("b"),
                 ),
             ),
-            protocInstance = InlinedCollectionOuterClass.InlinedCollection.newBuilder()
+            protocInstance = InlinedCollectionProto.InlinedCollection.newBuilder()
                 .addValueClassList("")
                 .addValueClassList("go")
-                .addValueClassOfEnumList(AnEnumOuterClass.AnEnum.AnEnum_A)
-                .addValueClassOfEnumList(AnEnumOuterClass.AnEnum.AnEnum_B)
-                .addValueClassOfNullableEnumList(AnEnumOuterClass.AnEnum.AnEnum_A)
+                .addValueClassOfEnumList(AnEnumProto.AnEnum.AnEnum_A)
+                .addValueClassOfEnumList(AnEnumProto.AnEnum.AnEnum_B)
+                .addValueClassOfNullableEnumList(AnEnumProto.AnEnum.AnEnum_A)
                 //.addValueClassOfNullableEnumList(null)
-                .addValueClassOfNullableEnumList(AnEnumOuterClass.AnEnum.AnEnum_B)
+                .addValueClassOfNullableEnumList(AnEnumProto.AnEnum.AnEnum_B)
                 .addValueClassOfNullableStringList("a")
                 //.addValueClassOfNullableStringList(null)
                 .addValueClassOfNullableStringList("")

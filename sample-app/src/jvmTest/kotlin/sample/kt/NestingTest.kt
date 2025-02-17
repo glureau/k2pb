@@ -1,6 +1,6 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.WithNestClassAOuterClass
+import com.glureau.k2pb_sample.WithNestClassAProto
 import com.glureau.sample.WithNestClassA
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
@@ -11,9 +11,9 @@ class NestingTest : BaseEncodingTest() {
     fun checkNestedClass() {
         assertCompatibleSerialization(
             ktInstance = WithNestClassA(WithNestClassA.NestedClass("helloworld")),
-            protocInstance = WithNestClassAOuterClass.WithNestClassA.newBuilder()
+            protocInstance = WithNestClassAProto.WithNestClassA.newBuilder()
                 .setA(
-                    WithNestClassAOuterClass.WithNestClassA.NestedClass.newBuilder()
+                    WithNestClassAProto.WithNestClassA.NestedClass.newBuilder()
                         .setNested("helloworld")
                         .build()
                 )

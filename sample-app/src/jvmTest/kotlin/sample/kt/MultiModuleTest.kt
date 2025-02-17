@@ -1,6 +1,6 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.dataClassFromLib
+import com.glureau.custom.javapackage.dataClassFromLib
 import com.glureau.k2pb_sample.multiModule
 import com.glureau.sample.MultiModule
 import com.glureau.sample.lib.DataClassFromLib

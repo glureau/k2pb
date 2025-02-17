@@ -28,6 +28,8 @@ internal object Logger : KSPLogger by sharedLogger
 
 data class CompileOptions(private val options: Map<String, String>) {
     val protoPackageName by lazy { options["com.glureau.k2pb.protoPackageName"] }
+    val javaPackage by lazy { options["com.glureau.k2pb.javaPackage"] }
+    val javaOuterClassnameSuffix by lazy { options["com.glureau.k2pb.javaOuterClassnameSuffix"] }
 }
 
 internal lateinit var compileOptions: CompileOptions

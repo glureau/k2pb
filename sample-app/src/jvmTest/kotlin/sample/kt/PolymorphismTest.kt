@@ -1,6 +1,6 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.AbstractSubClassOuterClass
+import com.glureau.k2pb_sample.AbstractSubClassProto
 import com.glureau.k2pb_sample.VehicleKt.bike
 import com.glureau.k2pb_sample.VehicleKt.car
 import com.glureau.k2pb_sample.abstractClass
@@ -62,7 +62,7 @@ class PolymorphismTest : BaseEncodingTest() {
     fun checkAbstractSubClass() {
         assertCompatibleSerialization(
             ktInstance = AbstractSubClass(foo = 2, bar = "asc"),
-            protocInstance = AbstractSubClassOuterClass.AbstractSubClass.newBuilder().setFoo(2).setBar("asc").build(),
+            protocInstance = AbstractSubClassProto.AbstractSubClass.newBuilder().setFoo(2).setBar("asc").build(),
         )
     }
 

@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
-    id("com.glureau.k2pb") version "0.9.8-SNAPSHOT"
+    id("com.glureau.k2pb") version "0.9.9-SNAPSHOT"
 }
 
 repositories {
@@ -14,6 +14,7 @@ val customPackage = "com.glureau.k2pb_sample"
 
 k2pb {
     protoPackageName = customPackage
+    javaOuterClassnameSuffix = "Proto"
 }
 
 kotlin {

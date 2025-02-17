@@ -1,6 +1,6 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.ObjectClassOuterClass
+import com.glureau.k2pb_sample.ObjectClassProto
 import com.glureau.sample.ObjectClass
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
@@ -11,7 +11,7 @@ class ObjectTest : BaseEncodingTest() {
     fun checkObjectClass() {
         assertCompatibleSerialization(
             ktInstance = ObjectClass,
-            protocInstance = ObjectClassOuterClass.ObjectClass.newBuilder().build(),
+            protocInstance = ObjectClassProto.ObjectClass.newBuilder().build(),
         )
     }
 }

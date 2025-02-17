@@ -2,15 +2,19 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
-    id("com.glureau.k2pb") version "0.9.8-SNAPSHOT"
+    id("com.glureau.k2pb") version "0.9.9-SNAPSHOT"
 }
 
 repositories {
     mavenCentral()
 }
 
+val customPackage = "com.glureau.k2pb_sample"
+
 k2pb {
-    protoPackageName = "com.glureau.k2pb_sample"
+    protoPackageName = customPackage
+    javaOuterClassnameSuffix = "Proto"
+    javaPackage = "com.glureau.custom.javapackage"
 }
 
 kotlin {
@@ -45,7 +49,7 @@ dependencies {
 }
 
 task("runProtoc", type = Exec::class) {
-    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/"
+    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/" + customPackage.replace(".", "/") + "/"
     // The official gradle plugin doesn't support KMP yet: https://github.com/google/protobuf-gradle-plugin/issues/497
     // So we are assuming protoc is locally installed for now.
     // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)

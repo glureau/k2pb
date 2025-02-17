@@ -1,8 +1,8 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.AnEnumOuterClass
-import com.glureau.k2pb_sample.EnumHolderOuterClass
-import com.glureau.k2pb_sample.ValueClassOfEnumHolderOuterClass
+import com.glureau.custom.javapackage.AnEnumProto
+import com.glureau.custom.javapackage.EnumHolderProto
+import com.glureau.custom.javapackage.ValueClassOfEnumHolderProto
 import com.glureau.sample.lib.AnEnum
 import com.glureau.sample.lib.EnumHolder
 import com.glureau.sample.lib.ValueClassOfEnum
@@ -16,14 +16,14 @@ class EnumTest : BaseEncodingTest() {
     fun enumHolder() {
         assertCompatibleSerialization(
             ktInstance = EnumHolder(AnEnum.AnEnum_A), // Default value, not encoded
-            protocInstance = EnumHolderOuterClass.EnumHolder.newBuilder()
-                .setValue(AnEnumOuterClass.AnEnum.AnEnum_A)
+            protocInstance = EnumHolderProto.EnumHolder.newBuilder()
+                .setValue(AnEnumProto.AnEnum.AnEnum_A)
                 .build()
         )
         assertCompatibleSerialization(
             ktInstance = EnumHolder(AnEnum.AnEnum_B),
-            protocInstance = EnumHolderOuterClass.EnumHolder.newBuilder()
-                .setValue(AnEnumOuterClass.AnEnum.AnEnum_B)
+            protocInstance = EnumHolderProto.EnumHolder.newBuilder()
+                .setValue(AnEnumProto.AnEnum.AnEnum_B)
                 .build()
         )
     }
@@ -32,14 +32,14 @@ class EnumTest : BaseEncodingTest() {
     fun valueClassOfEnum() {
         assertCompatibleSerialization(
             ktInstance = ValueClassOfEnumHolder(ValueClassOfEnum(AnEnum.AnEnum_A)), // Default value, not encoded
-            protocInstance = ValueClassOfEnumHolderOuterClass.ValueClassOfEnumHolder.newBuilder()
-                .setValue(AnEnumOuterClass.AnEnum.AnEnum_A)
+            protocInstance = ValueClassOfEnumHolderProto.ValueClassOfEnumHolder.newBuilder()
+                .setValue(AnEnumProto.AnEnum.AnEnum_A)
                 .build()
         )
         assertCompatibleSerialization(
             ktInstance = ValueClassOfEnumHolder(ValueClassOfEnum(AnEnum.AnEnum_B)),
-            protocInstance = ValueClassOfEnumHolderOuterClass.ValueClassOfEnumHolder.newBuilder()
-                .setValue(AnEnumOuterClass.AnEnum.AnEnum_B)
+            protocInstance = ValueClassOfEnumHolderProto.ValueClassOfEnumHolder.newBuilder()
+                .setValue(AnEnumProto.AnEnum.AnEnum_B)
                 .build()
         )
     }

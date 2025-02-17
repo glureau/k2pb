@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.protofile
 
+import com.glureau.k2pb.compiler.compileOptions
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.ProtoSyntax
 
@@ -20,6 +21,14 @@ data class ProtobufFile(
         appendLine()
 
         if (packageName != null) appendLine("package $packageName;\n")
+
+        if (compileOptions.javaPackage!= null || compileOptions.javaOuterClassnameSuffix != null) {
+            if (compileOptions.javaPackage != null)
+                appendLine("option java_package = \"${compileOptions.javaPackage}\";")
+            if (compileOptions.javaOuterClassnameSuffix != null)
+                appendLine("option java_outer_classname = \"$path${compileOptions.javaOuterClassnameSuffix}\";")
+            appendLine()
+        }
 
         imports.forEach { appendLine("import \"$it\";") }
         if (imports.isNotEmpty()) appendLine()

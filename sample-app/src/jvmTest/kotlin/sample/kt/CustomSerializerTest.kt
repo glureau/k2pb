@@ -1,7 +1,7 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.BigDecimalHolderOuterClass
-import com.glureau.k2pb_sample.NullableBigDecimalHolderOuterClass
+import com.glureau.k2pb_sample.BigDecimalHolderProto
+import com.glureau.k2pb_sample.NullableBigDecimalHolderProto
 import com.glureau.sample.BigDecimalHolder
 import com.glureau.sample.NullableBigDecimalHolder
 import org.junit.Test
@@ -14,7 +14,7 @@ class CustomSerializerTest : BaseEncodingTest() {
     fun checkCustomSerializer() {
         assertCompatibleSerialization(
             ktInstance = BigDecimalHolder(BigDecimal("42.42")),
-            protocInstance = BigDecimalHolderOuterClass.BigDecimalHolder.newBuilder()
+            protocInstance = BigDecimalHolderProto.BigDecimalHolder.newBuilder()
                 .setBd("42.42")
                 .build()
         )
@@ -24,7 +24,7 @@ class CustomSerializerTest : BaseEncodingTest() {
     fun defaultValues() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalHolder(BigDecimal("0.0")),
-            protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
+            protocInstance = NullableBigDecimalHolderProto.NullableBigDecimalHolder.newBuilder()
                 .setBd("0.0")
                 .build()
         )
@@ -34,7 +34,7 @@ class CustomSerializerTest : BaseEncodingTest() {
     fun nullValues() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalHolder(null),
-            protocInstance = NullableBigDecimalHolderOuterClass.NullableBigDecimalHolder.newBuilder()
+            protocInstance = NullableBigDecimalHolderProto.NullableBigDecimalHolder.newBuilder()
                 //.setBd(null) // <- NPE in protoc generated java code, but default Java is null anyway
                 .setIsBdNull(true)
                 .build()

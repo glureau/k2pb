@@ -1,8 +1,8 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.NullableBigDecimalValueClassHolderOuterClass
-import com.glureau.k2pb_sample.NullableNativeTypeEventOuterClass
-import com.glureau.k2pb_sample.NullableValueClassHolderOuterClass
+import com.glureau.k2pb_sample.NullableBigDecimalValueClassHolderProto
+import com.glureau.k2pb_sample.NullableNativeTypeEventProto
+import com.glureau.k2pb_sample.NullableValueClassHolderProto
 import com.glureau.sample.NullableBigDecimalValueClass
 import com.glureau.sample.NullableBigDecimalValueClassHolder
 import com.glureau.sample.NullableNativeTypeEvent
@@ -30,7 +30,7 @@ class NullablesTest : BaseEncodingTest() {
                 byte = 42.toByte(), // int32
                 byteArray = "Hello World".toByteArray(),
             ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
+            protocInstance = NullableNativeTypeEventProto.NullableNativeTypeEvent.newBuilder()
                 .setInteger(42)
                 .setLong(84L)
                 .setFloat(12.34f)
@@ -60,7 +60,7 @@ class NullablesTest : BaseEncodingTest() {
                 byte = null,
                 byteArray = null,
             ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
+            protocInstance = NullableNativeTypeEventProto.NullableNativeTypeEvent.newBuilder()
                 .setIsIntegerNull(true)
                 .setIsLongNull(true)
                 .setIsFloatNull(true)
@@ -90,7 +90,7 @@ class NullablesTest : BaseEncodingTest() {
                 byte = null,
                 byteArray = null,
             ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
+            protocInstance = NullableNativeTypeEventProto.NullableNativeTypeEvent.newBuilder()
                 .setIsIntegerNull(true)
                 .setIsLongNull(true)
                 .setIsFloatNull(true)
@@ -120,7 +120,7 @@ class NullablesTest : BaseEncodingTest() {
                 byte = 0.toByte(), // int32
                 byteArray = "".toByteArray(),
             ),
-            protocInstance = NullableNativeTypeEventOuterClass.NullableNativeTypeEvent.newBuilder()
+            protocInstance = NullableNativeTypeEventProto.NullableNativeTypeEvent.newBuilder()
                 .setInteger(0)
                 .setLong(0L)
                 .setFloat(0f)
@@ -140,7 +140,7 @@ class NullablesTest : BaseEncodingTest() {
     fun nullableValueClassHolder_withData() {
         assertCompatibleSerialization(
             ktInstance = NullableValueClassHolder(ValueClassFromLib("42")),
-            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
+            protocInstance = NullableValueClassHolderProto.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("42")
                 .build()
         )
@@ -150,7 +150,7 @@ class NullablesTest : BaseEncodingTest() {
     fun nullableValueClassHolder_withNull() {
         assertCompatibleSerialization(
             ktInstance = NullableValueClassHolder(null),
-            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
+            protocInstance = NullableValueClassHolderProto.NullableValueClassHolder.newBuilder()
                 //.setValueClassFromLib("") // not required as it's protobuf default value
                 .setIsValueClassFromLibNull(true)
                 .build()
@@ -161,7 +161,7 @@ class NullablesTest : BaseEncodingTest() {
     fun nullableValueClassHolder_withDefaults() {
         assertCompatibleSerialization(
             ktInstance = NullableValueClassHolder(ValueClassFromLib("")),
-            protocInstance = NullableValueClassHolderOuterClass.NullableValueClassHolder.newBuilder()
+            protocInstance = NullableValueClassHolderProto.NullableValueClassHolder.newBuilder()
                 .setValueClassFromLib("")
                 //.setIsValueClassFromLibNull(false) // not required as it's protobuf default value
                 .build()
@@ -172,7 +172,7 @@ class NullablesTest : BaseEncodingTest() {
     fun nullableBigDecimalValueClassHolder_withData() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(BigDecimal("42.42"))),
-            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+            protocInstance = NullableBigDecimalValueClassHolderProto.NullableBigDecimalValueClassHolder.newBuilder()
                 .setNullableBdValue("42.42")
                 // .setIsNullableBdValueNull(false) // not required as it's protobuf default value
                 .build()
@@ -183,7 +183,7 @@ class NullablesTest : BaseEncodingTest() {
     fun nullableBigDecimalValueClassHolder_withNull() {
         assertCompatibleSerialization(
             ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(null)),
-            protocInstance = NullableBigDecimalValueClassHolderOuterClass.NullableBigDecimalValueClassHolder.newBuilder()
+            protocInstance = NullableBigDecimalValueClassHolderProto.NullableBigDecimalValueClassHolder.newBuilder()
                 //.setNullableBdValue(null) // <- NPE in protoc generated java code, but default Java is null anyway
                 .setIsNullableBdValueNull(true)
                 .build()

@@ -1,6 +1,6 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.NativeTypeEventOuterClass
+import com.glureau.k2pb_sample.NativeTypeEventProto
 import com.glureau.sample.NativeTypeEvent
 import com.google.protobuf.kotlin.toByteStringUtf8
 import sample.kt.tools.BaseEncodingTest
@@ -22,7 +22,7 @@ class NativeTypeTest : BaseEncodingTest() {
                 byte = 42.toByte(), // int32
                 byteArray = "Hello World".toByteArray(),
             ),
-            protocInstance = NativeTypeEventOuterClass.NativeTypeEvent.newBuilder()
+            protocInstance = NativeTypeEventProto.NativeTypeEvent.newBuilder()
                 .setInteger(42)
                 .setLong(84L)
                 .setFloat(12.34f)
@@ -52,7 +52,7 @@ class NativeTypeTest : BaseEncodingTest() {
                 byte = 0.toByte(), // int32
                 byteArray = "".toByteArray(),
             ),
-            protocInstance = NativeTypeEventOuterClass.NativeTypeEvent.newBuilder()
+            protocInstance = NativeTypeEventProto.NativeTypeEvent.newBuilder()
                 .setInteger(0)
                 .setLong(0L)
                 .setFloat(0f)

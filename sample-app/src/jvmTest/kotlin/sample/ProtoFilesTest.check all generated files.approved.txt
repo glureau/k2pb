@@ -3,6 +3,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "NullableBigDecimalValueClassHolderProto";
+
 message NullableBigDecimalValueClassHolder {
   string nullableBdValue = 1;
   bool isNullableBdValueNull = 2;
@@ -12,6 +14,9 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "EnumHolderProto";
 
 import "AnEnum.proto";
 
@@ -24,6 +29,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "AnnotatedClassProto";
+
 message AnnotatedClass {
   int32 a = 1;
   int32 b = 4;
@@ -35,6 +42,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "WithNestClassBProto";
 
 message WithNestClassB {
   WithNestClassB.NestedClass b = 1;
@@ -53,6 +62,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "MultiModuleProto";
+
 import "DataClassFromLib.proto";
 
 message MultiModule {
@@ -65,6 +76,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "AbstractSubClassProto";
+
 message AbstractSubClass {
   int32 foo = 1;
   string bar = 2;
@@ -74,6 +87,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "WithNestedEnumProto";
 
 message WithNestedEnum {
   WithNestedEnum.NestedEnum enum = 1;
@@ -89,6 +104,9 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "ValueClassOfEnumHolderProto";
+
 import "AnEnum.proto";
 
 message ValueClassOfEnumHolder {
@@ -100,6 +118,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "TransientFieldProto";
+
 message TransientField {
   string fieldSerialized = 1;
 }
@@ -108,6 +128,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "BigDecimalValueClassHolderProto";
 
 message BigDecimalValueClassHolder {
   string bdValue = 1;
@@ -118,6 +140,9 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "DataClassFromLibProto";
+
 message DataClassFromLib {
   int32 myInt = 1;
 }
@@ -126,6 +151,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableUuidsHolderProto";
 
 message NullableUuidsHolder {
   string uuidAsString = 1;
@@ -143,6 +170,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "WithNestClassAProto";
+
 message WithNestClassA {
   WithNestClassA.NestedClass a = 1;
   message NestedClass {
@@ -154,6 +183,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NativeTypeEventProto";
 
 message NativeTypeEvent {
   int32 integer = 1;
@@ -173,6 +204,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "NullableInlinedCollectionProto";
+
 import "AnEnum.proto";
 
 message NullableInlinedCollection {
@@ -191,6 +224,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "BigDecimalHolderProto";
+
 message BigDecimalHolder {
   string bd = 1;
 }
@@ -199,6 +234,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "AbstractClassProto";
 
 import "AbstractSubClass.proto";
 
@@ -213,6 +250,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "CommonClassProto";
+
 message CommonClass {
   string id = 1;
 }
@@ -221,6 +260,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "EnumClassProto";
 
 enum EnumClass {
   A = 0;
@@ -233,6 +274,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "KtxClassesProto";
+
 message KtxClasses {
   string instant = 1;
 }
@@ -241,6 +284,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "FooEventProto";
 
 import "CommonClass.proto";
 
@@ -253,6 +298,9 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "AnEnumProto";
+
 enum AnEnum {
   AnEnum_A = 0;
   AnEnum_B = 1;
@@ -264,12 +312,16 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "ObjectClassProto";
+
 message ObjectClass { }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BarEvent.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "BarEventProto";
 
 import "CommonClass.proto";
 
@@ -281,6 +333,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableNativeTypeEventProto";
 
 message NullableNativeTypeEvent {
   int32 integer = 1;
@@ -310,6 +364,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "NullableBigDecimalHolderProto";
+
 message NullableBigDecimalHolder {
   string bd = 1;
   bool isBdNull = 2;
@@ -319,6 +375,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "VehicleProto";
 
 // Polymorphism structure for 'Vehicle'
 // Possible values are:
@@ -342,6 +400,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "InlinedCollectionProto";
+
 import "AnEnum.proto";
 
 message InlinedCollection {
@@ -355,6 +415,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "CollectionTypeProto";
 
 import "DataClassFromLib.proto";
 
@@ -372,6 +434,9 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_package = "com.glureau.custom.javapackage";
+option java_outer_classname = "ValueClassListProto";
+
 message ValueClassList {
   repeated string valueClassFromLibs = 1;
 }
@@ -380,6 +445,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableValueClassHolderProto";
 
 message NullableValueClassHolder {
   string valueClassFromLib = 1;
@@ -391,6 +458,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "CommentedClassProto";
+
 //  This class has kdoc comment.
 message CommentedClass {
   //  This field has kdoc comment.
@@ -401,6 +470,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "UuidsHolderProto";
 
 message UuidsHolder {
   string uuidAsString = 1;
@@ -414,6 +485,8 @@ syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
+option java_outer_classname = "UserProto";
+
 import "Vehicle.proto";
 
 message User {
@@ -425,6 +498,8 @@ File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmM
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
+
+option java_outer_classname = "StandardClassProto";
 
 message StandardClass {
   string eventUUID = 1;

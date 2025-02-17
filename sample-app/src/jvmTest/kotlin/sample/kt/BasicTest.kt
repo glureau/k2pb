@@ -1,9 +1,9 @@
 package sample.kt
 
-import com.glureau.k2pb_sample.BarEventOuterClass
-import com.glureau.k2pb_sample.CommonClassOuterClass
-import com.glureau.k2pb_sample.FooEventOuterClass
-import com.glureau.k2pb_sample.StandardClassOuterClass
+import com.glureau.k2pb_sample.BarEventProto
+import com.glureau.k2pb_sample.CommonClassProto
+import com.glureau.k2pb_sample.FooEventProto
+import com.glureau.k2pb_sample.StandardClassProto
 import com.glureau.sample.BarEvent
 import com.glureau.sample.CommonClass
 import com.glureau.sample.FooEvent
@@ -17,9 +17,9 @@ class BasicTest : BaseEncodingTest() {
     fun dataClassBar() {
         assertCompatibleSerialization(
             ktInstance = BarEvent(CommonClass("helloworld")),
-            protocInstance = BarEventOuterClass.BarEvent.newBuilder()
+            protocInstance = BarEventProto.BarEvent.newBuilder()
                 .setCommon(
-                    CommonClassOuterClass.CommonClass.newBuilder()
+                    CommonClassProto.CommonClass.newBuilder()
                         .setId("helloworld")
                         .build()
                 )
@@ -31,9 +31,9 @@ class BasicTest : BaseEncodingTest() {
     fun dataClassFoo() {
         assertCompatibleSerialization(
             ktInstance = FooEvent(CommonClass("helloworld")),
-            protocInstance = FooEventOuterClass.FooEvent.newBuilder()
+            protocInstance = FooEventProto.FooEvent.newBuilder()
                 .setCommon(
-                    CommonClassOuterClass.CommonClass.newBuilder()
+                    CommonClassProto.CommonClass.newBuilder()
                         .setId("helloworld")
                         .build()
                 )
@@ -45,9 +45,9 @@ class BasicTest : BaseEncodingTest() {
     fun dataClassFooWithDefaultValues() {
         assertCompatibleSerialization(
             ktInstance = FooEvent(CommonClass("")),
-            protocInstance = FooEventOuterClass.FooEvent.newBuilder()
+            protocInstance = FooEventProto.FooEvent.newBuilder()
                 .setCommon(
-                    CommonClassOuterClass.CommonClass.newBuilder()
+                    CommonClassProto.CommonClass.newBuilder()
                         .setId("")
                         .build()
                 )
@@ -59,7 +59,7 @@ class BasicTest : BaseEncodingTest() {
     fun checkStandardClass() {
         assertCompatibleSerialization(
             ktInstance = StandardClass("000-00", "helloworld".toByteArray()),
-            protocInstance = StandardClassOuterClass.StandardClass.newBuilder()
+            protocInstance = StandardClassProto.StandardClass.newBuilder()
                 .setEventUUID("000-00")
                 .setBytes("helloworld".toByteArray().toByteString())
                 .build()
@@ -69,7 +69,7 @@ class BasicTest : BaseEncodingTest() {
     fun checkStandardClassWithDefaultValues() {
         assertCompatibleSerialization(
             ktInstance = StandardClass("", "".toByteArray()),
-            protocInstance = StandardClassOuterClass.StandardClass.newBuilder()
+            protocInstance = StandardClassProto.StandardClass.newBuilder()
                 .setEventUUID("")
                 .setBytes("".toByteArray().toByteString())
                 .build()
