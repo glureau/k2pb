@@ -1,6 +1,6 @@
 package sample.kt
 
-import NativeTypeEventOuterClass
+import com.glureau.k2pb_sample.NativeTypeEventOuterClass
 import com.glureau.sample.NativeTypeEvent
 import com.google.protobuf.kotlin.toByteStringUtf8
 import sample.kt.tools.BaseEncodingTest

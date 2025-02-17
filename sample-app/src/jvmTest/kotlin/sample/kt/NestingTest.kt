@@ -1,6 +1,6 @@
 package sample.kt
 
-import WithNestClassAOuterClass
+import com.glureau.k2pb_sample.WithNestClassAOuterClass
 import com.glureau.sample.WithNestClassA
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest

@@ -16,9 +16,9 @@ pluginManagement {
 
 include(":k2pb-annotations")
 include(":k2pb-compiler")
+include(":k2pb-gradle-plugin")
 include(":k2pb-runtime")
 include(":k2pb-serializers-datetime")
-include(":gradle-plugin")
 
 include(":sample-lib")
 include(":sample-app")

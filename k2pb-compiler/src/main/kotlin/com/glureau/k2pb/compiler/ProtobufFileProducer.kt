@@ -40,10 +40,14 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                         importResolver = importResolver
                     )
 
+                    val packageName =
+                        compileOptions.protoPackageName ?:
+                        node.packageName
+
                     yield(
                         ProtobufFile(
-                            path = "k2pb/${node.name}",
-                            packageName = null,
+                            path = node.name,
+                            packageName = packageName,
                             syntax = ProtoSyntax.v3,
                             nodes = listOf(node),
                             imports = imports

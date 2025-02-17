@@ -1,8 +1,8 @@
 package com.glureau.k2pb.sample.lib
 
-import DataClassFromLibOuterClass
 import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.encodeToByteArray
+import com.glureau.k2pb_sample.DataClassFromLibOuterClass
 import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.registerSampleLibSerializers
 import org.junit.Test

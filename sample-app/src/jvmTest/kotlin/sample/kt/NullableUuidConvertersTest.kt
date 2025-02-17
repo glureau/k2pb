@@ -1,11 +1,11 @@
 package sample.kt
 
+import com.glureau.k2pb_sample.nullableUuidsHolder
 import com.glureau.sample.NullableUuidsHolder
 import com.glureau.sample.UuidBytesValueClass
 import com.glureau.sample.UuidStringValueClass
 import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteString
-import nullableUuidsHolder
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
 import java.nio.ByteBuffer

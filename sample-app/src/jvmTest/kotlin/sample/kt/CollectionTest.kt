@@ -1,8 +1,10 @@
 package sample.kt
 
-import AnEnumOuterClass
-import CollectionTypeOuterClass
-import InlinedCollectionOuterClass
+import com.glureau.k2pb_sample.AnEnumOuterClass
+import com.glureau.k2pb_sample.CollectionTypeOuterClass
+import com.glureau.k2pb_sample.InlinedCollectionOuterClass
+import com.glureau.k2pb_sample.dataClassFromLib
+import com.glureau.k2pb_sample.valueClassList
 import com.glureau.sample.CollectionType
 import com.glureau.sample.InlinedCollection
 import com.glureau.sample.lib.AnEnum
@@ -12,10 +14,8 @@ import com.glureau.sample.lib.ValueClassFromLib
 import com.glureau.sample.lib.ValueClassList
 import com.glureau.sample.lib.ValueClassOfEnum
 import com.glureau.sample.lib.ValueClassOfNullableEnum
-import dataClassFromLib
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
-import valueClassList
 import kotlin.test.Ignore
 
 class CollectionTest : BaseEncodingTest() {

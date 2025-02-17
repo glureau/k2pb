@@ -1,5 +1,6 @@
 package sample.kt
 
+import com.glureau.k2pb_sample.uuidsHolder
 import com.glureau.sample.UuidBytesValueClass
 import com.glureau.sample.UuidStringValueClass
 import com.glureau.sample.UuidsHolder
@@ -7,7 +8,6 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteString
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
-import uuidsHolder
 import java.nio.ByteBuffer
 import java.util.UUID
 import kotlin.uuid.Uuid

@@ -1,18 +1,18 @@
 package sample.kt
 
-import AbstractSubClassOuterClass
-import VehicleKt.bike
-import VehicleKt.car
-import abstractClass
-import abstractSubClass
+import com.glureau.k2pb_sample.AbstractSubClassOuterClass
+import com.glureau.k2pb_sample.VehicleKt.bike
+import com.glureau.k2pb_sample.VehicleKt.car
+import com.glureau.k2pb_sample.abstractClass
+import com.glureau.k2pb_sample.abstractSubClass
+import com.glureau.k2pb_sample.user
+import com.glureau.k2pb_sample.vehicle
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.glureau.sample.User
 import com.glureau.sample.Vehicle
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
-import user
-import vehicle
 
 class PolymorphismTest : BaseEncodingTest() {
 

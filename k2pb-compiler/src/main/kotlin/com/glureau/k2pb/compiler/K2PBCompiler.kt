@@ -26,6 +26,12 @@ internal lateinit var sharedOptions: OptionManager
 
 internal object Logger : KSPLogger by sharedLogger
 
+data class CompileOptions(private val options: Map<String, String>) {
+    val protoPackageName by lazy { options["com.glureau.k2pb.protoPackageName"] }
+}
+
+internal lateinit var compileOptions: CompileOptions
+
 class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
     init {
@@ -40,6 +46,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             return emptyList()
         }
         runDone = true
+        compileOptions = CompileOptions(environment.options)
         val symbols = resolver.getSymbolsWithAnnotation(ProtoMessage::class.qualifiedName!!)
         symbols.forEach {
             if (it is KSClassDeclaration) {
@@ -55,6 +62,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
             environment.writeProtobufFile(
                 protobufFile.toProtoString().toByteArray(),
+                packageName = compileOptions.protoPackageName?.let { "k2pb.$it" } ?: "k2pb",
                 fileName = protobufFile.path,
                 dependencies = protobufFile.dependencies
             )
@@ -115,6 +123,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 }
 
                 TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
+                        //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
                     reference.simpleName.asString()
                 //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                 done = false

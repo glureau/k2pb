@@ -1,8 +1,8 @@
 package sample.kt
 
-import NullableBigDecimalValueClassHolderOuterClass
-import NullableNativeTypeEventOuterClass
-import NullableValueClassHolderOuterClass
+import com.glureau.k2pb_sample.NullableBigDecimalValueClassHolderOuterClass
+import com.glureau.k2pb_sample.NullableNativeTypeEventOuterClass
+import com.glureau.k2pb_sample.NullableValueClassHolderOuterClass
 import com.glureau.sample.NullableBigDecimalValueClass
 import com.glureau.sample.NullableBigDecimalValueClassHolder
 import com.glureau.sample.NullableNativeTypeEvent

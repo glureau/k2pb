@@ -1,6 +1,6 @@
 package sample.kt
 
-import TransientFieldOuterClass
+import com.glureau.k2pb_sample.TransientFieldOuterClass
 import com.glureau.sample.TransientField
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest

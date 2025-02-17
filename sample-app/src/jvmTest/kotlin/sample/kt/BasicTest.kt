@@ -1,9 +1,9 @@
 package sample.kt
 
-import BarEventOuterClass
-import CommonClassOuterClass
-import FooEventOuterClass
-import StandardClassOuterClass
+import com.glureau.k2pb_sample.BarEventOuterClass
+import com.glureau.k2pb_sample.CommonClassOuterClass
+import com.glureau.k2pb_sample.FooEventOuterClass
+import com.glureau.k2pb_sample.StandardClassOuterClass
 import com.glureau.sample.BarEvent
 import com.glureau.sample.CommonClass
 import com.glureau.sample.FooEvent

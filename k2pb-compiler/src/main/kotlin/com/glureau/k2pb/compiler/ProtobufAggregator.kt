@@ -14,7 +14,9 @@ class ProtobufAggregator {
             qualifiedNameSet.contains(node.qualifiedName).not()
         ) { "Duplicated qualified name: ${node.qualifiedName}" }
         qualifiedNameSet += node.qualifiedName
-        TypeResolver.qualifiedNameToProtobufName[node.qualifiedName] = node.name
+        TypeResolver.qualifiedNameToProtobufName[node.qualifiedName] =
+            //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
+                    node.name
     }
 
     fun unknownReferences(): Set<String> {

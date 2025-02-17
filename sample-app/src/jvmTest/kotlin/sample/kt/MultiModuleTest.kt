@@ -1,10 +1,10 @@
 package sample.kt
 
+import com.glureau.k2pb_sample.dataClassFromLib
+import com.glureau.k2pb_sample.multiModule
 import com.glureau.sample.MultiModule
 import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.ValueClassFromLib
-import dataClassFromLib
-import multiModule
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
 

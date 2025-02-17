@@ -1,7 +1,7 @@
 package sample.kt
 
-import BigDecimalHolderOuterClass
-import NullableBigDecimalHolderOuterClass
+import com.glureau.k2pb_sample.BigDecimalHolderOuterClass
+import com.glureau.k2pb_sample.NullableBigDecimalHolderOuterClass
 import com.glureau.sample.BigDecimalHolder
 import com.glureau.sample.NullableBigDecimalHolder
 import org.junit.Test

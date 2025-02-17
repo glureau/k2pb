@@ -1,13 +1,17 @@
-File: k2pb/NullableBigDecimalValueClassHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalValueClassHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message NullableBigDecimalValueClassHolder {
   string nullableBdValue = 1;
   bool isNullableBdValueNull = 2;
 }
 
-File: k2pb/EnumHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "AnEnum.proto";
 
@@ -15,8 +19,10 @@ message EnumHolder {
   AnEnum value = 1;
 }
 
-File: k2pb/AnnotatedClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnnotatedClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message AnnotatedClass {
   int32 a = 1;
@@ -25,8 +31,10 @@ message AnnotatedClass {
   string d = 5;
 }
 
-File: k2pb/WithNestClassB.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestClassB.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message WithNestClassB {
   WithNestClassB.NestedClass b = 1;
@@ -40,8 +48,10 @@ message WithNestClassB {
   }
 }
 
-File: k2pb/MultiModule.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "DataClassFromLib.proto";
 
@@ -50,16 +60,20 @@ message MultiModule {
   string valueClassFromLib = 2;
 }
 
-File: k2pb/AbstractSubClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AbstractSubClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message AbstractSubClass {
   int32 foo = 1;
   string bar = 2;
 }
 
-File: k2pb/WithNestedEnum.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestedEnum.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message WithNestedEnum {
   WithNestedEnum.NestedEnum enum = 1;
@@ -70,8 +84,10 @@ message WithNestedEnum {
   }
 }
 
-File: k2pb/ValueClassOfEnumHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ValueClassOfEnumHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "AnEnum.proto";
 
@@ -79,29 +95,37 @@ message ValueClassOfEnumHolder {
   AnEnum value = 1;
 }
 
-File: k2pb/TransientField.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/TransientField.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message TransientField {
   string fieldSerialized = 1;
 }
 
-File: k2pb/BigDecimalValueClassHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BigDecimalValueClassHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message BigDecimalValueClassHolder {
   string bdValue = 1;
 }
 
-File: k2pb/DataClassFromLib.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DataClassFromLib.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message DataClassFromLib {
   int32 myInt = 1;
 }
 
-File: k2pb/NullableUuidsHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableUuidsHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message NullableUuidsHolder {
   string uuidAsString = 1;
@@ -114,8 +138,10 @@ message NullableUuidsHolder {
   bool isBytesValueClassNull = 8;
 }
 
-File: k2pb/WithNestClassA.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/WithNestClassA.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message WithNestClassA {
   WithNestClassA.NestedClass a = 1;
@@ -124,8 +150,10 @@ message WithNestClassA {
   }
 }
 
-File: k2pb/NativeTypeEvent.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NativeTypeEvent.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message NativeTypeEvent {
   int32 integer = 1;
@@ -140,8 +168,10 @@ message NativeTypeEvent {
   bytes byteArray = 10;
 }
 
-File: k2pb/NullableInlinedCollection.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableInlinedCollection.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "AnEnum.proto";
 
@@ -156,15 +186,19 @@ message NullableInlinedCollection {
   bool isValueClassOfNullableStringListNull = 8;
 }
 
-File: k2pb/BigDecimalHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BigDecimalHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message BigDecimalHolder {
   string bd = 1;
 }
 
-File: k2pb/AbstractClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AbstractClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "AbstractSubClass.proto";
 
@@ -174,15 +208,19 @@ message AbstractClass {
   }
 }
 
-File: k2pb/CommonClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommonClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message CommonClass {
   string id = 1;
 }
 
-File: k2pb/EnumClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 enum EnumClass {
   A = 0;
@@ -190,15 +228,19 @@ enum EnumClass {
   C = 2;
 }
 
-File: k2pb/KtxClasses.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClasses.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message KtxClasses {
   string instant = 1;
 }
 
-File: k2pb/FooEvent.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/FooEvent.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "CommonClass.proto";
 
@@ -206,8 +248,10 @@ message FooEvent {
   CommonClass common = 1;
 }
 
-File: k2pb/AnEnum.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnEnum.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 enum AnEnum {
   AnEnum_A = 0;
@@ -215,13 +259,17 @@ enum AnEnum {
   AnEnum_C = 2;
 }
 
-File: k2pb/ObjectClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ObjectClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message ObjectClass { }
 
-File: k2pb/BarEvent.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BarEvent.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "CommonClass.proto";
 
@@ -229,8 +277,10 @@ message BarEvent {
   CommonClass common = 1;
 }
 
-File: k2pb/NullableNativeTypeEvent.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableNativeTypeEvent.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message NullableNativeTypeEvent {
   int32 integer = 1;
@@ -255,16 +305,20 @@ message NullableNativeTypeEvent {
   bool isByteArrayNull = 20;
 }
 
-File: k2pb/NullableBigDecimalHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message NullableBigDecimalHolder {
   string bd = 1;
   bool isBdNull = 2;
 }
 
-File: k2pb/Vehicle.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/Vehicle.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 // Polymorphism structure for 'Vehicle'
 // Possible values are:
@@ -283,8 +337,10 @@ message Vehicle {
   }
 }
 
-File: k2pb/InlinedCollection.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/InlinedCollection.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "AnEnum.proto";
 
@@ -295,8 +351,10 @@ message InlinedCollection {
   repeated string valueClassOfNullableStringList = 4;
 }
 
-File: k2pb/CollectionType.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CollectionType.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "DataClassFromLib.proto";
 
@@ -309,23 +367,29 @@ message CollectionType {
   repeated DataClassFromLib dataClassList = 6;
 }
 
-File: k2pb/ValueClassList.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ValueClassList.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message ValueClassList {
   repeated string valueClassFromLibs = 1;
 }
 
-File: k2pb/NullableValueClassHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableValueClassHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message NullableValueClassHolder {
   string valueClassFromLib = 1;
   bool isValueClassFromLibNull = 2;
 }
 
-File: k2pb/CommentedClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommentedClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 //  This class has kdoc comment.
 message CommentedClass {
@@ -333,8 +397,10 @@ message CommentedClass {
   string fieldWithComment = 1;
 }
 
-File: k2pb/UuidsHolder.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/UuidsHolder.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message UuidsHolder {
   string uuidAsString = 1;
@@ -343,8 +409,10 @@ message UuidsHolder {
   bytes bytesValueClass = 4;
 }
 
-File: k2pb/User.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/User.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 import "Vehicle.proto";
 
@@ -353,8 +421,10 @@ message User {
   Vehicle vehicle = 2;
 }
 
-File: k2pb/StandardClass.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/StandardClass.proto
 syntax = "proto3";
+
+package com.glureau.k2pb_sample;
 
 message StandardClass {
   string eventUUID = 1;

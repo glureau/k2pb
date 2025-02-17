@@ -19,10 +19,10 @@ data class ProtobufFile(
         appendLine("\";")
         appendLine()
 
+        if (packageName != null) appendLine("package $packageName;\n")
+
         imports.forEach { appendLine("import \"$it\";") }
         if (imports.isNotEmpty()) appendLine()
-
-        if (packageName != null) appendLine("package $packageName;\n")
 
         nodes.forEach { appendNode(0, it) }
     }

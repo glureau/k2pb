@@ -1,8 +1,8 @@
 package sample.kt
 
-import AnEnumOuterClass
-import EnumHolderOuterClass
-import ValueClassOfEnumHolderOuterClass
+import com.glureau.k2pb_sample.AnEnumOuterClass
+import com.glureau.k2pb_sample.EnumHolderOuterClass
+import com.glureau.k2pb_sample.ValueClassOfEnumHolderOuterClass
 import com.glureau.sample.lib.AnEnum
 import com.glureau.sample.lib.EnumHolder
 import com.glureau.sample.lib.ValueClassOfEnum
