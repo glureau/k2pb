@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
-    id("com.glureau.k2pb") version "0.9.9-SNAPSHOT"
+    id("com.glureau.k2pb") version "0.9.10-SNAPSHOT"
 }
 
 repositories {
@@ -86,7 +86,7 @@ task("runProtoc", type = Exec::class) {
             "--java_out=build/generated/ksp/jvm/jvmTest/java",
             *protoFiles.map { it.absolutePath.substringAfter(dirPath) }.toTypedArray()
         )
-        println("Running protoc: $cmd")
+        println("Running protoc:\n------\n${cmd.joinToString(" ")}\n------")
         commandLine(cmd)
     }
     dependsOn("compileKotlinJvm")
