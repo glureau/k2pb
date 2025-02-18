@@ -22,7 +22,7 @@ data class ProtobufFile(
 
         if (packageName != null) appendLine("package $packageName;\n")
 
-        if (compileOptions.javaPackage!= null || compileOptions.javaOuterClassnameSuffix != null) {
+        if (compileOptions.javaPackage != null || compileOptions.javaOuterClassnameSuffix != null) {
             if (compileOptions.javaPackage != null)
                 appendLine("option java_package = \"${compileOptions.javaPackage}\";")
             if (compileOptions.javaOuterClassnameSuffix != null)
@@ -30,7 +30,11 @@ data class ProtobufFile(
             appendLine()
         }
 
-        imports.forEach { appendLine("import \"$it\";") }
+        // TODO: packageName should be extracted based on each import...
+        val baseImport =
+            if (packageName == null) ""
+            else packageName.replace(".", "/") + "/"
+        imports.forEach { appendLine("import \"$baseImport$it\";") }
         if (imports.isNotEmpty()) appendLine()
 
         nodes.forEach { appendNode(0, it) }

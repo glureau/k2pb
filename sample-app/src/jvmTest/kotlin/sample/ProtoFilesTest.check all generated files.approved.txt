@@ -18,7 +18,7 @@ package com.glureau.k2pb_sample;
 option java_package = "com.glureau.custom.javapackage";
 option java_outer_classname = "EnumHolderProto";
 
-import "AnEnum.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message EnumHolder {
   AnEnum value = 1;
@@ -64,7 +64,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "MultiModuleProto";
 
-import "DataClassFromLib.proto";
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 
 message MultiModule {
   DataClassFromLib dataClassFromLib = 1;
@@ -107,7 +107,7 @@ package com.glureau.k2pb_sample;
 option java_package = "com.glureau.custom.javapackage";
 option java_outer_classname = "ValueClassOfEnumHolderProto";
 
-import "AnEnum.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message ValueClassOfEnumHolder {
   AnEnum value = 1;
@@ -206,7 +206,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableInlinedCollectionProto";
 
-import "AnEnum.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message NullableInlinedCollection {
   repeated string valueClassList = 1;
@@ -237,7 +237,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "AbstractClassProto";
 
-import "AbstractSubClass.proto";
+import "com/glureau/k2pb_sample/AbstractSubClass.proto";
 
 message AbstractClass {
   oneof abstractClass {
@@ -287,7 +287,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "FooEventProto";
 
-import "CommonClass.proto";
+import "com/glureau/k2pb_sample/CommonClass.proto";
 
 message FooEvent {
   CommonClass common = 1;
@@ -323,7 +323,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "BarEventProto";
 
-import "CommonClass.proto";
+import "com/glureau/k2pb_sample/CommonClass.proto";
 
 message BarEvent {
   CommonClass common = 1;
@@ -402,7 +402,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "InlinedCollectionProto";
 
-import "AnEnum.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message InlinedCollection {
   repeated string valueClassList = 1;
@@ -418,7 +418,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "CollectionTypeProto";
 
-import "DataClassFromLib.proto";
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 
 message CollectionType {
   repeated int32 integerList = 1;
@@ -487,7 +487,7 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "UserProto";
 
-import "Vehicle.proto";
+import "com/glureau/k2pb_sample/Vehicle.proto";
 
 message User {
   string name = 1;

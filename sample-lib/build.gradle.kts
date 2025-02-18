@@ -49,7 +49,7 @@ dependencies {
 }
 
 task("runProtoc", type = Exec::class) {
-    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/" + customPackage.replace(".", "/") + "/"
+    val dirPath = "build/generated/ksp/jvm/jvmMain/resources/k2pb/"
     // The official gradle plugin doesn't support KMP yet: https://github.com/google/protobuf-gradle-plugin/issues/497
     // So we are assuming protoc is locally installed for now.
     // protoc: Need to generate kotlin + JAVA (kotlin is only wrapping around java, not great for KMP...)
