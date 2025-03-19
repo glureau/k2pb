@@ -45,7 +45,7 @@ class MigrationTest {
         )
     }
 }
-
+/*
 // Generated
 interface MigrationAddFieldAfterProtoConstructor {
     public operator fun invoke(
@@ -80,7 +80,7 @@ fun main() {
     // OR
     val reS: MigrationAddFieldAfter = MigrationAddFieldAfterCtor(null, null, null, null, null)
 }
-
+*/
 /*
 object MigrationAddFieldAfter : ProtoConstructor<MigrationAddFieldAfter> {
     override fun create(parameters: Map<String, Any?>): MigrationAddFieldAfter =
@@ -93,7 +93,7 @@ object MigrationAddFieldAfter : ProtoConstructor<MigrationAddFieldAfter> {
         )
 }
 */
-
+/*
 object MigrationAddFieldAfterCtor : MigrationAddFieldAfterProtoConstructor {
     override fun invoke(
         a: String?,
@@ -110,3 +110,4 @@ object MigrationAddFieldAfterCtor : MigrationAddFieldAfterProtoConstructor {
             e = MigrationData("hardcoded here too")
         )
 }
+*/

@@ -99,7 +99,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         else emptyList(),
         originalFile = containingFile,
         sealedSubClasses = subclasses.map { it.toClassName() },
-        customConstructor = this.customConstructor,
+        customBuilder = this.customBuilder,
     )
 }
 
@@ -217,7 +217,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         fields = fields.toList(),
         originalFile = containingFile,
         sealedSubClasses = emptyList(),
-        customConstructor = this.customConstructor,
+        customBuilder = this.customBuilder,
     )
 }
 
@@ -354,7 +354,7 @@ private val KSAnnotated.serialNameInternal: String?
                 ?.getArg<String>(ProtoMessage::name)
                 ?.takeIf { it.isNotBlank() }
 
-private val KSAnnotated.customConstructor: ClassName?
+private val KSAnnotated.customBuilder: ClassName?
     get() = annotations.toList()
         .firstOrNull { it.shortName.asString() == ProtoMessage::class.simpleName }
         ?.getArg<KSType>(ProtoMessage::constructor)

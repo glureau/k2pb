@@ -1,8 +1,5 @@
 package com.glureau.k2pb.compiler.poet
 
-import com.glureau.k2pb.compiler.Logger
-import com.glureau.k2pb.compiler.poet.returnBuildIt
-import com.glureau.k2pb.compiler.struct.FieldType
 import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
 import com.glureau.k2pb.compiler.struct.MessageNode
@@ -74,10 +71,10 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
     endControlFlow() // when (tag)
     endControlFlow() // while (!eof)
 
-    if (messageNode.customConstructor != null) {
-        addStatement("return %T(", messageNode.customConstructor)
+    if (messageNode.customBuilder != null) {
+        addStatement("return %T(", messageNode.customBuilder)
     } else{
-        addStatement("return DefaultConstructor(")
+        addStatement("return DefaultBuilder(")
     }
     messageNode.fields.forEach { f ->
         addStatement("  ${f.name} = ${f.name},")
@@ -92,7 +89,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
 fun TypeSpec.Builder.addConstructorTypes(node: MessageNode, className: ClassName, serializerClassName: ClassName) {
     if (node.isPolymorphic) return // TODO: Handle polymorphic for retrocompat
     this.addType(
-        TypeSpec.interfaceBuilder("Constructor")
+        TypeSpec.interfaceBuilder("Builder")
             .addFunction(
                 buildInvokeFunction(node, className)
                     .addModifiers(KModifier.ABSTRACT)
@@ -101,13 +98,13 @@ fun TypeSpec.Builder.addConstructorTypes(node: MessageNode, className: ClassName
             .build()
     )
         .addType(
-            TypeSpec.objectBuilder("DefaultConstructor")
+            TypeSpec.objectBuilder("DefaultBuilder")
                 .addModifiers(KModifier.PRIVATE)
                 .addSuperinterface(
                     ClassName(
                         serializerClassName.packageName,
                         serializerClassName.simpleName,
-                        "Constructor"
+                        "Builder"
                     )
                 )
                 .addFunction(

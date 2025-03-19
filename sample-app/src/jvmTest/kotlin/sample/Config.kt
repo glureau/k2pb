@@ -8,4 +8,5 @@ import com.glureau.sample.registerSampleAppSerializers
 val serializer = K2PB {
     registerSampleLibSerializers()
     registerSampleAppSerializers()
+    // registerBuilder(MigrationAddFieldAfterDynamicSC("runtime value"))
 }

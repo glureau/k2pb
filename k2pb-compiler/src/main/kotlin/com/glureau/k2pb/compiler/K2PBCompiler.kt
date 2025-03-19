@@ -106,7 +106,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                             ),
                             originalFile = symbol.containingFile,
                             sealedSubClasses = emptyList(),
-                            customConstructor = null, // TODO
+                            customBuilder = null, // TODO
                         )
                     )
                 }
