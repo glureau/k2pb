@@ -44,7 +44,7 @@ fun FunSpec.Builder.encodeReferenceType(
             beginControlFlow("if ($fieldAccess != null)")
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
-        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "") })", annSerializer.toClassName())
+        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")})", annSerializer.toClassName())
         annSerializer.customConverterType()?.let { customType ->
             if (tag != null) {
                 addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
@@ -157,7 +157,7 @@ fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
 ) {
     addStatement("var $fieldName: %T? = null", type.className)
     nullabilitySubField?.let {
-        addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+        addNullabilityStatement(nullabilitySubField)
     }
 }
 

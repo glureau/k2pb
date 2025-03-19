@@ -8,6 +8,7 @@ import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.glureau.k2pb.compiler.struct.decodeField
 import com.glureau.k2pb.compiler.struct.decodeFieldVariableDefinition
+import com.glureau.k2pb.compiler.struct.decodeNullability
 import com.glureau.k2pb.compiler.struct.decodeScalarType
 import com.glureau.k2pb.compiler.struct.encodeField
 import com.glureau.k2pb.compiler.struct.nameOrDefault
@@ -51,7 +52,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
         endControlFlow()
         if (f is TypedField && f.nullabilitySubField != null) {
             beginControlFlow("${f.nullabilitySubField.protoNumber} ->")
-            decodeScalarType(f.nullabilitySubField.fieldName, ScalarFieldType.Boolean, null)
+            decodeNullability(f.nullabilitySubField)
             endControlFlow()
         }
     }

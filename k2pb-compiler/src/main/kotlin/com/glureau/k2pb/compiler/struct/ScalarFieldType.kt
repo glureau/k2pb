@@ -216,12 +216,12 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     } ?: run {
         addStatement("var $fieldName: %T? = null", type.kotlinClass)
         if (nullabilitySubField != null) {
-            addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+            addNullabilityStatement(nullabilitySubField)
         }
     }
 }
 
 fun FunSpec.Builder.decodeScalarType(fieldName: String, type: ScalarFieldType, annotatedSerializer: KSType?) {
     if (annotatedSerializer != null) TODO("Not supported yet")
-    addStatement("${fieldName} = ${type.readMethod()}")
+    addStatement("$fieldName = ${type.readMethod()}")
 }
