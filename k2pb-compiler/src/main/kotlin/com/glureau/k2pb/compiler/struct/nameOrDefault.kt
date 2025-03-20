@@ -8,7 +8,11 @@ fun FieldType.nameOrDefault(name: String): String {
     return return when (this) {
         is ListType -> name // default value will be the aggregating mutable list (empty)
         is MapType -> name // default value will be the aggregating mutable map (empty)
-        is ReferenceType -> if (isNullable) name else "requireNotNull($name)"
+        is ReferenceType -> when {
+            isNullable && isEnum -> "$name ?: $enumFirstEntry"
+            isNullable -> name
+            else -> "requireNotNull($name)"
+        }
         ScalarFieldType.Double,
         ScalarFieldType.DoubleNullable -> "$name ?: 0.0"
 
@@ -39,8 +43,6 @@ fun FieldType.nameOrDefault(name: String): String {
         ScalarFieldType.ByteArray,
         ScalarFieldType.ByteArrayNullable -> "$name ?: byteArrayOf()"
 
-        is ScalarFieldType -> {
-            error("ScalarType not handled for protobuf serialization: $this")
-        }
+        is ScalarFieldType -> error("ScalarType not handled for protobuf serialization: $this")
     }
 }

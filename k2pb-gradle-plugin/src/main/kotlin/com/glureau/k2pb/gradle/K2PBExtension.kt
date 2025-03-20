@@ -18,4 +18,11 @@ open class K2PBExtension {
      * Keep it null to use the standard "OuterClass" suffix.
      */
     var javaOuterClassnameSuffix: String? = null
+
+    /**
+     * K2PB explicit nullability is using a specific enum to ensure a good support.
+     * By default, a multi-module setup will emit multiple times this file, this setting
+     * allow to disable the emission of this protobuf file.
+     */
+    var emitNullability: Boolean = true
 }

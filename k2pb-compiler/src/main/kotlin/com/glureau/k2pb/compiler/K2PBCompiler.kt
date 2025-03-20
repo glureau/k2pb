@@ -5,6 +5,7 @@ import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.emitNullabilityProto
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.KSPLogger
@@ -30,6 +31,7 @@ data class CompileOptions(private val options: Map<String, String>) {
     val protoPackageName by lazy { options["com.glureau.k2pb.protoPackageName"] }
     val javaPackage by lazy { options["com.glureau.k2pb.javaPackage"] }
     val javaOuterClassnameSuffix by lazy { options["com.glureau.k2pb.javaOuterClassnameSuffix"] }
+    val emitNullability by lazy { options["com.glureau.k2pb.emitNullability"].toBoolean() }
 }
 
 internal lateinit var compileOptions: CompileOptions
@@ -69,6 +71,11 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 dependencies = protobufFile.dependencies
             )
         }
+
+        if (compileOptions.emitNullability) {
+            emitNullabilityProto(environment)
+        }
+
         ProtobufSerializerProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
             protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
         }
@@ -117,19 +124,21 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         do {
             var done = true
             val unknownReferences = protobufAggregator.unknownReferences()
-            unknownReferences.forEach {
-                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
-                if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
-                    Logger.warn("$it is referenced but not annotated with @ProtoMessage")
-                    // TODO: Should be an error
-                }
+            unknownReferences
+                //.filter { it != nullabilityQualifiedName }
+                .forEach {
+                    val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
+                    if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
+                        Logger.warn("$it is referenced but not annotated with @ProtoMessage")
+                        // TODO: Should be an error?
+                    }
 
-                TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
-                        //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
-                    reference.simpleName.asString()
-                //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
-                done = false
-            }
+                    TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
+                            //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
+                        reference.simpleName.asString()
+                    //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
+                    done = false
+                }
 
             if (!done && lastSignatures.isNotEmpty() && lastSignatures == unknownReferences) {
                 Logger.warn("Cannot resolve the following references: $unknownReferences")

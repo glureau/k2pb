@@ -6,9 +6,10 @@ import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.asClassName
+import com.glureau.k2pb.compiler.struct.buildNullable
 import com.glureau.k2pb.compiler.struct.decodeField
 import com.glureau.k2pb.compiler.struct.decodeFieldVariableDefinition
-import com.glureau.k2pb.compiler.struct.decodeScalarType
+import com.glureau.k2pb.compiler.struct.decodeNullability
 import com.glureau.k2pb.compiler.struct.encodeField
 import com.glureau.k2pb.compiler.struct.nameOrDefault
 import com.squareup.kotlinpoet.FunSpec
@@ -51,7 +52,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
         endControlFlow()
         if (f is TypedField && f.nullabilitySubField != null) {
             beginControlFlow("${f.nullabilitySubField.protoNumber} ->")
-            decodeScalarType(f.nullabilitySubField.fieldName, ScalarFieldType.Boolean, null)
+            decodeNullability(f.nullabilitySubField)
             endControlFlow()
         }
     }
@@ -76,40 +77,51 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                 val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
                     when {
                         it.type.inlineOf?.isNullable == true -> {
-                            "  ${it.name} = ${it.name} ?: ${it.type.className}(null), /* C */"
+                            "${it.name} ?: ${it.type.className}(null), /* C */"
                         }
 
                         it.type.isEnum -> {
-                            "  ${it.name} = ${it.name} ?: ${it.type.enumFirstEntry}, /* EE */"
+                            "${it.name} ?: ${it.type.enumFirstEntry}, /* EE */"
                         }
 
                         (it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum -> {
-                            "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
+                            "${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
                         }
 
                         (it.type.inlineOf is ScalarFieldType) -> {
-                            "  ${it.name} = ${it.name} ?: ${it.type.className}(${it.type.inlineOf.defaultValue}), /* E */"
+                            "${it.name} ?: ${it.type.className}(${it.type.inlineOf.defaultValue}), /* E */"
                         }
 
                         else -> {
-                            "  ${it.name} = requireNotNull(${it.name}), /* D */"
+                            "requireNotNull(${it.name}), /* D */"
                         }
                     }
                 } else {
                     if (it.nullabilitySubField != null) {
-                        if (it.type is ReferenceType && it.type.inlineOf is ScalarFieldType) {
-                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null " +
-                                    "else (${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue})), /* KP */"
-                        } else if (it.type is ReferenceType) {
-                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* KL */"
-                        } else {
-                            "  ${it.name} = if (${it.nullabilitySubField.fieldName}) null else ${it.nameOrDefault()}, /* K */"
+                        val unspecifiedDefault = when {
+                            it.type is ReferenceType && it.type.inlineOf is ScalarFieldType -> {
+                                "(${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue}))"
+                            }
+                            /*
+
+                            it.type is ReferenceType -> {
+                                it.name
+                            }*/
+
+                            else -> {
+                                it.nameOrDefault()
+                            }
                         }
+                        buildNullable(
+                            nullabilitySubField = it.nullabilitySubField,
+                            unspecifiedDefault = unspecifiedDefault,
+                            notNull = it.name
+                        ) + ","
                     } else {
-                        "  ${it.name} = ${it.nameOrDefault()}, /* E */"
+                        "${it.nameOrDefault()}, /* EKL */"
                     }
                 }
-                addStatement(str)
+                addStatement("  ${it.name} = " + str)
             }
         }
     }

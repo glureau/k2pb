@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.protofile
 
-import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
+import com.glureau.k2pb.compiler.struct.appendNullabilityField
 
 fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     appendComment(indentLevel, field.comment)
@@ -16,11 +16,6 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
 
     if (field.nullabilitySubField != null) {
         append(indentation(indentLevel))
-        appendFieldType(ScalarFieldType.Boolean, null)
-        append(" ")
-        append(field.nullabilitySubField.fieldName)
-        append(" = ")
-        append(field.nullabilitySubField.protoNumber)
-        appendLine(";")
+        appendNullabilityField(field.nullabilitySubField)
     }
 }

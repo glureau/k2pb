@@ -2,10 +2,7 @@ package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.NullableByteArrayConverter
 import com.glureau.k2pb.NullableStringConverter
-import com.glureau.k2pb.annotation.ProtoConverter
-import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
-import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.asClassName
@@ -25,7 +22,3 @@ fun KSType?.customConverterType(): ScalarFieldType? {
     }
     return null
 }
-
-fun Sequence<KSAnnotation>.customConverter(): KSType? =
-    firstOrNull { it.shortName.asString() == ProtoConverter::class.simpleName }
-        ?.getArg<KSType?>(ProtoConverter::converter)

@@ -164,7 +164,7 @@ data class ScalarFieldType(
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
             // '\n' are used because '·' is still wrapped even if it shouldn't...
-            readMethod = { CodeBlock.of("\nreadInt(%T)·==·1 /* ooo */", ProtoIntegerTypeDefault) },
+            readMethod = { CodeBlock.of("\nreadInt(%T)·==·1", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("\nreadIntNoTag()·==·1") },
         )
         val BooleanNullable = Boolean.copy(isNullable = true)
@@ -216,12 +216,12 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     } ?: run {
         addStatement("var $fieldName: %T? = null", type.kotlinClass)
         if (nullabilitySubField != null) {
-            addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+            addNullabilityStatement(nullabilitySubField)
         }
     }
 }
 
 fun FunSpec.Builder.decodeScalarType(fieldName: String, type: ScalarFieldType, annotatedSerializer: KSType?) {
     if (annotatedSerializer != null) TODO("Not supported yet")
-    addStatement("${fieldName} = ${type.readMethod()}")
+    addStatement("$fieldName = ${type.readMethod()}")
 }

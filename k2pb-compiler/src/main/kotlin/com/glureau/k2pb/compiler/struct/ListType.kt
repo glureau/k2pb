@@ -83,7 +83,7 @@ fun FunSpec.Builder.decodeListTypeVariableDefinition(
     val typeName = StringBuilder().appendKotlinDefinition(listType)
     addStatement("val ${fieldName}: Mutable${typeName.removeSuffix("?")} = mutableListOf()")
     nullabilitySubField?.let {
-        addStatement("var ${nullabilitySubField.fieldName}: Boolean = false")
+        addNullabilityStatement(nullabilitySubField)
     }
 }
 

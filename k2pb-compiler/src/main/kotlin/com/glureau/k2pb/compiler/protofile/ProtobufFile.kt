@@ -3,6 +3,8 @@ package com.glureau.k2pb.compiler.protofile
 import com.glureau.k2pb.compiler.compileOptions
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.ProtoSyntax
+import com.glureau.k2pb.compiler.struct.nullabilityClass
+import com.glureau.k2pb.compiler.struct.nullabilityImport
 
 data class ProtobufFile(
     val path: String,
@@ -30,11 +32,16 @@ data class ProtobufFile(
             appendLine()
         }
 
+        if (imports.contains("$nullabilityClass.proto")) {
+            appendLine("import \"$nullabilityImport.proto\";")
+        }
         // TODO: packageName should be extracted based on each import...
         val baseImport =
             if (packageName == null) ""
             else packageName.replace(".", "/") + "/"
-        imports.forEach { appendLine("import \"$baseImport$it\";") }
+        imports
+            .filter { it != "$nullabilityClass.proto" }
+            .forEach { appendLine("import \"$baseImport$it\";") }
         if (imports.isNotEmpty()) appendLine()
 
         nodes.forEach { appendNode(0, it) }

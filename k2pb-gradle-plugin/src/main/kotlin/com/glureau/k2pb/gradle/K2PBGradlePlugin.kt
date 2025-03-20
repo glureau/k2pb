@@ -23,6 +23,7 @@ class K2PBGradlePlugin : Plugin<Project> {
             k2pbExt.javaOuterClassnameSuffix?.let { javaOuterClassnameSuffix ->
                 kspExt.arg("com.glureau.k2pb.javaOuterClassnameSuffix", javaOuterClassnameSuffix)
             }
+            kspExt.arg("com.glureau.k2pb.emitNullability", k2pbExt.emitNullability.toString())
         }
     }
 }

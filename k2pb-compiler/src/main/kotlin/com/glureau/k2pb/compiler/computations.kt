@@ -14,6 +14,7 @@ import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.TypedField
+import com.glureau.k2pb.compiler.struct.nullabilityQualifiedName
 import com.google.devtools.ksp.symbol.KSFile
 
 
@@ -64,10 +65,15 @@ fun computeImports(
 fun FieldInterface.resolvedExternalTypes(): List<String> {
     return when (this) {
         is TypedField -> {
-            if (this.annotatedConverter.customConverterType() != null) {
-                emptyList()
-            } else {
-                this.type.resolvedExternalTypes()
+            buildList {
+                if (nullabilitySubField != null) {
+                    add(nullabilityQualifiedName)
+                }
+                if (annotatedConverter.customConverterType() != null) {
+                    /* ... */
+                } else {
+                    addAll(type.resolvedExternalTypes())
+                }
             }
         }
 

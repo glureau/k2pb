@@ -1,9 +1,9 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.NullableStringConverter
+import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
-import com.glureau.k2pb.annotation.ProtoName
-import com.glureau.k2pb.annotation.ProtoNumber
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.capitalizeUS
@@ -138,13 +138,14 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             }
         }
 
-        val annotatedConverter = prop.annotations.customConverter()
+        val annotatedConverter = prop.customConverter()
         val annotatedDerivedType = when (annotatedConverter) {
             is NullableStringConverter<*> -> ScalarFieldType.StringNullable
             else -> null
         }
         val annotatedNumber = prop.protoNumberInternal
         val propName = prop.simpleName.asString()
+        val annotatedNullableMigration = prop.nullableMigration()
         when {
             resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                 TypedField(
@@ -153,6 +154,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                     comment = prop.docString,
                     annotatedConverter = annotatedConverter,
+                    annotatedNullableMigration = annotatedNullableMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
                 )
@@ -173,6 +175,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
+                    annotatedNullableMigration = annotatedNullableMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null, // TODO: handle nullability
                 )
@@ -187,6 +190,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
+                    annotatedNullableMigration = annotatedNullableMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
                 ).withNullabilitySubFieldIfNeeded(numberManager)
@@ -223,7 +227,8 @@ private fun TypedField.useNullabilitySubField(): Boolean =
     (type.isNullable && (type !is ReferenceType || type.inlineOf != null)) ||
             (type.isNullable && annotatedConverter.customConverterType()?.isNullable == true) ||
             (type is ReferenceType && type.inlineOf != null && type.inlineOf.isNullable) ||
-            (type is ReferenceType && type.inlineAnnotatedSerializer is NullableStringConverter<*>)
+            (type is ReferenceType && type.inlineAnnotatedSerializer is NullableStringConverter<*>) ||
+            (type.isNullable && type is ReferenceType && type.isEnum)
 
 private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberManager): TypedField {
     return if (useNullabilitySubField()) {
@@ -233,6 +238,7 @@ private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberMana
                 fieldName = nullFieldName,
                 /* TODO : handle a custom number in annotation for this nullability field */
                 protoNumber = numberManager.resolve(nullFieldName, null),
+                nullableMigration = annotatedNullableMigration ?: NullableMigration.DEFAULT,
             )
         )
     } else {
@@ -296,7 +302,7 @@ private fun mapQfnToFieldType(
             if (typeDecl?.isInlineClass == true) {
                 val inlined = (type.declaration as KSClassDeclaration).getDeclaredProperties().first()
                 val inlinedFieldType = inlined.type.toProtobufFieldType()
-                val inlineAnnotatedSerializer = inlined.annotations.customConverter()
+                val inlineAnnotatedSerializer = inlined.customConverter()
                 ReferenceType(
                     className = type.toClassName(),
                     name = qfn,
@@ -343,12 +349,11 @@ val KSPropertyDeclaration.serialName: String
 
 private val KSAnnotated.serialNameInternal: String?
     get() =
-        annotations.toList()
-            .firstOrNull { it.shortName.asString() == ProtoName::class.simpleName }
-            ?.getArg<String>(ProtoName::name)
-            ?: annotations.toList()
-                .firstOrNull { it.shortName.asString() == ProtoMessage::class.simpleName }
-                ?.getArg<String>(ProtoMessage::name)
+        protoFieldAnnotation()
+            ?.getArg<String?>(ProtoField::name)
+            ?.takeIf { it.isNotBlank() }
+            ?: protoMessageAnnotation()
+                ?.getArg<String?>(ProtoMessage::name)
                 ?.takeIf { it.isNotBlank() }
 
 
@@ -360,6 +365,6 @@ val KSPropertyDeclaration.protoNumber: Int?
 
 private val KSAnnotated.protoNumberInternal: Int?
     get() =
-        annotations.toList()
-            .firstOrNull { it.shortName.asString() == ProtoNumber::class.simpleName }
-            ?.getArg<Int>(ProtoNumber::number)
+        protoFieldAnnotation()
+            ?.getArg<Int?>(ProtoField::number)
+            ?.takeIf { it >= 0 }
