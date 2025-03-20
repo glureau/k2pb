@@ -1,5 +1,8 @@
 package sample.kt
 
+import com.glureau.k2pb.AnnotatedClassProto
+import com.glureau.k2pb.K2PBNullability
+import com.glureau.k2pb.K2PBNullabilityProto
 import com.glureau.k2pb_sample.BigDecimalHolderProto
 import com.glureau.k2pb_sample.NullableBigDecimalHolderProto
 import com.glureau.sample.BigDecimalHolder
@@ -36,7 +39,7 @@ class CustomSerializerTest : BaseEncodingTest() {
             ktInstance = NullableBigDecimalHolder(null),
             protocInstance = NullableBigDecimalHolderProto.NullableBigDecimalHolder.newBuilder()
                 //.setBd(null) // <- NPE in protoc generated java code, but default Java is null anyway
-                .setIsBdNull(true)
+                .setIsBdNull(K2PBNullabilityProto.K2PBNullability.NULL)
                 .build()
         )
     }

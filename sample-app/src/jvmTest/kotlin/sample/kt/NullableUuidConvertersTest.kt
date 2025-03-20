@@ -1,5 +1,6 @@
 package sample.kt
 
+import com.glureau.k2pb.K2PBNullabilityProto
 import com.glureau.k2pb_sample.nullableUuidsHolder
 import com.glureau.sample.NullableUuidsHolder
 import com.glureau.sample.UuidBytesValueClass
@@ -69,13 +70,13 @@ class NullableUuidConvertersTest : BaseEncodingTest() {
             ),
             protocInstance = nullableUuidsHolder {
                 uuidAsString = ""
-                isUuidAsStringNull = true
+                isUuidAsStringNull = K2PBNullabilityProto.K2PBNullability.NULL
                 uuidAsBytes = ByteString.EMPTY
-                isUuidAsBytesNull = true
+                isUuidAsBytesNull = K2PBNullabilityProto.K2PBNullability.NULL
                 stringValueClass = ""
-                isStringValueClassNull = true
+                isStringValueClassNull = K2PBNullabilityProto.K2PBNullability.NULL
                 bytesValueClass = ByteString.EMPTY
-                isBytesValueClassNull = true
+                isBytesValueClassNull = K2PBNullabilityProto.K2PBNullability.NULL
             }
         )
     }

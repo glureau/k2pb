@@ -4,6 +4,7 @@ import com.glureau.k2pb.NullableStringConverter
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoName
 import com.glureau.k2pb.annotation.ProtoNumber
+import com.glureau.k2pb.annotation.UnspecifiedBehavior
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.capitalizeUS
@@ -145,6 +146,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         }
         val annotatedNumber = prop.protoNumberInternal
         val propName = prop.simpleName.asString()
+        val annotatedUnspecifiedBehavior = prop.annotations.unspecifiedBehavior()
         when {
             resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                 TypedField(
@@ -153,6 +155,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                     comment = prop.docString,
                     annotatedConverter = annotatedConverter,
+                    annotatedUnspecifiedBehavior = annotatedUnspecifiedBehavior,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
                 )
@@ -173,6 +176,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
+                    annotatedUnspecifiedBehavior = annotatedUnspecifiedBehavior,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null, // TODO: handle nullability
                 )
@@ -187,6 +191,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
+                    annotatedUnspecifiedBehavior = annotatedUnspecifiedBehavior,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
                 ).withNullabilitySubFieldIfNeeded(numberManager)
@@ -233,6 +238,7 @@ private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberMana
                 fieldName = nullFieldName,
                 /* TODO : handle a custom number in annotation for this nullability field */
                 protoNumber = numberManager.resolve(nullFieldName, null),
+                unspecifiedBehavior = annotatedUnspecifiedBehavior ?: UnspecifiedBehavior.DEFAULT,
             )
         )
     } else {

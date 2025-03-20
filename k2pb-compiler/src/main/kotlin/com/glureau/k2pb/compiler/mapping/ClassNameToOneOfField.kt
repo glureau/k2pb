@@ -25,6 +25,7 @@ fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: Map<Cla
                     protoNumber = number,
                     annotatedName = null,
                     annotatedConverter = null,
+                    annotatedUnspecifiedBehavior = null,
                     nullabilitySubField = null,
                 )
             }

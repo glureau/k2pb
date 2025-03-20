@@ -164,7 +164,7 @@ data class ScalarFieldType(
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
             // '\n' are used because '·' is still wrapped even if it shouldn't...
-            readMethod = { CodeBlock.of("\nreadInt(%T)·==·1 /* ooo */", ProtoIntegerTypeDefault) },
+            readMethod = { CodeBlock.of("\nreadInt(%T)·==·1", ProtoIntegerTypeDefault) },
             readMethodNoTag = { CodeBlock.of("\nreadIntNoTag()·==·1") },
         )
         val BooleanNullable = Boolean.copy(isNullable = true)

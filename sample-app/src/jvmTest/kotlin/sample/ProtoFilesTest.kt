@@ -13,10 +13,8 @@ class ProtoFilesTest {
     fun `check all generated files`() {
         val resourcePath = "build/generated/ksp/jvm/jvmMain/resources/"
         val generatedDir = File(resourcePath)
-        println(generatedDir.absolutePath)
         var allMarkdownGenerated = ""
         generatedDir.onEachFile { file ->
-            println("Testing ${file.absolutePath}")
             allMarkdownGenerated += "File: " + file.absolutePath.substringAfter("$resourcePath/") + "\n" + file.readText() + "\n"
         }
 
@@ -33,12 +31,26 @@ class ProtoFilesTest {
     }
 
     private fun File.onEachFile(action: (file: File) -> Unit) {
+        listAllFiles().sorted().forEach { file -> action(file) }
+        /*
         listFiles().forEach { child ->
             if (child.isDirectory) {
                 child.onEachFile(action)
             } else {
                 action(child)
             }
+        }*/
+    }
+
+    private fun File.listAllFiles(): List<File> {
+        val allFiles = mutableListOf<File>()
+        listFiles().forEach { child ->
+            if (child.isDirectory) {
+                allFiles += child.listAllFiles()
+            } else {
+                allFiles += child
+            }
         }
+        return allFiles
     }
 }

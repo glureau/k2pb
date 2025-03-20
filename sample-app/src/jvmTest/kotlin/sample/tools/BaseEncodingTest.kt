@@ -27,14 +27,28 @@ abstract class BaseEncodingTest {
         println("encodedViaK2PB\t\t\t\t\t ${encodedViaK2PB.joinToString(" ") { it.toHexString() }}")
         assertContentEquals(expected = encodedViaK2PB, actual = encodedViaProtocGeneratedCode)
 
-        val decodedViaKtxSerialization = serializer.decodeFromByteArray<Kt>(encodedViaProtocGeneratedCode)
+        val decodedViaK2PB = serializer.decodeFromByteArray<Kt>(encodedViaProtocGeneratedCode)
         val decodedViaProtocGeneratedCode = protocInstance.parserForType.parseFrom(encodedViaK2PB)
         println("Original Kt: $ktInstance")
-        println("Decoded Kt : $decodedViaKtxSerialization")
+        println("Decoded Kt : $decodedViaK2PB")
 
         // Asserting that data encoded from protoc generated files and decoded via ktx serialization are equals.
-        Assert.assertEquals(ktInstance, decodedViaKtxSerialization)
+        Assert.assertEquals(ktInstance, decodedViaK2PB)
         // Asserting that data encoded from ktx serialization and decoded via protoc generated files are equals.
         Assert.assertEquals(protocInstance, decodedViaProtocGeneratedCode)
+    }
+
+
+    @OptIn(ExperimentalStdlibApi::class)
+    inline fun <reified Before : Any, reified After : Any> assertMigration(
+        before: Before,
+        expectedAfter: After,
+    ) {
+        val encoded = serializer.encodeToByteArray<Before>(before)
+        println("encoded\t ${encoded.joinToString(" ") { it.toHexString() }}")
+        val decoded = serializer.decodeFromByteArray<After>(encoded)
+        println("Expected: $expectedAfter")
+        println("Decoded:  $decoded")
+        Assert.assertEquals(expectedAfter, decoded)
     }
 }

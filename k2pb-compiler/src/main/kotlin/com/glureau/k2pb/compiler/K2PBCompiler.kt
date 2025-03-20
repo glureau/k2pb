@@ -124,11 +124,14 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         do {
             var done = true
             val unknownReferences = protobufAggregator.unknownReferences()
-            unknownReferences.forEach {
+            unknownReferences
+                //.filter { it != nullabilityQualifiedName }
+                .forEach {
+                Logger.warn("UNKNOWN: $it")
                 val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
                 if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
                     Logger.warn("$it is referenced but not annotated with @ProtoMessage")
-                    // TODO: Should be an error
+                    // TODO: Should be an error?
                 }
 
                 TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =

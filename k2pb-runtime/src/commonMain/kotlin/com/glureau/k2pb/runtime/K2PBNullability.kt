@@ -1,4 +1,5 @@
-package com.glureau.k2pb.runtime
+package com.glureau.k2pb
 
-enum class K2PBNullability {
+public enum class K2PBNullability {
+    UNSPECIFIED, NULL, NOT_NULL
 }
