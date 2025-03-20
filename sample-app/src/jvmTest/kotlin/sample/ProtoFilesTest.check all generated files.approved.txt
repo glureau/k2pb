@@ -1,20 +1,20 @@
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb/K2PBNullability.proto
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb/ExplicitNullability.proto
 syntax = "proto3";
 
 package com.glureau.k2pb;
 
-option java_outer_classname = "K2PBNullabilityProto";
+option java_outer_classname = "K2PBConstants";
 
 // Ensures backward compatibility, when adding a new nullable field, we want to be able to distinguish
 // between the absence of the field (old format read) and the default value (ex "" for String).
 
-enum K2PBNullability {
+enum ExplicitNullability {
   // A nullable field has not been explicitly defined, probably an evolution from a previous format.
   // In this case, the associated field will be returned without protobuf default value.
   // Example, a new nullable enum has been added, the default protobuf value would have been
   // technically the first enum entry
   // K2PB will return the associated value without any requirement.
-  UNSPECIFIED = 0;
+  UNKNOWN = 0;
   
   // A nullable field has been explicitly set to NULL.
   // K2PB ignores the associated field, effectively returning a null for the value.
@@ -122,14 +122,14 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "CollectionTypeProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 
 message CollectionType {
   repeated int32 integerList = 1;
   repeated string stringList = 2;
   repeated int32 maybeIntegerList = 3;
-  com.glureau.k2pb.K2PBNullability isMaybeIntegerListNull = 4;
+  com.glureau.k2pb.ExplicitNullability isMaybeIntegerListNull = 4;
   map<string, int32> mapStringInt = 5;
   repeated DataClassFromLib dataClassList = 6;
 }
@@ -271,6 +271,26 @@ message NativeTypeEvent {
   bytes byteArray = 10;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NativeTypeEventUnspecifiedDefault.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NativeTypeEventUnspecifiedDefaultProto";
+
+message NativeTypeEventUnspecifiedDefault {
+  int32 integer = 1;
+  int64 long = 2;
+  float float = 3;
+  double double = 4;
+  string string = 5;
+  int32 short = 6;
+  int32 char = 7;
+  bool boolean = 8;
+  int32 byte = 9;
+  bytes byteArray = 10;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalHolder.proto
 syntax = "proto3";
 
@@ -278,11 +298,11 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableBigDecimalHolderProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableBigDecimalHolder {
   string bd = 1;
-  com.glureau.k2pb.K2PBNullability isBdNull = 2;
+  com.glureau.k2pb.ExplicitNullability isBdNull = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalValueClassHolder.proto
@@ -292,11 +312,41 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableBigDecimalValueClassHolderProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableBigDecimalValueClassHolder {
   string nullableBdValue = 1;
-  com.glureau.k2pb.K2PBNullability isNullableBdValueNull = 2;
+  com.glureau.k2pb.ExplicitNullability isNullableBdValueNull = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableEnumHolderUnspecifiedDefault.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableEnumHolderUnspecifiedDefaultProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message NullableEnumHolderUnspecifiedDefault {
+  AnEnum enum = 1;
+  com.glureau.k2pb.ExplicitNullability isEnumNull = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableEnumHolderUnspecifiedNull.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableEnumHolderUnspecifiedNullProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message NullableEnumHolderUnspecifiedNull {
+  AnEnum enum = 1;
+  com.glureau.k2pb.ExplicitNullability isEnumNull = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableInlinedCollection.proto
@@ -306,18 +356,18 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableInlinedCollectionProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message NullableInlinedCollection {
   repeated string valueClassList = 1;
-  com.glureau.k2pb.K2PBNullability isValueClassListNull = 2;
+  com.glureau.k2pb.ExplicitNullability isValueClassListNull = 2;
   repeated AnEnum valueClassOfEnumList = 3;
-  com.glureau.k2pb.K2PBNullability isValueClassOfEnumListNull = 4;
+  com.glureau.k2pb.ExplicitNullability isValueClassOfEnumListNull = 4;
   repeated AnEnum valueClassOfNullableEnumList = 5;
-  com.glureau.k2pb.K2PBNullability isValueClassOfNullableEnumListNull = 6;
+  com.glureau.k2pb.ExplicitNullability isValueClassOfNullableEnumListNull = 6;
   repeated string valueClassOfNullableStringList = 7;
-  com.glureau.k2pb.K2PBNullability isValueClassOfNullableStringListNull = 8;
+  com.glureau.k2pb.ExplicitNullability isValueClassOfNullableStringListNull = 8;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableNativeTypeEvent.proto
@@ -327,29 +377,29 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableNativeTypeEventProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableNativeTypeEvent {
   int32 integer = 1;
-  com.glureau.k2pb.K2PBNullability isIntegerNull = 2;
+  com.glureau.k2pb.ExplicitNullability isIntegerNull = 2;
   int64 long = 3;
-  com.glureau.k2pb.K2PBNullability isLongNull = 4;
+  com.glureau.k2pb.ExplicitNullability isLongNull = 4;
   float float = 5;
-  com.glureau.k2pb.K2PBNullability isFloatNull = 6;
+  com.glureau.k2pb.ExplicitNullability isFloatNull = 6;
   double double = 7;
-  com.glureau.k2pb.K2PBNullability isDoubleNull = 8;
+  com.glureau.k2pb.ExplicitNullability isDoubleNull = 8;
   string string = 9;
-  com.glureau.k2pb.K2PBNullability isStringNull = 10;
+  com.glureau.k2pb.ExplicitNullability isStringNull = 10;
   int32 short = 11;
-  com.glureau.k2pb.K2PBNullability isShortNull = 12;
+  com.glureau.k2pb.ExplicitNullability isShortNull = 12;
   int32 char = 13;
-  com.glureau.k2pb.K2PBNullability isCharNull = 14;
+  com.glureau.k2pb.ExplicitNullability isCharNull = 14;
   bool boolean = 15;
-  com.glureau.k2pb.K2PBNullability isBooleanNull = 16;
+  com.glureau.k2pb.ExplicitNullability isBooleanNull = 16;
   int32 byte = 17;
-  com.glureau.k2pb.K2PBNullability isByteNull = 18;
+  com.glureau.k2pb.ExplicitNullability isByteNull = 18;
   bytes byteArray = 19;
-  com.glureau.k2pb.K2PBNullability isByteArrayNull = 20;
+  com.glureau.k2pb.ExplicitNullability isByteArrayNull = 20;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableNativeTypeEventUnspecifiedDefault.proto
@@ -359,29 +409,29 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableNativeTypeEventUnspecifiedDefaultProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableNativeTypeEventUnspecifiedDefault {
   int32 integer = 1;
-  com.glureau.k2pb.K2PBNullability isIntegerNull = 2;
+  com.glureau.k2pb.ExplicitNullability isIntegerNull = 2;
   int64 long = 3;
-  com.glureau.k2pb.K2PBNullability isLongNull = 4;
+  com.glureau.k2pb.ExplicitNullability isLongNull = 4;
   float float = 5;
-  com.glureau.k2pb.K2PBNullability isFloatNull = 6;
+  com.glureau.k2pb.ExplicitNullability isFloatNull = 6;
   double double = 7;
-  com.glureau.k2pb.K2PBNullability isDoubleNull = 8;
+  com.glureau.k2pb.ExplicitNullability isDoubleNull = 8;
   string string = 9;
-  com.glureau.k2pb.K2PBNullability isStringNull = 10;
+  com.glureau.k2pb.ExplicitNullability isStringNull = 10;
   int32 short = 11;
-  com.glureau.k2pb.K2PBNullability isShortNull = 12;
+  com.glureau.k2pb.ExplicitNullability isShortNull = 12;
   int32 char = 13;
-  com.glureau.k2pb.K2PBNullability isCharNull = 14;
+  com.glureau.k2pb.ExplicitNullability isCharNull = 14;
   bool boolean = 15;
-  com.glureau.k2pb.K2PBNullability isBooleanNull = 16;
+  com.glureau.k2pb.ExplicitNullability isBooleanNull = 16;
   int32 byte = 17;
-  com.glureau.k2pb.K2PBNullability isByteNull = 18;
+  com.glureau.k2pb.ExplicitNullability isByteNull = 18;
   bytes byteArray = 19;
-  com.glureau.k2pb.K2PBNullability isByteArrayNull = 20;
+  com.glureau.k2pb.ExplicitNullability isByteArrayNull = 20;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableNativeTypeEventUnspecifiedNull.proto
@@ -391,29 +441,29 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableNativeTypeEventUnspecifiedNullProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableNativeTypeEventUnspecifiedNull {
   int32 integer = 1;
-  com.glureau.k2pb.K2PBNullability isIntegerNull = 2;
+  com.glureau.k2pb.ExplicitNullability isIntegerNull = 2;
   int64 long = 3;
-  com.glureau.k2pb.K2PBNullability isLongNull = 4;
+  com.glureau.k2pb.ExplicitNullability isLongNull = 4;
   float float = 5;
-  com.glureau.k2pb.K2PBNullability isFloatNull = 6;
+  com.glureau.k2pb.ExplicitNullability isFloatNull = 6;
   double double = 7;
-  com.glureau.k2pb.K2PBNullability isDoubleNull = 8;
+  com.glureau.k2pb.ExplicitNullability isDoubleNull = 8;
   string string = 9;
-  com.glureau.k2pb.K2PBNullability isStringNull = 10;
+  com.glureau.k2pb.ExplicitNullability isStringNull = 10;
   int32 short = 11;
-  com.glureau.k2pb.K2PBNullability isShortNull = 12;
+  com.glureau.k2pb.ExplicitNullability isShortNull = 12;
   int32 char = 13;
-  com.glureau.k2pb.K2PBNullability isCharNull = 14;
+  com.glureau.k2pb.ExplicitNullability isCharNull = 14;
   bool boolean = 15;
-  com.glureau.k2pb.K2PBNullability isBooleanNull = 16;
+  com.glureau.k2pb.ExplicitNullability isBooleanNull = 16;
   int32 byte = 17;
-  com.glureau.k2pb.K2PBNullability isByteNull = 18;
+  com.glureau.k2pb.ExplicitNullability isByteNull = 18;
   bytes byteArray = 19;
-  com.glureau.k2pb.K2PBNullability isByteArrayNull = 20;
+  com.glureau.k2pb.ExplicitNullability isByteArrayNull = 20;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableUuidsHolder.proto
@@ -423,17 +473,17 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableUuidsHolderProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableUuidsHolder {
   string uuidAsString = 1;
-  com.glureau.k2pb.K2PBNullability isUuidAsStringNull = 2;
+  com.glureau.k2pb.ExplicitNullability isUuidAsStringNull = 2;
   bytes uuidAsBytes = 3;
-  com.glureau.k2pb.K2PBNullability isUuidAsBytesNull = 4;
+  com.glureau.k2pb.ExplicitNullability isUuidAsBytesNull = 4;
   string stringValueClass = 5;
-  com.glureau.k2pb.K2PBNullability isStringValueClassNull = 6;
+  com.glureau.k2pb.ExplicitNullability isStringValueClassNull = 6;
   bytes bytesValueClass = 7;
-  com.glureau.k2pb.K2PBNullability isBytesValueClassNull = 8;
+  com.glureau.k2pb.ExplicitNullability isBytesValueClassNull = 8;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableValueClassHolder.proto
@@ -443,11 +493,11 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "NullableValueClassHolderProto";
 
-import "com/glureau/k2pb/K2PBNullability.proto";
+import "com/glureau/k2pb/ExplicitNullability.proto";
 
 message NullableValueClassHolder {
   string valueClassFromLib = 1;
-  com.glureau.k2pb.K2PBNullability isValueClassFromLibNull = 2;
+  com.glureau.k2pb.ExplicitNullability isValueClassFromLibNull = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ObjectClass.proto

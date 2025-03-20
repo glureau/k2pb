@@ -98,31 +98,27 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                     }
                 } else {
                     if (it.nullabilitySubField != null) {
-                        if (it.type is ReferenceType && it.type.inlineOf is ScalarFieldType) {
-                            buildNullable(
-                                nullabilitySubField = it.nullabilitySubField,
-                                unspecifiedDefault = "(${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue}))",
-                                notNull = it.name
-                            ) + ","
-                            //"if (${it.nullabilitySubField.fieldName}) null " +
-                            //"else (${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue})), /* KP */"
-                        } else if (it.type is ReferenceType) {
-                            buildNullable(
-                                nullabilitySubField = it.nullabilitySubField,
-                                unspecifiedDefault = it.name,
-                                notNull = it.name,
-                            ) + ","
-                            //"if (${it.nullabilitySubField.fieldName}) null else requireNotNull(${it.name}), /* KL */"
-                        } else {
-                            buildNullable(
-                                nullabilitySubField = it.nullabilitySubField,
-                                unspecifiedDefault = it.nameOrDefault(),
-                                notNull = it.name,
-                            ) + ","
-                            //"if (${it.nullabilitySubField.fieldName}) null else ${it.nameOrDefault()}, /* K */"
+                        val unspecifiedDefault = when {
+                            it.type is ReferenceType && it.type.inlineOf is ScalarFieldType -> {
+                                "(${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue}))"
+                            }
+                            /*
+
+                            it.type is ReferenceType -> {
+                                it.name
+                            }*/
+
+                            else -> {
+                                it.nameOrDefault()
+                            }
                         }
+                        buildNullable(
+                            nullabilitySubField = it.nullabilitySubField,
+                            unspecifiedDefault = unspecifiedDefault,
+                            notNull = it.name
+                        ) + ","
                     } else {
-                        "${it.nameOrDefault()}, /* E */"
+                        "${it.nameOrDefault()}, /* EKL */"
                     }
                 }
                 addStatement("  ${it.name} = " + str)

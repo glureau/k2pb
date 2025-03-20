@@ -228,7 +228,8 @@ private fun TypedField.useNullabilitySubField(): Boolean =
     (type.isNullable && (type !is ReferenceType || type.inlineOf != null)) ||
             (type.isNullable && annotatedConverter.customConverterType()?.isNullable == true) ||
             (type is ReferenceType && type.inlineOf != null && type.inlineOf.isNullable) ||
-            (type is ReferenceType && type.inlineAnnotatedSerializer is NullableStringConverter<*>)
+            (type is ReferenceType && type.inlineAnnotatedSerializer is NullableStringConverter<*>) ||
+            (type.isNullable && type is ReferenceType && type.isEnum)
 
 private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberManager): TypedField {
     return if (useNullabilitySubField()) {

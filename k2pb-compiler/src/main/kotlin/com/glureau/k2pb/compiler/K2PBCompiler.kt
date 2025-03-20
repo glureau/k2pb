@@ -127,19 +127,18 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             unknownReferences
                 //.filter { it != nullabilityQualifiedName }
                 .forEach {
-                Logger.warn("UNKNOWN: $it")
-                val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
-                if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
-                    Logger.warn("$it is referenced but not annotated with @ProtoMessage")
-                    // TODO: Should be an error?
-                }
+                    val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
+                    if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
+                        Logger.warn("$it is referenced but not annotated with @ProtoMessage")
+                        // TODO: Should be an error?
+                    }
 
-                TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
-                        //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
-                    reference.simpleName.asString()
-                //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
-                done = false
-            }
+                    TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
+                            //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
+                        reference.simpleName.asString()
+                    //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
+                    done = false
+                }
 
             if (!done && lastSignatures.isNotEmpty() && lastSignatures == unknownReferences) {
                 Logger.warn("Cannot resolve the following references: $unknownReferences")

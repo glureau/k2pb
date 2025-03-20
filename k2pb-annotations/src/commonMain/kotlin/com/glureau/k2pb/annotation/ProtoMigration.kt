@@ -25,6 +25,9 @@ public annotation class ProtoMigration(val unspecified: UnspecifiedBehavior)
  * So because in both cases, the previously encoded ByteArray is strictly equivalent, but as a developer we have
  * different expectations, based on a code history which is not available, we need to specify the behavior explicitly.
  */
+
+// ajout de champ non nullable, on s'attend à la valeur par défaut
+// ajout de champ nullable, on s'attend à null
 public enum class UnspecifiedBehavior {
     /**
      * To be used when adding a new nullable field.

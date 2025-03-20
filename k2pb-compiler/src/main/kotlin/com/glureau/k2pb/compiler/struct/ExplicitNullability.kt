@@ -7,20 +7,21 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 
-val nullabilityPackage = "com.glureau.k2pb"
-val nullabilityClass = "K2PBNullability"
+private val nullabilityPackage = "com.glureau.k2pb"
+val nullabilityClass = "ExplicitNullability"
 val nullabilityQualifiedName = "$nullabilityPackage.$nullabilityClass"
 val nullabilityImport = "${nullabilityPackage.replace(".", "/")}/$nullabilityClass"
 val K2PBNullabilityClassName = ClassName(nullabilityPackage, nullabilityClass)
 
 fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
+     // See ExplicitNullability class in k2pb-runtime
     environment.writeProtobufFile(
         """
             |syntax = "proto3";
             |
             |package $nullabilityPackage;
             |
-            |option java_outer_classname = "$nullabilityClass${compileOptions.javaOuterClassnameSuffix}";
+            |option java_outer_classname = "K2PBConstants";
             |
             |// Ensures backward compatibility, when adding a new nullable field, we want to be able to distinguish
             |// between the absence of the field (old format read) and the default value (ex "" for String).
@@ -31,7 +32,7 @@ fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
             |  // Example, a new nullable enum has been added, the default protobuf value would have been
             |  // technically the first enum entry
             |  // K2PB will return the associated value without any requirement.
-            |  UNSPECIFIED = 0;
+            |  UNKNOWN = 0;
             |  
             |  // A nullable field has been explicitly set to NULL.
             |  // K2PB ignores the associated field, effectively returning a null for the value.
@@ -43,7 +44,7 @@ fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
             |  NOT_NULL = 2;
             |}
             """.trimMargin().toByteArray(),
-        packageName = "k2pb.com.glureau.k2pb",
+        packageName = "k2pb.$nullabilityPackage",
         fileName = nullabilityClass,
         dependencies = emptyList(),
     )
@@ -51,7 +52,7 @@ fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
 
 fun FunSpec.Builder.addNullabilityStatement(nullabilitySubField: NullabilitySubField) {
     addStatement(
-        "var ${nullabilitySubField.fieldName}: %T = %T.UNSPECIFIED",
+        "var ${nullabilitySubField.fieldName}: %T = %T.UNKNOWN",
         K2PBNullabilityClassName,
         K2PBNullabilityClassName
     )
@@ -61,7 +62,7 @@ fun FunSpec.Builder.decodeNullability(nullabilitySubField: NullabilitySubField) 
     //decodeScalarType(nullabilitySubField.fieldName, ScalarFieldType.Boolean, null)
     addStatement(
         "${nullabilitySubField.fieldName} = " +
-                "%T.entries.getOrElse(${ScalarFieldType.Int.readMethodNoTag()}) { %T.UNSPECIFIED }",
+                "%T.entries.getOrElse(${ScalarFieldType.Int.readMethodNoTag()}) { %T.UNKNOWN }",
         K2PBNullabilityClassName,
         K2PBNullabilityClassName,
     )
@@ -85,7 +86,7 @@ fun FunSpec.Builder.buildNullable(
     notNull: String
 ): String {
     return """when (${nullabilitySubField.fieldName}) {
-        |  $nullabilityClass.UNSPECIFIED -> ${
+        |  $nullabilityClass.UNKNOWN -> ${
         when (nullabilitySubField.unspecifiedBehavior) {
             UnspecifiedBehavior.NULL -> "null"
             UnspecifiedBehavior.DEFAULT -> unspecifiedDefault

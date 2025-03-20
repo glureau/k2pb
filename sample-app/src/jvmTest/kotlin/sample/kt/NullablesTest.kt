@@ -1,6 +1,6 @@
 package sample.kt
 
-import com.glureau.k2pb.K2PBNullabilityProto
+import com.glureau.k2pb.K2PBConstants.ExplicitNullability
 import com.glureau.k2pb_sample.NullableBigDecimalValueClassHolderProto
 import com.glureau.k2pb_sample.NullableNativeTypeEventProto
 import com.glureau.k2pb_sample.NullableValueClassHolderProto
@@ -62,16 +62,16 @@ class NullablesTest : BaseEncodingTest() {
                 byteArray = null,
             ),
             protocInstance = NullableNativeTypeEventProto.NullableNativeTypeEvent.newBuilder()
-                .setIsIntegerNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsLongNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsFloatNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsDoubleNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsStringNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsShortNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsCharNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsBooleanNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsByteNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsByteArrayNull(K2PBNullabilityProto.K2PBNullability.NULL)
+                .setIsIntegerNull(ExplicitNullability.NULL)
+                .setIsLongNull(ExplicitNullability.NULL)
+                .setIsFloatNull(ExplicitNullability.NULL)
+                .setIsDoubleNull(ExplicitNullability.NULL)
+                .setIsStringNull(ExplicitNullability.NULL)
+                .setIsShortNull(ExplicitNullability.NULL)
+                .setIsCharNull(ExplicitNullability.NULL)
+                .setIsBooleanNull(ExplicitNullability.NULL)
+                .setIsByteNull(ExplicitNullability.NULL)
+                .setIsByteArrayNull(ExplicitNullability.NULL)
                 .build()
         )
     }
@@ -92,16 +92,16 @@ class NullablesTest : BaseEncodingTest() {
                 byteArray = null,
             ),
             protocInstance = NullableNativeTypeEventProto.NullableNativeTypeEvent.newBuilder()
-                .setIsIntegerNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsLongNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsFloatNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsDoubleNull(K2PBNullabilityProto.K2PBNullability.NULL)
+                .setIsIntegerNull(ExplicitNullability.NULL)
+                .setIsLongNull(ExplicitNullability.NULL)
+                .setIsFloatNull(ExplicitNullability.NULL)
+                .setIsDoubleNull(ExplicitNullability.NULL)
                 .setString("Hola !")
-                .setIsShortNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsCharNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsBooleanNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsByteNull(K2PBNullabilityProto.K2PBNullability.NULL)
-                .setIsByteArrayNull(K2PBNullabilityProto.K2PBNullability.NULL)
+                .setIsShortNull(ExplicitNullability.NULL)
+                .setIsCharNull(ExplicitNullability.NULL)
+                .setIsBooleanNull(ExplicitNullability.NULL)
+                .setIsByteNull(ExplicitNullability.NULL)
+                .setIsByteArrayNull(ExplicitNullability.NULL)
                 .build()
         )
     }
@@ -153,7 +153,7 @@ class NullablesTest : BaseEncodingTest() {
             ktInstance = NullableValueClassHolder(null),
             protocInstance = NullableValueClassHolderProto.NullableValueClassHolder.newBuilder()
                 //.setValueClassFromLib("") // not required as it's protobuf default value
-                .setIsValueClassFromLibNull(K2PBNullabilityProto.K2PBNullability.NULL)
+                .setIsValueClassFromLibNull(ExplicitNullability.NULL)
                 .build()
         )
     }
@@ -186,7 +186,7 @@ class NullablesTest : BaseEncodingTest() {
             ktInstance = NullableBigDecimalValueClassHolder(NullableBigDecimalValueClass(null)),
             protocInstance = NullableBigDecimalValueClassHolderProto.NullableBigDecimalValueClassHolder.newBuilder()
                 //.setNullableBdValue(null) // <- NPE in protoc generated java code, but default Java is null anyway
-                .setIsNullableBdValueNull(K2PBNullabilityProto.K2PBNullability.NULL)
+                .setIsNullableBdValueNull(ExplicitNullability.NULL)
                 .build()
         )
     }
