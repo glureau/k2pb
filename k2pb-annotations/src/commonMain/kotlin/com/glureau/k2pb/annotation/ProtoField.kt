@@ -1,7 +1,15 @@
 package com.glureau.k2pb.annotation
 
+import com.glureau.k2pb.CustomConverter
+import kotlin.reflect.KClass
+
 @Target(AnnotationTarget.PROPERTY)
-public annotation class ProtoMigration(val unspecified: UnspecifiedBehavior)
+public annotation class ProtoField(
+    val name: String = "",
+    val number: Int = -1,
+    val nullabilityMigration: NullableMigration = NullableMigration.DEFAULT,
+    val converter: KClass<out CustomConverter<*, *>> = CustomConverter::class,
+)
 
 /**
  * Protobuf defines a default value for scalar and enum types, for example 0 for Int, false for Boolean, etc.
@@ -25,10 +33,7 @@ public annotation class ProtoMigration(val unspecified: UnspecifiedBehavior)
  * So because in both cases, the previously encoded ByteArray is strictly equivalent, but as a developer we have
  * different expectations, based on a code history which is not available, we need to specify the behavior explicitly.
  */
-
-// ajout de champ non nullable, on s'attend à la valeur par défaut
-// ajout de champ nullable, on s'attend à null
-public enum class UnspecifiedBehavior {
+public enum class NullableMigration {
     /**
      * To be used when adding a new nullable field.
      */

@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.annotation.UnspecifiedBehavior
+import com.glureau.k2pb.annotation.NullableMigration
 import com.glureau.k2pb.compiler.compileOptions
 import com.glureau.k2pb.compiler.writeProtobufFile
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -87,9 +87,9 @@ fun FunSpec.Builder.buildNullable(
 ): String {
     return """when (${nullabilitySubField.fieldName}) {
         |  $nullabilityClass.UNKNOWN -> ${
-        when (nullabilitySubField.unspecifiedBehavior) {
-            UnspecifiedBehavior.NULL -> "null"
-            UnspecifiedBehavior.DEFAULT -> unspecifiedDefault
+        when (nullabilitySubField.nullableMigration) {
+            NullableMigration.NULL -> "null"
+            NullableMigration.DEFAULT -> unspecifiedDefault
         }
     }
         |  $nullabilityClass.NULL -> null

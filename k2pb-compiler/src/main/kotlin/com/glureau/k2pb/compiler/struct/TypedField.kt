@@ -1,13 +1,13 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.annotation.UnspecifiedBehavior
+import com.glureau.k2pb.annotation.NullableMigration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
 
 data class NullabilitySubField(
     val fieldName: String,
     val protoNumber: Int,
-    val unspecifiedBehavior: UnspecifiedBehavior,
+    val nullableMigration: NullableMigration,
 )
 
 data class TypedField(
@@ -17,7 +17,7 @@ data class TypedField(
     override val protoNumber: Int,
     private val annotatedName: String?,
     val annotatedConverter: KSType? = null,
-    val annotatedUnspecifiedBehavior: UnspecifiedBehavior?,
+    val annotatedNullableMigration: NullableMigration?,
     val nullabilitySubField: NullabilitySubField?,
 ) : FieldInterface {
     val resolvedName = annotatedName ?: name

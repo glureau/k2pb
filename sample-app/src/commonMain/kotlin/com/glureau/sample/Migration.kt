@@ -1,33 +1,33 @@
 package com.glureau.sample
 
+import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
-import com.glureau.k2pb.annotation.ProtoMigration
-import com.glureau.k2pb.annotation.UnspecifiedBehavior
 import com.glureau.sample.lib.AnEnum
 
 
 @ProtoMessage
 data class NullableEnumHolderUnspecifiedNull(
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val enum: AnEnum?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val enum: AnEnum?
 )
 
 @ProtoMessage
 data class NullableEnumHolderUnspecifiedDefault(
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val enum: AnEnum?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val enum: AnEnum?,
 )
 
 @ProtoMessage
 data class NullableNativeTypeEventUnspecifiedNull(
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val integer: Int?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val long: Long?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val float: Float?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val double: Double?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val string: String?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val short: Short?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val char: Char?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val boolean: Boolean?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val byte: Byte?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val byteArray: ByteArray?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val integer: Int?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val long: Long?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val float: Float?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val double: Double?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val string: String?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val short: Short?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val char: Char?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val boolean: Boolean?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val byte: Byte?,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val byteArray: ByteArray?,
 ) : EventInterface {
 
     // ByteArray requires to generate equals & hashcode, as data class doesn't compare ByteArray content
@@ -69,16 +69,16 @@ data class NullableNativeTypeEventUnspecifiedNull(
 
 @ProtoMessage
 data class NullableNativeTypeEventUnspecifiedDefault(
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val integer: Int?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val long: Long?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val float: Float?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val double: Double?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val string: String?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val short: Short?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val char: Char?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val boolean: Boolean?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val byte: Byte?,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val byteArray: ByteArray?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val integer: Int?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val long: Long?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val float: Float?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val double: Double?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val string: String?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val short: Short?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val char: Char?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val boolean: Boolean?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byte: Byte?,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byteArray: ByteArray?,
 ) : EventInterface {
 
     // ByteArray requires to generate equals & hashcode, as data class doesn't compare ByteArray content
@@ -119,16 +119,16 @@ data class NullableNativeTypeEventUnspecifiedDefault(
 
 @ProtoMessage
 data class NativeTypeEventUnspecifiedDefault(
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val integer: Int,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.NULL) val long: Long,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val float: Float,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val double: Double,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val string: String,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val short: Short,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val char: Char,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val boolean: Boolean,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val byte: Byte,
-    @ProtoMigration(unspecified = UnspecifiedBehavior.DEFAULT) val byteArray: ByteArray,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val integer: Int,
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val long: Long,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val float: Float,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val double: Double,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val string: String,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val short: Short,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val char: Char,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val boolean: Boolean,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byte: Byte,
+    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byteArray: ByteArray,
 ) : EventInterface {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

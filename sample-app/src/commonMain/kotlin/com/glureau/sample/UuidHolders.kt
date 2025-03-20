@@ -1,6 +1,6 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.annotation.ProtoConverter
+import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.runtime.UuidBytesConverter
 import com.glureau.k2pb.runtime.UuidStringConverter
@@ -8,16 +8,16 @@ import kotlin.uuid.Uuid
 
 @ProtoMessage
 data class UuidsHolder(
-    @ProtoConverter(UuidStringConverter::class) val uuidAsString: Uuid,
-    @ProtoConverter(UuidBytesConverter::class) val uuidAsBytes: Uuid,
+    @ProtoField(converter = UuidStringConverter::class) val uuidAsString: Uuid,
+    @ProtoField(converter = UuidBytesConverter::class) val uuidAsBytes: Uuid,
     val stringValueClass: UuidStringValueClass,
     val bytesValueClass: UuidBytesValueClass,
 )
 
 @ProtoMessage
 data class NullableUuidsHolder(
-    @ProtoConverter(UuidStringConverter::class) val uuidAsString: Uuid?,
-    @ProtoConverter(UuidBytesConverter::class) val uuidAsBytes: Uuid?,
+    @ProtoField(converter = UuidStringConverter::class) val uuidAsString: Uuid?,
+    @ProtoField(converter = UuidBytesConverter::class) val uuidAsBytes: Uuid?,
     val stringValueClass: UuidStringValueClass?,
     val bytesValueClass: UuidBytesValueClass?,
 )
@@ -26,11 +26,11 @@ data class NullableUuidsHolder(
 @JvmInline
 @ProtoMessage
 value class UuidStringValueClass(
-    @ProtoConverter(UuidStringConverter::class) val uuidAsString: Uuid,
+    @ProtoField(converter = UuidStringConverter::class) val uuidAsString: Uuid,
 )
 
 @JvmInline
 @ProtoMessage
 value class UuidBytesValueClass(
-    @ProtoConverter(UuidBytesConverter::class) val uuidAsString: Uuid,
+    @ProtoField(converter = UuidBytesConverter::class) val uuidAsString: Uuid,
 )
