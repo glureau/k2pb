@@ -23,6 +23,7 @@ fun KSClassDeclaration.mapEnumNode(): EnumNode {
         packageName = this.packageName.asString(),
         qualifiedName = qualifiedName!!.asString(),
         name = protobufName(),
+        protoName = serialNameOrNull ?: protobufName(),
         comment = docString,
         entries = entries,
         originalFile = containingFile,

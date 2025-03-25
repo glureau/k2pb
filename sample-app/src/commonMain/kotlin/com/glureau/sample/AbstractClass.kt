@@ -14,6 +14,7 @@ data class AbstractSubClass(override val foo: Int, val bar: String) : AbstractCl
 // Could be defined in another module actually...
 @ProtoPolymorphism(
     AbstractClass::class,
-    [Pair(AbstractSubClass::class, 1)]
+    name = "AbstractClass",
+    oneOf = [Pair(AbstractSubClass::class, 1)]
 )
 private object K2PBPolymorphismConfigHolder

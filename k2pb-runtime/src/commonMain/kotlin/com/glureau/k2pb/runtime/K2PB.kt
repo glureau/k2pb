@@ -36,6 +36,8 @@ public class K2PB internal constructor(private val config: K2PBConfig = K2PBConf
     public fun getRegisteredChildrenFor(parent: KClass<*>): List<KClass<*>> {
         return config.polymorphics[parent]?.toList() ?: emptyList()
     }
+
+    public fun getProtoMessageName(klass: KClass<*>): String? = config.messageNames[klass]
 }
 
 public fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
@@ -46,15 +48,19 @@ public fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
 
 public class K2PBConfig internal constructor() {
     internal val serializers: MutableMap<KClass<*>, ProtoSerializer<*>> = mutableMapOf()
+    internal val messageNames: MutableMap<KClass<*>, String> = mutableMapOf()
 
     private val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
 
     internal val polymorphics: MutableMap<KClass<*>, MutableList<KClass<*>>> = mutableMapOf()
 
-    //private val polymorphicDefinitions: MutableMap<KClass<*>, Map<KClass<*>, Int>> = mutableMapOf()
-
-    public fun registerSerializer(kClass: KClass<*>, serializer: ProtoSerializer<*>) {
-        serializers[kClass] = serializer
+    public fun registerSerializer(
+        typeToSerialize: KClass<*>,
+        serializer: ProtoSerializer<*>,
+        protoMessageName: String
+    ) {
+        serializers[typeToSerialize] = serializer
+        messageNames[typeToSerialize] = protoMessageName
     }
 
     @Deprecated("Not used YET")
@@ -62,17 +68,9 @@ public class K2PBConfig internal constructor() {
         converters[kClass] = converter
     }
 
-    public fun registerPolymorphicParent(kClass: KClass<*>) {
-        polymorphics += kClass to mutableListOf()
+    public fun registerPolymorphicChild(parent: KClass<*>, child: KClass<*>) {
+        polymorphics.getOrPut(parent) { mutableListOf() }.add(child)
     }
-
-    public fun registerPolymorphicChild(parentKClass: KClass<*>, childKClass: KClass<*>) {
-        polymorphics.getOrPut(parentKClass, { mutableListOf() }).add(childKClass)
-    }
-    /*
-        public fun registerPolymorphicDefinition(parentKClass: KClass<*>, children: Map<KClass<*>, Int>) {
-            polymorphicDefinitions += parentKClass to children
-        }*/
 
     public fun verify() {
         polymorphics.forEach { (parent, children) ->

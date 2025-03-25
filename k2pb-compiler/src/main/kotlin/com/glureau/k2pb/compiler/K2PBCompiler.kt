@@ -3,6 +3,7 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.ProtoPolymorphism
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
+import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.emitNullabilityProto
@@ -84,38 +85,38 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
     private fun resolvePolymorphism(resolver: Resolver) {
         resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
-            symbol.annotations
-                .filter { it.shortName.asString() == ProtoPolymorphism::class.simpleName }
-                .forEach { annotation ->
-                    val parentKClass = annotation.getArg<KSType>(ProtoPolymorphism::parent)
-                    val parent = parentKClass.toClassName()
-                    val oneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::oneOf)
-                    val oneOf = oneOfAnnotations.map {
-                        val className = it.getArg<KSType>(ProtoPolymorphism.Pair::kClass).toClassName()
-                        val number = it.getArg<Int>(ProtoPolymorphism.Pair::number)
-                        className to number
-                    }
-
-                    protobufAggregator.recordNode(
-                        MessageNode(
-                            packageName = parent.packageName,
-                            qualifiedName = parent.canonicalName,
-                            name = parent.simpleName,
-                            isPolymorphic = true,
-                            isSealed = false,
-                            explicitGenerationRequested = true,
-                            isInlineClass = false,
-                            superTypes = emptyList(),
-                            comment = null, // TODO: Should we just remove that variable?
-                            fields = classNamesToOneOfField(
-                                fieldName = parent.simpleName,
-                                subclassesWithProtoNumber = oneOf.toMap()
-                            ),
-                            originalFile = symbol.containingFile,
-                            sealedSubClasses = emptyList(),
-                        )
-                    )
+            symbol.protoPolymorphismAnnotation()?.let { annotation ->
+                val parentKClass = annotation.getArg<KSType>(ProtoPolymorphism::parent)
+                val parent = parentKClass.toClassName()
+                val oneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::oneOf)
+                val oneOf = oneOfAnnotations.map {
+                    val className = it.getArg<KSType>(ProtoPolymorphism.Pair::kClass).toClassName()
+                    val number = it.getArg<Int>(ProtoPolymorphism.Pair::number)
+                    className to number
                 }
+                val protoName = annotation.getArg<String?>(ProtoPolymorphism::name)
+
+                protobufAggregator.recordNode(
+                    MessageNode(
+                        packageName = parent.packageName,
+                        qualifiedName = parent.canonicalName,
+                        name = parent.simpleName,
+                        protoName = protoName ?: parent.simpleName,
+                        isPolymorphic = true,
+                        isSealed = false,
+                        explicitGenerationRequested = true,
+                        isInlineClass = false,
+                        superTypes = emptyList(),
+                        comment = null, // TODO: Should we just remove that variable?
+                        fields = classNamesToOneOfField(
+                            fieldName = parent.simpleName,
+                            subclassesWithProtoNumber = oneOf.toMap()
+                        ),
+                        originalFile = symbol.containingFile,
+                        sealedSubClasses = emptyList(),
+                    )
+                )
+            }
         }
     }
 

@@ -5,7 +5,7 @@ import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.serializers.datetime.InstantIsoDateTimeOffsetConverter
 import kotlinx.datetime.Instant
 
-@ProtoMessage(name = "KtxClasses")
+@ProtoMessage(name = "CustomNameKtxClasses")
 data class KtxClasses(
     @ProtoField(converter = InstantIsoDateTimeOffsetConverter::class)
     val instant: Instant,

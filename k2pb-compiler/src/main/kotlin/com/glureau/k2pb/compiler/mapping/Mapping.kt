@@ -84,6 +84,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
+        protoName = serialNameOrNull ?: protobufName(),
         comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText" else "",
         isPolymorphic = true,
         isSealed = modifiers.contains(Modifier.SEALED),
@@ -208,6 +209,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
+        protoName = serialNameOrNull ?: protobufName(),
         isPolymorphic = false,
         isSealed = false,
         explicitGenerationRequested = false,
@@ -341,21 +343,22 @@ fun KSClassDeclaration.protobufName(): String {
             simpleName.asString()
 }
 
+val KSClassDeclaration.serialNameOrNull: String?
+    get() = protoMessageAnnotation()
+        ?.getArg<String?>(ProtoMessage::name)
+        ?.takeIf { it.isNotBlank() }
+
 val KSClassDeclaration.serialName: String
-    get() = serialNameInternal ?: simpleName.asString()
+    get() = protoMessageAnnotation()
+        ?.getArg<String?>(ProtoMessage::name)
+        ?.takeIf { it.isNotBlank() }
+        ?: simpleName.asString()
 
 val KSPropertyDeclaration.serialName: String
-    get() = serialNameInternal ?: simpleName.asString()
-
-private val KSAnnotated.serialNameInternal: String?
-    get() =
-        protoFieldAnnotation()
-            ?.getArg<String?>(ProtoField::name)
-            ?.takeIf { it.isNotBlank() }
-            ?: protoMessageAnnotation()
-                ?.getArg<String?>(ProtoMessage::name)
-                ?.takeIf { it.isNotBlank() }
-
+    get() = protoFieldAnnotation()
+        ?.getArg<String?>(ProtoField::name)
+        ?.takeIf { it.isNotBlank() }
+        ?: simpleName.asString()
 
 val KSClassDeclaration.protoNumber: Int?
     get() = protoNumberInternal

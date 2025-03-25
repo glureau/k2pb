@@ -66,20 +66,6 @@ enum AnEnum {
   AnEnum_C = 2;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnnotatedClass.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "AnnotatedClassProto";
-
-message AnnotatedClass {
-  int32 a = 1;
-  int32 b = 4;
-  string c = 3;
-  string d = 5;
-}
-
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BarEvent.proto
 syntax = "proto3";
 
@@ -158,6 +144,17 @@ message CommonClass {
   string id = 1;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CustomNameKtxClasses.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "CustomNameKtxClassesProto";
+
+message CustomNameKtxClasses {
+  string instant = 1;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DataClassFromLib.proto
 syntax = "proto3";
 
@@ -226,17 +223,6 @@ message InlinedCollection {
   repeated string valueClassOfNullableStringList = 4;
 }
 
-File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClasses.proto
-syntax = "proto3";
-
-package com.glureau.k2pb_sample;
-
-option java_outer_classname = "KtxClassesProto";
-
-message KtxClasses {
-  string instant = 1;
-}
-
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
 syntax = "proto3";
 
@@ -249,6 +235,20 @@ import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 message MultiModule {
   DataClassFromLib dataClassFromLib = 1;
   string valueClassFromLib = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MyAnnotatedClass.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "MyAnnotatedClassProto";
+
+message MyAnnotatedClass {
+  int32 a = 1;
+  int32 b = 4;
+  string c = 3;
+  string d = 5;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NativeTypeEvent.proto

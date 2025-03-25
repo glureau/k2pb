@@ -54,37 +54,36 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                                 val serializerClassName = it.serializerClassName()
                                 when (it) {
                                     is MessageNode -> {
-                                        if (it.isPolymorphic) {
+                                        addRegisterSerializerStatement(
+                                            className,
+                                            serializerClassName,
+                                            it.protoName,
+                                        )
+                                        it.superTypes.forEach { superType ->
                                             addStatement(
-                                                "registerSerializer(%T::class, %T())",
+                                                """|registerPolymorphicChild(
+                                                   |parent = %T::class, 
+                                                   |child = %T::class,""".trimMargin(),
+                                                superType,
                                                 className,
-                                                serializerClassName
                                             )
-                                        } else {
-                                            addStatement(
-                                                "registerSerializer(%T::class, %T())",
-                                                className,
-                                                serializerClassName
-                                            )
-                                        }
-                                        it.superTypes.forEach { s ->
-                                            addStatement("registerPolymorphicChild(%T::class, %T::class)", s, className)
+                                            addStatement(")")
                                         }
                                     }
 
                                     is EnumNode -> {
-                                        addStatement(
-                                            "registerSerializer(%T::class, %T())",
+                                        addRegisterSerializerStatement(
                                             className,
-                                            serializerClassName
+                                            serializerClassName,
+                                            it.protoName,
                                         )
                                     }
 
                                     is ObjectNode -> {
-                                        addStatement(
-                                            "registerSerializer(%T::class, %T())",
+                                        addRegisterSerializerStatement(
                                             className,
-                                            serializerClassName
+                                            serializerClassName,
+                                            it.protoName,
                                         )
                                     }
                                 }
@@ -96,4 +95,22 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
         )
         return fileSpecs + moduleCodeFile
     }
+}
+
+private fun FunSpec.Builder.addRegisterSerializerStatement(
+    className: ClassName,
+    serializerClassName: ClassName,
+    protoName: String,
+) {
+    addStatement(
+        """|registerSerializer(
+           |typeToSerialize = %T::class, 
+           |serializer = %T(), 
+           |protoMessageName = "%L",
+           """.trimMargin(),
+        className,
+        serializerClassName,
+        protoName,
+    )
+    addStatement(")")
 }
