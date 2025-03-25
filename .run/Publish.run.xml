@@ -13,6 +13,7 @@
           <option value="allTests" />
           <option value="publish" />
           <option value="k2pb-gradle-plugin:publishPlugins" />
+          <option value="grip" />
         </list>
       </option>
       <option name="vmOptions" />
