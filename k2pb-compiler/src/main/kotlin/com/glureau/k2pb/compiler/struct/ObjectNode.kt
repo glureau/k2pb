@@ -6,6 +6,7 @@ data class ObjectNode(
     override val packageName: String,
     override val qualifiedName: String,
     override val name: String,
+    override val protoName: String,
     val comment: String?,
     override val originalFile: KSFile?,
 ) : Node() {

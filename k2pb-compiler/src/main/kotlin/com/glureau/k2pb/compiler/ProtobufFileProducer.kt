@@ -46,7 +46,7 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
 
                     yield(
                         ProtobufFile(
-                            path = node.name,
+                            path = node.protoName,
                             packageName = packageName,
                             syntax = ProtoSyntax.v3,
                             nodes = listOf(node),

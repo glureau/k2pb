@@ -7,6 +7,7 @@ fun KSClassDeclaration.mapObjectNode(): ObjectNode = ObjectNode(
     packageName = this.packageName.asString(),
     qualifiedName = qualifiedName!!.asString(),
     name = protobufName(),
+    protoName = serialNameOrNull ?: protobufName(),
     comment = docString,
     originalFile = containingFile,
 )

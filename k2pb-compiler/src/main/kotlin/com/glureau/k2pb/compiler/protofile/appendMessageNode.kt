@@ -4,7 +4,7 @@ import com.glureau.k2pb.compiler.struct.MessageNode
 
 fun StringBuilder.appendMessageNode(indentLevel: Int, messageNode: MessageNode) {
     appendComment(indentLevel, messageNode.comment)
-    appendLineWithIndent(indentLevel, "message ${messageNode.name.substringAfterLast(".")} {")
+    appendLineWithIndent(indentLevel, "message ${messageNode.protoName.substringAfterLast(".")} {")
     messageNode.fields.forEach {
         appendField(indentLevel + 1, it, messageNode.numberManager)
     }
