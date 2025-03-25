@@ -98,7 +98,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                     }
                 } else {
                     if (it.nullabilitySubField != null) {
-                        val unspecifiedDefault = when {
+                        val nameOrDefault = when {
                             it.type is ReferenceType && it.type.inlineOf is ScalarFieldType -> {
                                 "(${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue}))"
                             }
@@ -114,8 +114,7 @@ fun FunSpec.Builder.generateDataClassSerializerDecode(
                         }
                         buildNullable(
                             nullabilitySubField = it.nullabilitySubField,
-                            unspecifiedDefault = unspecifiedDefault,
-                            notNull = it.name
+                            nameOrDefault = nameOrDefault,
                         ) + ","
                     } else {
                         "${it.nameOrDefault()}, /* EKL */"

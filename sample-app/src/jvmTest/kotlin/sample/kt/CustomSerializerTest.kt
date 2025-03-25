@@ -27,6 +27,7 @@ class CustomSerializerTest : BaseEncodingTest() {
             ktInstance = NullableBigDecimalHolder(BigDecimal("0.0")),
             protocInstance = NullableBigDecimalHolderProto.NullableBigDecimalHolder.newBuilder()
                 .setBd("0.0")
+                .setIsBdNull(ExplicitNullability.NOT_NULL)
                 .build()
         )
     }

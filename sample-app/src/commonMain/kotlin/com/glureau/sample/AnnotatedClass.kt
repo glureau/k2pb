@@ -3,7 +3,7 @@ package com.glureau.sample
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
 
-@ProtoMessage("MyAnnotatedClass")
+@ProtoMessage(name = "MyAnnotatedClass")
 data class AnnotatedClass(
     @ProtoField(name = "a")
     val fieldA: Int,

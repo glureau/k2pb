@@ -36,18 +36,16 @@ data class ScalarFieldType(
                     it.endControlFlow()
                         .addStatement("// else: default value should not be encoded")
             }
-            .also { builder ->
+            .apply {
                 if (isNullable) {
                     if (nullableTag != null) {
-                        builder.endControlFlow()
-                            .beginControlFlow("else")
-                            .addStatement(
-                                "writeInt(value = 1, tag = $nullableTag, format = %T)",
-                                ProtoIntegerTypeDefault
-                            )
-                            .endControlFlow()
+                        encodeScalarNullability(nullableTag, isNull = false)
+                        endControlFlow()
+                        beginControlFlow("else")
+                        encodeScalarNullability(nullableTag, isNull = true)
+                        endControlFlow()
                     } else {
-                        builder.endControlFlow()
+                        endControlFlow()
                     }
                 }
             }

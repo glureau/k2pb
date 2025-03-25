@@ -3,6 +3,9 @@ package sample.kt
 import com.glureau.custom.javapackage.AnEnumProto
 import com.glureau.custom.javapackage.dataClassFromLib
 import com.glureau.custom.javapackage.valueClassList
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.K2PBConstants
+import com.glureau.k2pb.K2PBConstants.ExplicitNullability.*
 import com.glureau.k2pb_sample.CollectionTypeProto
 import com.glureau.k2pb_sample.InlinedCollectionProto
 import com.glureau.sample.CollectionType
@@ -64,6 +67,7 @@ class CollectionTest : BaseEncodingTest() {
                 .putMapStringInt("b", 4)
                 .addMaybeIntegerList(42)
                 .addMaybeIntegerList(51)
+                .setIsMaybeIntegerListNull(NOT_NULL)
                 .addStringList("aaa")
                 .addStringList("bbb")
                 .addStringList("ccc")
@@ -93,6 +97,7 @@ class CollectionTest : BaseEncodingTest() {
                 .addStringList("")
                 .addMaybeIntegerList(0)
                 .addMaybeIntegerList(0)
+                .setIsMaybeIntegerListNull(NOT_NULL)
                 .putMapStringInt("", 0)
                 .addDataClassList(
                     dataClassFromLib {
