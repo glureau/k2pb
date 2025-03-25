@@ -1,20 +1,23 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.ExplicitNullability
 import com.glureau.k2pb.annotation.NullableMigration
-import com.glureau.k2pb.compiler.compileOptions
+import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.writeProtobufFile
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
-import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 
-private val nullabilityPackage = "com.glureau.k2pb"
-val nullabilityClass = "ExplicitNullability"
-val nullabilityQualifiedName = "$nullabilityPackage.$nullabilityClass"
+val K2PBNullabilityClassName =
+    ExplicitNullability::class.asClassName()// ClassName(nullabilityPackage, nullabilityClass)
+private val nullabilityPackage = K2PBNullabilityClassName.packageName
+val nullabilityClass = K2PBNullabilityClassName.simpleName
+val nullabilityQualifiedName = K2PBNullabilityClassName.canonicalName
 val nullabilityImport = "${nullabilityPackage.replace(".", "/")}/$nullabilityClass"
-val K2PBNullabilityClassName = ClassName(nullabilityPackage, nullabilityClass)
 
 fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
-     // See ExplicitNullability class in k2pb-runtime
+    // See ExplicitNullability class in k2pb-runtime
     environment.writeProtobufFile(
         """
             |syntax = "proto3";
@@ -50,11 +53,28 @@ fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
     )
 }
 
+fun FunSpec.Builder.encodeNullability(nullabilitySubField: NullabilitySubField, isNull: Boolean) {
+    val explicitNullability = if (isNull) ExplicitNullability.NULL else ExplicitNullability.NOT_NULL
+    addStatement(
+        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+        K2PBNullabilityClassName,
+        ProtoIntegerTypeDefault,
+    )
+}
+fun CodeBlock.Builder.encodeScalarNullability(nullabilityTag: Int, isNull: Boolean) {
+    val explicitNullability = if (isNull) ExplicitNullability.NULL else ExplicitNullability.NOT_NULL
+    addStatement(
+        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = $nullabilityTag, format = %T)",
+        K2PBNullabilityClassName,
+        ProtoIntegerTypeDefault,
+    )
+}
+
 fun FunSpec.Builder.addNullabilityStatement(nullabilitySubField: NullabilitySubField) {
     addStatement(
         "var ${nullabilitySubField.fieldName}: %T = %T.UNKNOWN",
         K2PBNullabilityClassName,
-        K2PBNullabilityClassName
+        K2PBNullabilityClassName,
     )
 }
 
@@ -82,18 +102,17 @@ fun StringBuilder.appendNullabilityField(nullabilitySubField: NullabilitySubFiel
 
 fun FunSpec.Builder.buildNullable(
     nullabilitySubField: NullabilitySubField,
-    unspecifiedDefault: String,
-    notNull: String
+    nameOrDefault: String,
 ): String {
     return """when (${nullabilitySubField.fieldName}) {
         |  $nullabilityClass.UNKNOWN -> ${
         when (nullabilitySubField.nullableMigration) {
             NullableMigration.NULL -> "null"
-            NullableMigration.DEFAULT -> unspecifiedDefault
+            NullableMigration.DEFAULT -> nameOrDefault
         }
     }
         |  $nullabilityClass.NULL -> null
-        |  $nullabilityClass.NOT_NULL -> requireNotNull($notNull)
+        |  $nullabilityClass.NOT_NULL -> $nameOrDefault
         |}
     """.trimMargin()
 }

@@ -1,7 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.mapping.customConverterType
-import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
@@ -56,13 +55,13 @@ fun FunSpec.Builder.encodeReferenceType(
             ?: error("Not supported yet")
 
         if (checkNullability) {
+            if (nullabilitySubField != null) {
+                encodeNullability(nullabilitySubField, isNull = false)
+            }
             endControlFlow()
             if (nullabilitySubField != null) {
                 beginControlFlow("else")
-                addStatement(
-                    "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
-                    ProtoIntegerTypeDefault
-                )
+                encodeNullability(nullabilitySubField, isNull = true)
                 endControlFlow()
             }
         }
@@ -94,13 +93,13 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (checkNullability) {
+            if (nullabilitySubField != null) {
+                encodeNullability(nullabilitySubField, isNull = false)
+            }
             endControlFlow() // if (checkNullability)
             if (nullabilitySubField != null) {
                 beginControlFlow("else")
-                addStatement(
-                    "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
-                    ProtoIntegerTypeDefault
-                )
+                encodeNullability(nullabilitySubField, isNull = true)
                 endControlFlow() // else
             }
         }
@@ -136,15 +135,15 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (type.isNullable) {
+            if (nullabilitySubField != null) {
+                encodeNullability(nullabilitySubField, isNull = false)
+            }
             endControlFlow() // if (!null)
         }
 
         if (nullabilitySubField != null) {
             beginControlFlow("else")
-            addStatement(
-                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
-                ProtoIntegerTypeDefault
-            )
+            encodeNullability(nullabilitySubField, isNull = true)
             endControlFlow() // else
         }
     }

@@ -319,6 +319,19 @@ message NullableBigDecimalValueClassHolder {
   com.glureau.k2pb.ExplicitNullability isNullableBdValueNull = 2;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableDataClassHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableDataClassHolderProto";
+
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
+
+message NullableDataClassHolder {
+  DataClassFromLib dataClassFromLib = 1;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableEnumHolderUnspecifiedDefault.proto
 syntax = "proto3";
 

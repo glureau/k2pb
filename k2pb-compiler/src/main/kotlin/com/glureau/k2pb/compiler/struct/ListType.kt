@@ -63,13 +63,13 @@ fun FunSpec.Builder.encodeListType(
     }
 
     if (listType.isNullable) {
+        if (nullabilitySubField != null) {
+            encodeNullability(nullabilitySubField, isNull = false)
+        }
         endControlFlow() // if
         if (nullabilitySubField != null) {
             beginControlFlow("else")
-            addStatement(
-                "writeInt(value = 1, tag = ${nullabilitySubField.protoNumber}, format = %T)",
-                ProtoIntegerTypeDefault
-            )
+            encodeNullability(nullabilitySubField, isNull = true)
             endControlFlow() // else
         }
     }

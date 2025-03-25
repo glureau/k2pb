@@ -30,9 +30,13 @@ class NullableUuidConvertersTest : BaseEncodingTest() {
             ),
             protocInstance = nullableUuidsHolder {
                 uuidAsString = "1c92e771-b29e-453a-b4f9-e984aa78d5f0"
+                isUuidAsStringNull = ExplicitNullability.NOT_NULL
                 uuidAsBytes = uuidToByteString("aa92e771-b29e-453a-b4f9-e984aa78d5aa")
+                isUuidAsBytesNull = ExplicitNullability.NOT_NULL
                 stringValueClass = "30dd3f74-5281-4f41-86b9-b7499c3a82ce"
+                isStringValueClassNull = ExplicitNullability.NOT_NULL
                 bytesValueClass = uuidToByteString("5513e592-65d1-4197-aeea-723bbc1cd14d")
+                isBytesValueClassNull = ExplicitNullability.NOT_NULL
             }
         )
     }
@@ -52,9 +56,13 @@ class NullableUuidConvertersTest : BaseEncodingTest() {
             ),
             protocInstance = nullableUuidsHolder {
                 uuidAsString = "00000000-0000-0000-0000-000000000000"
+                isUuidAsStringNull = ExplicitNullability.NOT_NULL
                 uuidAsBytes = UUIDfromLongs(0, 0)
+                isUuidAsBytesNull = ExplicitNullability.NOT_NULL
                 stringValueClass = "00000000-0000-0000-0000-000000000000"
+                isStringValueClassNull = ExplicitNullability.NOT_NULL
                 bytesValueClass = UUIDfromLongs(0, 0)
+                isBytesValueClassNull = ExplicitNullability.NOT_NULL
             }
         )
     }
@@ -93,7 +101,6 @@ class NullableUuidConvertersTest : BaseEncodingTest() {
         val bb = ByteBuffer.wrap(ByteArray(16))
         bb.putLong(mostSignificantBits)
         bb.putLong(leastSignificantBits)
-        val uuid = UUID.nameUUIDFromBytes(bb.array())
         return bb.array().toByteString()
     }
 
