@@ -21,6 +21,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
+import java.util.Collections.emptyList
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
@@ -110,7 +111,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                         comment = null, // TODO: Should we just remove that variable?
                         fields = classNamesToOneOfField(
                             fieldName = parent.simpleName,
-                            subclassesWithProtoNumber = oneOf.toMap()
+                            subclassesWithProtoNumber = oneOf
                         ),
                         originalFile = symbol.containingFile,
                         sealedSubClasses = emptyList(),

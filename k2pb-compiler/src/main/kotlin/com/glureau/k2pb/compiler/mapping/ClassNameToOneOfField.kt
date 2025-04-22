@@ -6,7 +6,7 @@ import com.glureau.k2pb.compiler.struct.TypedField
 import com.squareup.kotlinpoet.ClassName
 import java.util.Locale
 
-fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: Map<ClassName, Int>) =
+fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: List<Pair<ClassName, Int>>) =
     listOf(
         OneOfField(
             comment = null,

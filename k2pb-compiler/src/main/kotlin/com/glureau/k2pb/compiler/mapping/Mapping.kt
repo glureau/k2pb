@@ -75,10 +75,9 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
     } else {
         "(subclasses cannot be listed automatically)"
     }
-    val sealedSubclassWithIndex: Map<ClassName, Int> =
+    val sealedSubclassWithIndex: List<Pair<ClassName, Int>> =
         // TODO : Handle proto-numbers for sealed subclasses!
         subclasses.mapIndexed { i, c -> c.toClassName() to i + 1 }
-            .toMap()
 
     return MessageNode(
         packageName = this.packageName.asString(),
