@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.codegen
 
-import com.glureau.k2pb.DelegateProtoSerializer
-import com.glureau.k2pb.ProtoSerializer
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
 import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
 import com.glureau.k2pb.compiler.struct.Node
@@ -27,13 +27,13 @@ fun FileSpec.Builder.generateSerializerType(
         TypeSpec
             .classBuilder(node.serializerClassName())
             .addModifiers(KModifier.INTERNAL)
-            .addSuperinterface(ProtoSerializer::class.asClassName().parameterizedBy(className))
+            .addSuperinterface(ProtoCodec::class.asClassName().parameterizedBy(className))
             .addFunction(
                 FunSpec.builder("encode")
                     .receiver(ProtobufWriter::class.asClassName())
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter(instanceName, className.copy(nullable = true))
-                    .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
+                    .addParameter(protoSerializerName, DelegateProtoCodec::class.asClassName())
                     .encodeContent(instanceName, protoSerializerName)
                     .build()
             )
@@ -42,7 +42,7 @@ fun FileSpec.Builder.generateSerializerType(
                 FunSpec.builder("decode")
                     .receiver(ProtobufReader::class.asClassName())
                     .addModifiers(KModifier.OVERRIDE)
-                    .addParameter(protoSerializerName, DelegateProtoSerializer::class.asClassName())
+                    .addParameter(protoSerializerName, DelegateProtoCodec::class.asClassName())
                     .returns(className.copy(nullable = true))
                     .decodeContent(instanceName, protoSerializerName)
                     .build()

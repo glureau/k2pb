@@ -1,8 +1,8 @@
 package com.glureau.k2pb.runtime
 
 import com.glureau.k2pb.CustomConverter
-import com.glureau.k2pb.DelegateProtoSerializer
-import com.glureau.k2pb.ProtoSerializer
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
 import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
 import com.glureau.k2pb.runtime.ktx.ByteArrayInput
@@ -12,7 +12,7 @@ import com.glureau.k2pb.runtime.ktx.ProtobufWriterImpl
 import kotlin.reflect.KClass
 
 public class K2PB internal constructor(private val config: K2PBConfig = K2PBConfig()) {
-    private val delegated = ConfiguredProtoSerializer(config)
+    private val delegated = ConfiguredProtoCodec(config)
 
     public fun <T : Any> encodeToByteArray(any: T, klass: KClass<T>): ByteArray {
         val out = ByteArrayOutput()
@@ -47,7 +47,7 @@ public fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
 }
 
 public class K2PBConfig internal constructor() {
-    internal val serializers: MutableMap<KClass<*>, ProtoSerializer<*>> = mutableMapOf()
+    internal val serializers: MutableMap<KClass<*>, ProtoCodec<*>> = mutableMapOf()
     internal val messageNames: MutableMap<KClass<*>, String> = mutableMapOf()
 
     private val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
@@ -56,7 +56,7 @@ public class K2PBConfig internal constructor() {
 
     public fun registerSerializer(
         typeToSerialize: KClass<*>,
-        serializer: ProtoSerializer<*>,
+        serializer: ProtoCodec<*>,
         protoMessageName: String
     ) {
         serializers[typeToSerialize] = serializer
@@ -83,12 +83,12 @@ public class K2PBConfig internal constructor() {
     }
 }
 
-internal class ConfiguredProtoSerializer(private val config: K2PBConfig) : DelegateProtoSerializer {
+internal class ConfiguredProtoCodec(private val config: K2PBConfig) : DelegateProtoCodec {
     @Suppress("UNCHECKED_CAST")
     override fun ProtobufWriter.encode(instance: Any?, instanceClass: KClass<*>) {
         config.serializers[instanceClass]?.let {
-            with(it as ProtoSerializer<Any>) {
-                encode(instance, this@ConfiguredProtoSerializer)
+            with(it as ProtoCodec<Any>) {
+                encode(instance, this@ConfiguredProtoCodec)
             }
         } ?: throw IllegalArgumentException("Unsupported type: $instanceClass")
     }
@@ -96,8 +96,8 @@ internal class ConfiguredProtoSerializer(private val config: K2PBConfig) : Deleg
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> ProtobufReader.decode(instanceClass: KClass<T>): T? {
         config.serializers[instanceClass]?.let {
-            with(it as ProtoSerializer<Any>) {
-                return decode(this@ConfiguredProtoSerializer) as? T
+            with(it as ProtoCodec<Any>) {
+                return decode(this@ConfiguredProtoCodec) as? T
             }
         } ?: throw IllegalArgumentException("Unsupported type: $instanceClass")
     }
