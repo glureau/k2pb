@@ -1,8 +1,10 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.ProtoDecoder
 import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import kotlin.math.max
 
@@ -34,6 +36,8 @@ data class OneOfField(
         val protoNumber: Int,
         val deprecationReason: String?,
         val publishedInProto: Boolean,
+        val migrationDecoder: ClassName?,
+        val migrationTargetClass: ClassName?,
     )
 }
 
@@ -89,10 +93,25 @@ fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
             }
 
             deprecatedField != null -> {
-                addStatement(
-                    "%L -> return@readMessage null // deprecated ${deprecatedField.protoName}",
-                    deprecatedField.protoNumber
-                )
+                if (deprecatedField.migrationDecoder != null &&
+                    deprecatedField.migrationDecoder != ProtoDecoder::class &&
+                    deprecatedField.migrationTargetClass != null) {
+                    // 3 -> return@readMessage with(PolymorphicMigration.SevenDecoder()) { decode(PolymorphicMigration.Seven::class)}
+                    addComment("migration of old %L", deprecatedField.protoName)
+                    addStatement(
+                        "%L -> return@readMessage with(%T()) { decode(protoCodec) }",
+                        deprecatedField.protoNumber,
+                        deprecatedField.migrationDecoder,
+                        //deprecatedField.migrationTargetClass,
+                        //deprecatedField.migrationTargetClass,
+                        //(deprecatedField.migrationDecoder as ParameterizedTypeName).typeArguments.first(),
+                    )
+                } else {
+                    addStatement(
+                        "%L -> return@readMessage null // deprecated ${deprecatedField.protoName}",
+                        deprecatedField.protoNumber
+                    )
+                }
             }
         }
     }

@@ -4,7 +4,7 @@ import com.glureau.custom.javapackage.DataClassFromLibProto
 import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.sample.lib.DataClassFromLib
-import com.glureau.sample.lib.registerSampleLibSerializers
+import com.glureau.sample.lib.registerSampleLibCodecs
 import org.junit.Test
 
 
@@ -13,7 +13,7 @@ class EncodingTest {
 
     private val k2PB = K2PB {
         // Record sampleLibModule
-        registerSampleLibSerializers()
+        registerSampleLibCodecs()
     }
 
     @Test

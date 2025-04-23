@@ -1,5 +1,6 @@
 package com.glureau.k2pb.annotation
 
+import com.glureau.k2pb.ProtoDecoder
 import com.glureau.k2pb.ProtoEncoder
 import kotlin.reflect.KClass
 
@@ -36,7 +37,7 @@ public annotation class ProtoPolymorphism(
          */
         val publishedInProto: Boolean = true,
 
-        val migrationDecoder: KClass<ProtoEncoder<*>> = ProtoEncoder::class,
+        val migrationDecoder: KClass<out ProtoDecoder<*>> = ProtoDecoder::class,
     )
 
     public annotation class Child(

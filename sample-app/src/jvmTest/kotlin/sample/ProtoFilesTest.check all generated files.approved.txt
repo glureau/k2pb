@@ -541,8 +541,9 @@ message PolymorphicMigration {
     // The protoNumber 4 is not defined, if it's not used anymore consider using @ProtoPolymorphism.Deprecated annotation.
     PolymorphicMigration.Five five = 5;
     // Deprecated field PolymorphicMigration.Six 6
-    // Will be removed soon
+    // Will be removed soon, should be migrated to Seven
     PolymorphicMigration.Six six = 6;
+    PolymorphicMigration.Seven seven = 7;
   }
   message Six {
     int64 b = 1;
@@ -554,6 +555,9 @@ message PolymorphicMigration {
     int64 b = 1;
   }
   message One { }
+  message Seven {
+    string b = 1;
+  }
   message Two {
     string a = 1;
   }

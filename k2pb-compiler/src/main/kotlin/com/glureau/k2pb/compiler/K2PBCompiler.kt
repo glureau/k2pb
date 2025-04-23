@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.annotation.ProtoMessage
+import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
 import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
@@ -19,6 +19,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -98,11 +99,19 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 }
                 val deprecateOneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::deprecateOneOf)
                 val deprecateOneOf = deprecateOneOfAnnotations.map {
+                    val migrationDecoderType = it.getArg<KSType?>(ProtoPolymorphism.Deprecated::migrationDecoder)
+                    val migrationDecoderDeclaration = migrationDecoderType?.declaration as? KSClassDeclaration
+                    val migrationDecoderSuper = migrationDecoderDeclaration?.superTypes?.firstOrNull() as? KSTypeReference
+                    val migrationDecoderParameterType = migrationDecoderSuper?.resolve()?.arguments?.firstOrNull()?.type
+                    val migrationDecoderParameterClassName = migrationDecoderParameterType?.resolve()?.toClassName()
+
                     OneOfField.DeprecatedField(
                         protoName = it.getArg<String>(ProtoPolymorphism.Deprecated::protoName),
                         protoNumber = it.getArg<Int>(ProtoPolymorphism.Deprecated::protoNumber),
                         deprecationReason = it.getArg<String?>(ProtoPolymorphism.Deprecated::deprecationReason),
                         publishedInProto = it.getArg<Boolean?>(ProtoPolymorphism.Deprecated::publishedInProto) ?: true,
+                        migrationDecoder = migrationDecoderType?.toClassName(),
+                        migrationTargetClass = migrationDecoderParameterClassName
                     )
                 }
                 val protoName = annotation.getArg<String?>(ProtoPolymorphism::name)

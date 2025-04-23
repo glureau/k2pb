@@ -1,10 +1,11 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.annotation.ProtoPolymorphism
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoDecoder
+import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.annotation.ProtoMessage
-import com.glureau.sample.PolymorphicMigration.Five
-import com.glureau.sample.PolymorphicMigration.One
-import com.glureau.sample.PolymorphicMigration.Two
+import com.glureau.k2pb.annotation.ProtoPolymorphism
+import com.glureau.sample.PolymorphicMigration.*
 
 @ProtoPolymorphism(
     parent = PolymorphicMigration::class,
@@ -15,19 +16,20 @@ import com.glureau.sample.PolymorphicMigration.Two
             protoNumber = 3,
             deprecationReason = "This has been removed in 2.1.0 with the blipbloup feature",
             publishedInProto = false,
-            //migrationDecoder = PolymorphicMigration_SevenCodec::class,
         ),
         ProtoPolymorphism.Deprecated(
             protoName = "PolymorphicMigration.Six",
             protoNumber = 6,
-            deprecationReason = "Will be removed soon",
-            publishedInProto = true
+            deprecationReason = "Will be removed soon, should be migrated to Seven",
+            publishedInProto = true,
+            migrationDecoder = SixToSevenMigrationDecoder::class
         ),
     ],
     oneOf = [
         ProtoPolymorphism.Child(One::class, 1),
         ProtoPolymorphism.Child(Two::class, 2),
         ProtoPolymorphism.Child(Five::class, 5),
+        ProtoPolymorphism.Child(Seven::class, 7),
     ]
 )
 interface PolymorphicMigration {
@@ -37,7 +39,7 @@ interface PolymorphicMigration {
     @ProtoMessage
     data class Two(val a: String) : PolymorphicMigration
 
-    // Kept for testing retrocompat, all files and usage removed in reality
+    // Kept for testing protobuf retrocompat (proto file required), all files and usage removed in reality
     @ProtoMessage("PolymorphicMigration.Three")
     data class DeprecatedThree(val a: Int) : PolymorphicMigration
 
@@ -48,8 +50,22 @@ interface PolymorphicMigration {
     @ProtoMessage("PolymorphicMigration.Six")
     data class DeprecatedSix(val b: Long) : PolymorphicMigration
 
-    @ProtoMessage // Migrate the 3 by re-using the generated SevenSerializer
-    data class Seven(val b: Long) : PolymorphicMigration
-    @ProtoMessage // Migrate the 3 by a custom encoder
-    data class Eight(val b: Long) : PolymorphicMigration
+    @ProtoMessage // Migrate the 6 by a custom encoder
+    data class Seven(val b: String) : PolymorphicMigration
+
+    class SixToSevenMigrationDecoder : ProtoDecoder<Seven> {
+        override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): Seven? {
+            var b: Long? = null
+            while (!eof) {
+                when (readTag()) {
+                    1 -> {
+                        b = readLong(com.glureau.k2pb.ProtoIntegerType.DEFAULT)
+                    }
+                }
+            }
+            return Seven(
+                b = (b ?: 0).toString(),
+            )
+        }
+    }
 }
