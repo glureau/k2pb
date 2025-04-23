@@ -101,7 +101,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 val deprecateOneOf = deprecateOneOfAnnotations.map {
                     val migrationDecoderType = it.getArg<KSType?>(ProtoPolymorphism.Deprecated::migrationDecoder)
                     val migrationDecoderDeclaration = migrationDecoderType?.declaration as? KSClassDeclaration
-                    val migrationDecoderSuper = migrationDecoderDeclaration?.superTypes?.firstOrNull() as? KSTypeReference
+                    val migrationDecoderSuper =
+                        migrationDecoderDeclaration?.superTypes?.firstOrNull() as? KSTypeReference
                     val migrationDecoderParameterType = migrationDecoderSuper?.resolve()?.arguments?.firstOrNull()?.type
                     val migrationDecoderParameterClassName = migrationDecoderParameterType?.resolve()?.toClassName()
 

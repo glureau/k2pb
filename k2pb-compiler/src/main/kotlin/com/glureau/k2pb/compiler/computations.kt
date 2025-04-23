@@ -101,3 +101,29 @@ fun FieldType.resolvedExternalTypes(): List<String> {
         }
     }
 }
+
+fun computeDeprecatedProtoImports(nodes: List<Node>): List<String> {
+    val selfRef = nodes.map { it.protoName }
+    Logger.warn("computeDeprecatedProtoImports : $selfRef")
+
+    return nodes.flatMap { it.allNodes() }
+        .flatMap {
+            it.declaredReferences
+            when (it) {
+                is MessageNode -> it.fields.flatMap {
+                    when (it) {
+                        is OneOfField -> it.deprecatedFields
+                        else -> emptyList()
+                    }
+                }
+
+                is EnumNode -> emptyList()
+                is ObjectNode -> emptyList()
+            }
+        }
+        .filter { it.publishedInProto }
+        // Only import the highest level parent
+        .map { it.protoName.substringBefore(".") } -
+            selfRef
+
+}

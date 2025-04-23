@@ -34,15 +34,18 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                         return@forEach
                     }
 
-                    val imports = computeImports(
+                    val imports = (computeImports(
                         nodes = listOf(node),
                         locallyDeclaredReferences = node.declaredReferences,
                         importResolver = importResolver
-                    )
+                    ) +
+                            computeDeprecatedProtoImports(listOf(node)))
+                        .distinct()
+                        .sorted()
+                    Logger.warn("imports for ${node.name} = $imports")
 
                     val packageName =
-                        compileOptions.protoPackageName ?:
-                        node.packageName
+                        compileOptions.protoPackageName ?: node.packageName
 
                     yield(
                         ProtobufFile(
