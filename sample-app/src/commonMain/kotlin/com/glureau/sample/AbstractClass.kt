@@ -1,7 +1,7 @@
 package com.glureau.sample
 
 import com.glureau.k2pb.ProtoPolymorphism
-import com.glureau.k2pb.ProtoPolymorphism.Pair
+import com.glureau.k2pb.ProtoPolymorphism.Child
 import com.glureau.k2pb.annotation.ProtoMessage
 
 abstract class AbstractClass {
@@ -15,6 +15,6 @@ data class AbstractSubClass(override val foo: Int, val bar: String) : AbstractCl
 @ProtoPolymorphism(
     AbstractClass::class,
     name = "AbstractClass",
-    oneOf = [Pair(AbstractSubClass::class, 1)]
+    oneOf = [Child(AbstractSubClass::class, 1)]
 )
 private object K2PBPolymorphismConfigHolder

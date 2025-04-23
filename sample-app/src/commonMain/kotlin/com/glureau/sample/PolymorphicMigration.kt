@@ -24,9 +24,9 @@ import com.glureau.sample.PolymorphicMigration.Two
         ),
     ],
     oneOf = [
-        ProtoPolymorphism.Pair(One::class, 1),
-        ProtoPolymorphism.Pair(Two::class, 2),
-        ProtoPolymorphism.Pair(Five::class, 5),
+        ProtoPolymorphism.Child(One::class, 1),
+        ProtoPolymorphism.Child(Two::class, 2),
+        ProtoPolymorphism.Child(Five::class, 5),
     ]
 )
 interface PolymorphicMigration {
@@ -43,7 +43,7 @@ interface PolymorphicMigration {
     @ProtoMessage
     data class Five(val b: Long) : PolymorphicMigration
 
-    // Kept for testing retrocompat, removed from KMP code but still preserved in proto files
+    // Kept for testing protoc retrocompat, removed from KMP code but still preserved in proto files
     @ProtoMessage("PolymorphicMigration.Six")
     data class DeprecatedSix(val b: Long) : PolymorphicMigration
 }

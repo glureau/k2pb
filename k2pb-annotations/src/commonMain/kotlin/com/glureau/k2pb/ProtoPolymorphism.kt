@@ -7,7 +7,7 @@ public annotation class ProtoPolymorphism(
     val parent: KClass<*>,
     val name: String,
     val deprecateOneOf: Array<Deprecated> = [],
-    val oneOf: Array<Pair>,
+    val oneOf: Array<Child>,
     // We could define a boolean at true by default to check that children are inheriting from parent,
     // Without that the deserialization may fail to cast...
 ) {
@@ -36,7 +36,7 @@ public annotation class ProtoPolymorphism(
         val publishedInProto: Boolean = true,
     )
 
-    public annotation class Pair(
+    public annotation class Child(
         val kClass: KClass<*>,
         val number: Int
     )

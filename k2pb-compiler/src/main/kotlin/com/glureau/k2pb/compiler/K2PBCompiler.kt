@@ -92,8 +92,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                 val parent = parentKClass.toClassName()
                 val oneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::oneOf)
                 val oneOf = oneOfAnnotations.map {
-                    val className = it.getArg<KSType>(ProtoPolymorphism.Pair::kClass).toClassName()
-                    val number = it.getArg<Int>(ProtoPolymorphism.Pair::number)
+                    val className = it.getArg<KSType>(ProtoPolymorphism.Child::kClass).toClassName()
+                    val number = it.getArg<Int>(ProtoPolymorphism.Child::number)
                     className to number
                 }
                 val deprecateOneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::deprecateOneOf)
