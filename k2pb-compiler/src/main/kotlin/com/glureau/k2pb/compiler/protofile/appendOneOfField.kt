@@ -12,10 +12,12 @@ fun StringBuilder.appendOneOfField(indentLevel: Int, field: OneOfField, numberMa
             indentLevel,
             "// Removed field ${deprecatedField.protoName} (number=${deprecatedField.protoNumber})"
         )
-        appendLineWithIndent(
-            indentLevel,
-            "// ${deprecatedField.deprecationReason}"
-        )
+        deprecatedField.deprecationReason?.let { reason ->
+            appendLineWithIndent(
+                indentLevel,
+                "// $reason"
+            )
+        }
         appendLineWithIndent(
             indentLevel,
             "reserved \"${deprecatedField.protoName}\";"
@@ -55,13 +57,17 @@ fun StringBuilder.appendOneOfField(indentLevel: Int, field: OneOfField, numberMa
                         indentLevel + 1,
                         "// Deprecated field ${deprecatedField.protoName} ${deprecatedField.protoNumber}"
                     )
+                    deprecatedField.deprecationReason?.let { reason ->
+                        appendLineWithIndent(
+                            indentLevel + 1,
+                            "// $reason"
+                        )
+                    }
                     appendLineWithIndent(
                         indentLevel + 1,
-                        "// ${deprecatedField.deprecationReason}"
-                    )
-                    appendLineWithIndent(
-                        indentLevel + 1,
-                        "${deprecatedField.protoName} ${deprecatedField.protoName.substringAfterLast(".").decapitalizeUS()} = ${deprecatedField.protoNumber};"
+                        "${deprecatedField.protoName} ${
+                            deprecatedField.protoName.substringAfterLast(".").decapitalizeUS()
+                        } = ${deprecatedField.protoNumber};"
                     )
                 } else {
                     // Reserved field needs to be defined before the oneof {}

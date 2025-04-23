@@ -101,8 +101,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                     OneOfField.DeprecatedField(
                         protoName = it.getArg<String>(ProtoPolymorphism.Deprecated::protoName),
                         protoNumber = it.getArg<Int>(ProtoPolymorphism.Deprecated::protoNumber),
-                        deprecationReason = it.getArg<String>(ProtoPolymorphism.Deprecated::deprecationReason),
-                        publishedInProto = it.getArg<Boolean>(ProtoPolymorphism.Deprecated::publishedInProto),
+                        deprecationReason = it.getArg<String?>(ProtoPolymorphism.Deprecated::deprecationReason),
+                        publishedInProto = it.getArg<Boolean?>(ProtoPolymorphism.Deprecated::publishedInProto) ?: true,
                     )
                 }
                 val protoName = annotation.getArg<String?>(ProtoPolymorphism::name)

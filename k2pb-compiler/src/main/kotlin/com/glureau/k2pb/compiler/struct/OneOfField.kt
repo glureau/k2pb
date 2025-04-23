@@ -32,7 +32,7 @@ data class OneOfField(
     data class DeprecatedField(
         val protoName: String,
         val protoNumber: Int,
-        val deprecationReason: String,
+        val deprecationReason: String?,
         val publishedInProto: Boolean,
     )
 }
