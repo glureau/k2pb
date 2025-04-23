@@ -3,16 +3,27 @@ package sample
 import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.decodeFromByteArray
 import com.glureau.k2pb.runtime.encodeToByteArray
-import com.glureau.sample.*
-import com.glureau.sample.lib.registerSampleLibSerializers
+import com.glureau.sample.BigDecimalHolder
+import com.glureau.sample.BigDecimalValueClass
+import com.glureau.sample.BigDecimalValueClassHolder
+import com.glureau.sample.NativeTypeEventUnspecifiedDefault
+import com.glureau.sample.NullableBigDecimalHolder
+import com.glureau.sample.NullableBigDecimalValueClass
+import com.glureau.sample.NullableBigDecimalValueClassHolder
+import com.glureau.sample.NullableEnumHolderUnspecifiedDefault
+import com.glureau.sample.NullableEnumHolderUnspecifiedNull
+import com.glureau.sample.NullableNativeTypeEventUnspecifiedDefault
+import com.glureau.sample.NullableNativeTypeEventUnspecifiedNull
+import com.glureau.sample.lib.registerSampleLibCodecs
+import com.glureau.sample.registerSampleAppCodecs
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class K2PBAdvancedTest {
     private val serializer = K2PB {
-        registerSampleLibSerializers()
-        registerSampleAppSerializers()
+        registerSampleLibCodecs()
+        registerSampleAppCodecs()
     }
 
     @Test

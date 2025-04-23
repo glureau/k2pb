@@ -188,10 +188,10 @@ fun FunSpec.Builder.encodeScalarFieldType(
     fieldName: String,
     fieldType: ScalarFieldType,
     tag: Int,
-    annotatedSerializer: KSType?,
+    annotatedCodec: KSType?,
     nullabilitySubField: NullabilitySubField?
 ) {
-    (annotatedSerializer?.let { s ->
+    (annotatedCodec?.let { s ->
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
         addStatement(
             "val $encodedTmpName = %T().encode($instanceName.${fieldName})",
@@ -205,11 +205,11 @@ fun FunSpec.Builder.encodeScalarFieldType(
 fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     fieldName: String,
     type: ScalarFieldType,
-    annotatedSerializer: KSType?,
+    annotatedCodec: KSType?,
     nullabilitySubField: NullabilitySubField?
 ) {
-    annotatedSerializer.customConverterType()?.let { customSerializerType ->
-        // TODO: String should be derived from customSerializerType
+    annotatedCodec.customConverterType()?.let { customCodecType ->
+        // TODO: String should be derived from customCodecType
         addStatement("var $fieldName: String? = null")
     } ?: run {
         addStatement("var $fieldName: %T? = null", type.kotlinClass)
@@ -219,7 +219,7 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     }
 }
 
-fun FunSpec.Builder.decodeScalarType(fieldName: String, type: ScalarFieldType, annotatedSerializer: KSType?) {
-    if (annotatedSerializer != null) TODO("Not supported yet")
+fun FunSpec.Builder.decodeScalarType(fieldName: String, type: ScalarFieldType, annotatedCodec: KSType?) {
+    if (annotatedCodec != null) TODO("Not supported yet")
     addStatement("$fieldName = ${type.readMethod()}")
 }

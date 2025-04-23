@@ -6,13 +6,13 @@ import com.glureau.k2pb.compiler.struct.asClassName
 import com.squareup.kotlinpoet.FileSpec
 
 // TODO: WARNING, this is not checking for ProtoNumber annotations yet, using ordinal does limit to contiguous values
-fun FileSpec.Builder.generateEnumSerializerType(enumNode: EnumNode) = generateSerializerType(
+fun FileSpec.Builder.generateEnumCodecType(enumNode: EnumNode) = generateCodecType(
     node = enumNode,
-    encodeContent = { instanceName: String, protoSerializerName: String ->
+    encodeContent = { instanceName: String, protoCodecName: String ->
         addStatement("if ($instanceName == null) return")
         addCode(ScalarFieldType.Int.safeWriteMethodNoTag("$instanceName.ordinal", null, false))
     },
-    decodeContent = { instanceName: String, protoSerializerName: String ->
+    decodeContent = { instanceName: String, protoCodecName: String ->
         addStatement(
             "return %T.entries.getOrNull(%L)",
             enumNode.asClassName(),

@@ -14,7 +14,7 @@ fun StringBuilder.appendFieldType(type: FieldType, annotatedConverter: KSType?) 
             append(convertedType.protoType.name)
             return
         }
-        error("Annotated custom serializer not supported yet: $annotatedConverter")
+        error("Annotated custom converter not supported yet: $annotatedConverter")
     }
     when (type) {
         is ScalarFieldType -> appendScalarType(type)

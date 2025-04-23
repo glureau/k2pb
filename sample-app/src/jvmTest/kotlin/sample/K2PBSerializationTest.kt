@@ -18,8 +18,8 @@ import com.glureau.sample.WithNestClassA
 import com.glureau.sample.WithNestClassB
 import com.glureau.sample.lib.AnEnum
 import com.glureau.sample.lib.EnumHolder
-import com.glureau.sample.lib.registerSampleLibSerializers
-import com.glureau.sample.registerSampleAppSerializers
+import com.glureau.sample.lib.registerSampleLibCodecs
+import com.glureau.sample.registerSampleAppCodecs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.Uuid
@@ -27,8 +27,8 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalStdlibApi::class)
 class K2PBSerializationTest {
     private val serializer = K2PB {
-        registerSampleLibSerializers()
-        registerSampleAppSerializers()
+        registerSampleLibCodecs()
+        registerSampleAppCodecs()
     }
 
     @Test

@@ -14,7 +14,8 @@ import com.glureau.sample.PolymorphicMigration.Two
             protoName = "Three",
             protoNumber = 3,
             deprecationReason = "This has been removed in 2.1.0 with the blipbloup feature",
-            publishedInProto = false
+            publishedInProto = false,
+            //migrationDecoder = PolymorphicMigration_SevenCodec::class,
         ),
         ProtoPolymorphism.Deprecated(
             protoName = "PolymorphicMigration.Six",
@@ -46,4 +47,9 @@ interface PolymorphicMigration {
     // Kept for testing protoc retrocompat, removed from KMP code but still preserved in proto files
     @ProtoMessage("PolymorphicMigration.Six")
     data class DeprecatedSix(val b: Long) : PolymorphicMigration
+
+    @ProtoMessage // Migrate the 3 by re-using the generated SevenSerializer
+    data class Seven(val b: Long) : PolymorphicMigration
+    @ProtoMessage // Migrate the 3 by a custom encoder
+    data class Eight(val b: Long) : PolymorphicMigration
 }

@@ -1,6 +1,5 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.FunSpec
@@ -50,7 +49,7 @@ fun FunSpec.Builder.encodeListType(
                 fieldName = "it",
                 type = listType.repeatedType,
                 tag = tag,
-                annotatedSerializer = null,
+                annotatedCodec = null,
                 nullabilitySubField = null,
                 forceEncodeDefault = true,
             )

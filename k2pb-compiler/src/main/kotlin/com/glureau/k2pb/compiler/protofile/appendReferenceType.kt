@@ -9,7 +9,7 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
     // both solutions are valid for protobuf.
 
     type.inlineOf?.let { inlined ->
-        appendFieldType(inlined, type.inlineAnnotatedSerializer)
+        appendFieldType(inlined, type.inlineAnnotatedCodec)
         return
     }
 

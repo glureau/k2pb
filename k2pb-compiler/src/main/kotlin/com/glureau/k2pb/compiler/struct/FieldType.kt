@@ -19,7 +19,7 @@ fun FieldType.readNoTag(): CodeBlock =
     when (this) {
         is ScalarFieldType -> readMethodNoTag()
 // TODO: improve this very basic implementation that uses requireNotNul...
-        is ReferenceType -> CodeBlock.of("with(protoSerializer) { requireNotNull(decode(%T::class)) }", className)
+        is ReferenceType -> CodeBlock.of("with(protoCodec) { requireNotNull(decode(%T::class)) }", className)
 
         else -> TODO("Doesn't support readNoTag on $this")
     }

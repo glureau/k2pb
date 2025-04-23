@@ -93,7 +93,7 @@ fun FieldType.resolvedExternalTypes(): List<String> {
 
         is ScalarFieldType -> emptyList()
         is ReferenceType -> {
-            if (this.inlineAnnotatedSerializer.customConverterType() != null) {
+            if (this.inlineAnnotatedCodec.customConverterType() != null) {
                 emptyList()
             } else {
                 this.inlineOf?.resolvedExternalTypes() ?: listOf(this.name)

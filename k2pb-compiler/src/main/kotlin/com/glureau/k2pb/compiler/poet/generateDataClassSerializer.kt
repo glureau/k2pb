@@ -14,10 +14,10 @@ import com.glureau.k2pb.compiler.struct.encodeField
 import com.glureau.k2pb.compiler.struct.nameOrDefault
 import com.squareup.kotlinpoet.FunSpec
 
-fun FunSpec.Builder.generateDataClassSerializerEncode(
+fun FunSpec.Builder.generateDataClassCodecEncode(
     messageNode: MessageNode,
     instanceName: String,
-    protoSerializerName: String
+    protoCodecName: String
 ): FunSpec.Builder {
     addStatement("// If $instanceName is null, nothing to encode")
     addStatement("if ($instanceName == null) return")
@@ -30,10 +30,10 @@ fun FunSpec.Builder.generateDataClassSerializerEncode(
     return this
 }
 
-fun FunSpec.Builder.generateDataClassSerializerDecode(
+fun FunSpec.Builder.generateDataClassCodecDecode(
     messageNode: MessageNode,
     instanceName: String,
-    protoSerializerName: String
+    protoCodecName: String
 ): FunSpec.Builder {
     messageNode.fields.forEach {
         decodeFieldVariableDefinition(it)

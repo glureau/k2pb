@@ -160,7 +160,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
 
             resolvedType.isError -> {
                 Logger.error("Unknown type on ${(qualifiedName ?: simpleName).asString()}: ${prop.type} / ${prop.type.resolve()}")
-                Logger.warn("You can use ksp arguments to replace a type with a custom serializer by another type")// TODO doc
+                Logger.warn("You can use ksp arguments to replace a type with a custom codec by another type")// TODO doc
                 TypedField(
                     name = propName,
                     annotatedName = prop.serialName,
@@ -226,7 +226,7 @@ private fun TypedField.useNullabilitySubField(): Boolean =
     (type.isNullable && (type !is ReferenceType || type.inlineOf != null)) ||
             (type.isNullable && annotatedConverter.customConverterType()?.isNullable == true) ||
             (type is ReferenceType && type.inlineOf != null && type.inlineOf.isNullable) ||
-            (type is ReferenceType && type.inlineAnnotatedSerializer is NullableStringConverter<*>) ||
+            (type is ReferenceType && type.inlineAnnotatedCodec is NullableStringConverter<*>) ||
             (type.isNullable && type is ReferenceType && type.isEnum)
 
 private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberManager): TypedField {
@@ -301,14 +301,14 @@ private fun mapQfnToFieldType(
             if (typeDecl?.isInlineClass == true) {
                 val inlined = (type.declaration as KSClassDeclaration).getDeclaredProperties().first()
                 val inlinedFieldType = inlined.type.toProtobufFieldType()
-                val inlineAnnotatedSerializer = inlined.customConverter()
+                val inlineAnnotatedCodec = inlined.customConverter()
                 ReferenceType(
                     className = type.toClassName(),
                     name = qfn,
                     isNullable = type.isMarkedNullable == true,// inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
                     inlineName = inlined.simpleName.asString(),
-                    inlineAnnotatedSerializer = inlineAnnotatedSerializer,
+                    inlineAnnotatedCodec = inlineAnnotatedCodec,
                     isEnum = inlined.modifiers.contains(Modifier.ENUM),
                 )
             } else {

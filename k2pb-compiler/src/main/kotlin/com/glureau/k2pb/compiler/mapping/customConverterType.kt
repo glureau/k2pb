@@ -10,15 +10,15 @@ import com.squareup.kotlinpoet.ksp.toClassName
 
 fun KSType?.customConverterType(): ScalarFieldType? {
     if (this != null && declaration is KSClassDeclaration) {
-        val annotatedSerializerDecl = declaration as KSClassDeclaration
-        val parents = annotatedSerializerDecl.superTypes.map { it.resolve().toClassName() }
+        val annotatedCodecDecl = declaration as KSClassDeclaration
+        val parents = annotatedCodecDecl.superTypes.map { it.resolve().toClassName() }
         if (parents.contains(NullableStringConverter::class.asClassName())) {
             return ScalarFieldType.StringNullable
         }
         if (parents.contains(NullableByteArrayConverter::class.asClassName())) {
             return ScalarFieldType.ByteArrayNullable
         }
-        error("Annotated custom serializer not supported yet: $this")
+        error("Annotated custom codec not supported yet: $this")
     }
     return null
 }

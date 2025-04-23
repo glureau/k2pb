@@ -17,18 +17,18 @@ data class ReferenceType(
     val enumFirstEntry: ClassName? = null,
     val inlineOf: FieldType? = null,
     val inlineName: String? = null,
-    val inlineAnnotatedSerializer: KSType? = null,
+    val inlineAnnotatedCodec: KSType? = null,
 ) : FieldType
 
 fun FunSpec.Builder.encodeReferenceType(
     fieldName: String,
     type: ReferenceType,
     tag: Int?,
-    annotatedSerializer: KSType?,
+    annotatedCodec: KSType?,
     nullabilitySubField: NullabilitySubField?,
     forceEncodeDefault: Boolean = false,
 ) {
-    (annotatedSerializer ?: type.inlineAnnotatedSerializer)?.let { annSerializer ->
+    (annotatedCodec ?: type.inlineAnnotatedCodec)?.let { annCodec ->
         val fieldAccess = buildString {
             append(fieldName)
             if (type.inlineName != null) {
@@ -43,8 +43,8 @@ fun FunSpec.Builder.encodeReferenceType(
             beginControlFlow("if ($fieldAccess != null)")
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
-        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")})", annSerializer.toClassName())
-        annSerializer.customConverterType()?.let { customType ->
+        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")})", annCodec.toClassName())
+        annCodec.customConverterType()?.let { customType ->
             if (tag != null) {
                 addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
             } else {
@@ -84,7 +84,7 @@ fun FunSpec.Builder.encodeReferenceType(
             val wireType = if (isInlineEnum || isInlinedInt) "VARINT" else "SIZE_DELIMITED"
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
-        beginControlFlow("with(protoSerializer)")
+        beginControlFlow("with(protoCodec)")
         addStatement("encode(${fieldName}, %T::class) /* FF */", type.className)
         endControlFlow()
 
@@ -121,7 +121,7 @@ fun FunSpec.Builder.encodeReferenceType(
             addStatement("writeInt(%T.VARINT.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
 
-        beginControlFlow("with(protoSerializer)")
+        beginControlFlow("with(protoCodec)")
         addStatement(
             "encode(${fieldName}, %T::class)",
             type.className
@@ -163,12 +163,12 @@ fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
 fun FunSpec.Builder.decodeReferenceType(
     fieldName: String,
     fieldType: ReferenceType,
-    fieldAnnotatedSerializer: KSType?,
+    fieldAnnotatedCodec: KSType?,
 ) {
-    (fieldAnnotatedSerializer ?: fieldType.inlineAnnotatedSerializer)?.let { annotatedSerializer ->
-        val customSerializerType = annotatedSerializer.customConverterType()
-        if (customSerializerType != null) {
-            val decodedTmpName = decodeInLocalVar(fieldName, annotatedSerializer, customSerializerType)
+    (fieldAnnotatedCodec ?: fieldType.inlineAnnotatedCodec)?.let { annotatedCodec ->
+        val customCodecType = annotatedCodec.customConverterType()
+        if (customCodecType != null) {
+            val decodedTmpName = decodeInLocalVar(fieldName, annotatedCodec, customCodecType)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
                     addStatement("${fieldType.className}($decodedTmpName) /* P */")
@@ -177,7 +177,7 @@ fun FunSpec.Builder.decodeReferenceType(
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.
-                addCode(decodedTmpName, annotatedSerializer.toClassName()) // TODO unused 2nd param?
+                addCode(decodedTmpName, annotatedCodec.toClassName()) // TODO unused 2nd param?
             }
         } else {
             error("Not supported yet")
@@ -187,7 +187,7 @@ fun FunSpec.Builder.decodeReferenceType(
         if (useReadMessage) {
             beginControlFlow("%M", readMessageExt)
         }
-        beginControlFlow("with(protoSerializer) {")
+        beginControlFlow("with(protoCodec) {")
         addStatement("decode(%T::class)", fieldType.className)
         endControlFlow()
         if (useReadMessage) {
@@ -198,13 +198,13 @@ fun FunSpec.Builder.decodeReferenceType(
 
 fun FunSpec.Builder.decodeInLocalVar(
     fieldName: String,
-    annotatedSerializer: KSType,
+    annotatedCodec: KSType,
     encodedType: ScalarFieldType,
 ): String {
     val decodedTmpName = "${fieldName.replace(".", "_")}Decoded"
     addStatement(
         "val $decodedTmpName = %T().decode(${encodedType.readMethod()})",
-        annotatedSerializer.toClassName()
+        annotatedCodec.toClassName()
     )
     return decodedTmpName
 }

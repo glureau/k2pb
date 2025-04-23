@@ -6,7 +6,7 @@ import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.asClassName
-import com.glureau.k2pb.compiler.struct.serializerClassName
+import com.glureau.k2pb.compiler.struct.codecClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -14,18 +14,18 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 
-fun FileSpec.Builder.generateSerializerType(
+fun FileSpec.Builder.generateCodecType(
     node: Node,
-    encodeContent: FunSpec.Builder.(instanceName: String, protoSerializerName: String) -> FunSpec.Builder,
-    decodeContent: FunSpec.Builder.(instanceName: String, protoSerializerName: String) -> FunSpec.Builder,
+    encodeContent: FunSpec.Builder.(instanceName: String, protoCodecName: String) -> FunSpec.Builder,
+    decodeContent: FunSpec.Builder.(instanceName: String, protoCodecName: String) -> FunSpec.Builder,
 ) {
     addFileComment("Generated from ${node.originalFile?.filePath}")
     val className = node.asClassName()
     val instanceName = "instance"
-    val protoSerializerName = "protoSerializer"
+    val protoCodecName = "protoCodec"
     addType(
         TypeSpec
-            .classBuilder(node.serializerClassName())
+            .classBuilder(node.codecClassName())
             .addModifiers(KModifier.INTERNAL)
             .addSuperinterface(ProtoCodec::class.asClassName().parameterizedBy(className))
             .addFunction(
@@ -33,8 +33,8 @@ fun FileSpec.Builder.generateSerializerType(
                     .receiver(ProtobufWriter::class.asClassName())
                     .addModifiers(KModifier.OVERRIDE)
                     .addParameter(instanceName, className.copy(nullable = true))
-                    .addParameter(protoSerializerName, DelegateProtoCodec::class.asClassName())
-                    .encodeContent(instanceName, protoSerializerName)
+                    .addParameter(protoCodecName, DelegateProtoCodec::class.asClassName())
+                    .encodeContent(instanceName, protoCodecName)
                     .build()
             )
 
@@ -42,9 +42,9 @@ fun FileSpec.Builder.generateSerializerType(
                 FunSpec.builder("decode")
                     .receiver(ProtobufReader::class.asClassName())
                     .addModifiers(KModifier.OVERRIDE)
-                    .addParameter(protoSerializerName, DelegateProtoCodec::class.asClassName())
+                    .addParameter(protoCodecName, DelegateProtoCodec::class.asClassName())
                     .returns(className.copy(nullable = true))
-                    .decodeContent(instanceName, protoSerializerName)
+                    .decodeContent(instanceName, protoCodecName)
                     .build()
             )
             .build()

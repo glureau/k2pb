@@ -79,7 +79,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             emitNullabilityProto(environment)
         }
 
-        ProtobufSerializerProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
+        ProtobufCodecProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
             protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
         }
         return emptyList()

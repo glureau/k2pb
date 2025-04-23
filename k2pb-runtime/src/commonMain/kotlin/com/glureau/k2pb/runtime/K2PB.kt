@@ -47,20 +47,20 @@ public fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
 }
 
 public class K2PBConfig internal constructor() {
-    internal val serializers: MutableMap<KClass<*>, ProtoCodec<*>> = mutableMapOf()
+    internal val codecs: MutableMap<KClass<*>, ProtoCodec<*>> = mutableMapOf()
     internal val messageNames: MutableMap<KClass<*>, String> = mutableMapOf()
 
     private val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
 
     internal val polymorphics: MutableMap<KClass<*>, MutableList<KClass<*>>> = mutableMapOf()
 
-    public fun registerSerializer(
-        typeToSerialize: KClass<*>,
-        serializer: ProtoCodec<*>,
+    public fun registerCodec(
+        targetType: KClass<*>,
+        codec: ProtoCodec<*>,
         protoMessageName: String
     ) {
-        serializers[typeToSerialize] = serializer
-        messageNames[typeToSerialize] = protoMessageName
+        codecs[targetType] = codec
+        messageNames[targetType] = protoMessageName
     }
 
     @Deprecated("Not used YET")
@@ -75,7 +75,7 @@ public class K2PBConfig internal constructor() {
     public fun verify() {
         polymorphics.forEach { (parent, children) ->
             children.forEach { child ->
-                if (!serializers.containsKey(child)) {
+                if (!codecs.containsKey(child)) {
                     throw IllegalArgumentException("Missing serializer for polymorphic parent: $parent, child: $child")
                 }
             }
@@ -86,7 +86,7 @@ public class K2PBConfig internal constructor() {
 internal class ConfiguredProtoCodec(private val config: K2PBConfig) : DelegateProtoCodec {
     @Suppress("UNCHECKED_CAST")
     override fun ProtobufWriter.encode(instance: Any?, instanceClass: KClass<*>) {
-        config.serializers[instanceClass]?.let {
+        config.codecs[instanceClass]?.let {
             with(it as ProtoCodec<Any>) {
                 encode(instance, this@ConfiguredProtoCodec)
             }
@@ -95,7 +95,7 @@ internal class ConfiguredProtoCodec(private val config: K2PBConfig) : DelegatePr
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> ProtobufReader.decode(instanceClass: KClass<T>): T? {
-        config.serializers[instanceClass]?.let {
+        config.codecs[instanceClass]?.let {
             with(it as ProtoCodec<Any>) {
                 return decode(this@ConfiguredProtoCodec) as? T
             }

@@ -45,7 +45,7 @@ private fun FieldType.write(name: String, tag: Int): CodeBlock =
     when (this) {
         is ScalarFieldType -> safeWriteMethod(name, tag, null, true)
         is ReferenceType -> CodeBlock.of(
-            "writeMessage(%L) { with(protoSerializer) { encode(%L, %T::class) } }\n",
+            "writeMessage(%L) { with(protoCodec) { encode(%L, %T::class) } }\n",
             tag,
             name,
             className

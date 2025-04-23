@@ -44,7 +44,7 @@ fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfFiel
         subclass.type as ReferenceType
         beginControlFlow("is %T ->", subclass.type.className)
         beginControlFlow("%M(%L)", writeMessageExt, subclass.protoNumber)
-        beginControlFlow("with(protoSerializer)")
+        beginControlFlow("with(protoCodec)")
         addStatement("encode($instanceName, %T::class)", subclass.type.className)
         endControlFlow()
         endControlFlow()
@@ -60,7 +60,7 @@ fun FunSpec.Builder.decodeOneOfFieldVariableDefinition(oneOfField: OneOfField) {
 fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
     addStatement("val oneOfTag = readTag()")
     beginControlFlow("return %M", readMessageExt)
-    beginControlFlow("with(protoSerializer)")
+    beginControlFlow("with(protoCodec)")
     beginControlFlow("when (oneOfTag)")
 
     val maxProtoNumber = max(

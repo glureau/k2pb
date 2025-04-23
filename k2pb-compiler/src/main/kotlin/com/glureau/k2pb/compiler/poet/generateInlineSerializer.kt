@@ -12,10 +12,10 @@ import com.glureau.k2pb.compiler.struct.encodeReferenceType
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 
-fun FunSpec.Builder.generateInlineSerializerEncode(
+fun FunSpec.Builder.generateInlineCodecEncode(
     messageNode: MessageNode,
     instanceName: String,
-    protoSerializerName: String
+    protoCodecName: String
 ): FunSpec.Builder {
     addStatement("if ($instanceName == null) return")
     require(messageNode.fields.size == 1) { "Only one field is allowed in an inline class: $messageNode" }
@@ -35,10 +35,10 @@ fun FunSpec.Builder.generateInlineSerializerEncode(
     return this
 }
 
-fun FunSpec.Builder.generateInlineSerializerDecode(
+fun FunSpec.Builder.generateInlineCodecDecode(
     messageNode: MessageNode,
     instanceName: String,
-    protoSerializerName: String
+    protoCodecName: String
 ): FunSpec.Builder {
     val inlinedField = messageNode.fields.first()
     var localVar: String? = null

@@ -4,15 +4,15 @@ import com.glureau.k2pb.runtime.K2PB
 import com.glureau.sample.AbstractClass
 import com.glureau.sample.AbstractSubClass
 import com.glureau.sample.Vehicle
-import com.glureau.sample.lib.registerSampleLibSerializers
-import com.glureau.sample.registerSampleAppSerializers
+import com.glureau.sample.lib.registerSampleLibCodecs
+import com.glureau.sample.registerSampleAppCodecs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class K2PBTest {
     val serializer = K2PB {
-        registerSampleLibSerializers()
-        registerSampleAppSerializers()
+        registerSampleLibCodecs()
+        registerSampleAppCodecs()
     }
 
     @Test

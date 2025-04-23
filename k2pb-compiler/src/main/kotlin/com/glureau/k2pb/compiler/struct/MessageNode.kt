@@ -43,4 +43,4 @@ data class MessageNode(
 }
 
 fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))
-fun Node.serializerClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Serializer")
+fun Node.codecClassName(): ClassName = ClassName(packageName, "${name.replace(".", "_")}Codec")

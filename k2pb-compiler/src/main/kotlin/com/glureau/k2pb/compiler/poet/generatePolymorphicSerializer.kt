@@ -5,10 +5,10 @@ import com.glureau.k2pb.compiler.struct.decodeField
 import com.glureau.k2pb.compiler.struct.encodeField
 import com.squareup.kotlinpoet.FunSpec
 
-fun FunSpec.Builder.generatePolymorphicSerializerEncode(
+fun FunSpec.Builder.generatePolymorphicCodecEncode(
     messageNode: MessageNode,
     instanceName: String,
-    protoSerializerName: String
+    protoCodecName: String
 ): FunSpec.Builder {
     addStatement("if ($instanceName == null) return")
     messageNode.fields.forEach {
@@ -17,10 +17,10 @@ fun FunSpec.Builder.generatePolymorphicSerializerEncode(
     return this
 }
 
-fun FunSpec.Builder.generatePolymorphicSerializerDecode(
+fun FunSpec.Builder.generatePolymorphicCodecDecode(
     messageNode: MessageNode,
     instanceName: String,
-    protoSerializerName: String
+    protoCodecName: String
 ): FunSpec.Builder {
     messageNode.fields.forEach { f ->
         decodeField(f)

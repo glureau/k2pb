@@ -1,18 +1,18 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.compiler.codegen.generateEnumSerializerType
-import com.glureau.k2pb.compiler.codegen.generateMessageSerializerType
-import com.glureau.k2pb.compiler.codegen.generateObjectSerializerType
+import com.glureau.k2pb.compiler.codegen.generateEnumCodecType
+import com.glureau.k2pb.compiler.codegen.generateMessageCodecType
+import com.glureau.k2pb.compiler.codegen.generateObjectCodecType
 import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.ObjectNode
 import com.glureau.k2pb.compiler.struct.asClassName
-import com.glureau.k2pb.compiler.struct.serializerClassName
+import com.glureau.k2pb.compiler.struct.codecClassName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 
-class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggregator) {
+class ProtobufCodecProducer(private val protobufAggregator: ProtobufAggregator) {
     data class CodeFile(
         val fileSpec: FileSpec,
         val aggregating: Boolean,
@@ -21,11 +21,11 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
     fun buildFileSpecs(moduleName: String): List<CodeFile> {
         val fileSpecs = protobufAggregator.nodes
             .map {
-                val builder = FileSpec.builder(it.serializerClassName())
+                val builder = FileSpec.builder(it.codecClassName())
                 when (it) {
-                    is MessageNode -> builder.generateMessageSerializerType(it)
-                    is EnumNode -> builder.generateEnumSerializerType(it)
-                    is ObjectNode -> builder.generateObjectSerializerType(it)
+                    is MessageNode -> builder.generateMessageCodecType(it)
+                    is EnumNode -> builder.generateEnumCodecType(it)
+                    is ObjectNode -> builder.generateObjectCodecType(it)
                 }
                 CodeFile(builder.build(), false)
             }
@@ -44,19 +44,19 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
             .joinToString("") { it.capitalizeUS() }
 
         val moduleCodeFile = CodeFile(
-            FileSpec.builder(commonPackage, "${cleanModuleName}Serializers")
+            FileSpec.builder(commonPackage, "${cleanModuleName}Codec")
                 .addFunction(
-                    FunSpec.builder("register${cleanModuleName}Serializers")
+                    FunSpec.builder("register${cleanModuleName}Codecs")
                         .receiver(ClassName("com.glureau.k2pb.runtime", "K2PBConfig"))
                         .apply {
                             protobufAggregator.nodes.forEach {
                                 val className = it.asClassName()
-                                val serializerClassName = it.serializerClassName()
+                                val codecClassName = it.codecClassName()
                                 when (it) {
                                     is MessageNode -> {
-                                        addRegisterSerializerStatement(
+                                        addRegisterCodecStatement(
                                             className,
-                                            serializerClassName,
+                                            codecClassName,
                                             it.protoName,
                                         )
                                         it.superTypes.forEach { superType ->
@@ -72,17 +72,17 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
                                     }
 
                                     is EnumNode -> {
-                                        addRegisterSerializerStatement(
+                                        addRegisterCodecStatement(
                                             className,
-                                            serializerClassName,
+                                            codecClassName,
                                             it.protoName,
                                         )
                                     }
 
                                     is ObjectNode -> {
-                                        addRegisterSerializerStatement(
+                                        addRegisterCodecStatement(
                                             className,
-                                            serializerClassName,
+                                            codecClassName,
                                             it.protoName,
                                         )
                                     }
@@ -97,19 +97,19 @@ class ProtobufSerializerProducer(private val protobufAggregator: ProtobufAggrega
     }
 }
 
-private fun FunSpec.Builder.addRegisterSerializerStatement(
+private fun FunSpec.Builder.addRegisterCodecStatement(
     className: ClassName,
-    serializerClassName: ClassName,
+    codecClassName: ClassName,
     protoName: String,
 ) {
     addStatement(
-        """|registerSerializer(
-           |typeToSerialize = %T::class, 
-           |serializer = %T(), 
+        """|registerCodec(
+           |targetType = %T::class,
+           |codec = %T(),
            |protoMessageName = "%L",
            """.trimMargin(),
         className,
-        serializerClassName,
+        codecClassName,
         protoName,
     )
     addStatement(")")
