@@ -9,7 +9,6 @@ import com.glureau.k2pb.compiler.ProtobufAggregator
 import com.glureau.k2pb.compiler.capitalizeUS
 import com.glureau.k2pb.compiler.decapitalizeUS
 import com.glureau.k2pb.compiler.getArg
-import com.glureau.k2pb.compiler.sharedOptions
 import com.glureau.k2pb.compiler.struct.FieldType
 import com.glureau.k2pb.compiler.struct.ListType
 import com.glureau.k2pb.compiler.struct.MapType
@@ -84,18 +83,17 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
         protoName = serialNameOrNull ?: protobufName(),
-        comment = if (sharedOptions.useKspPolymorphism) "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText" else "",
+        comment = "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText",
         isPolymorphic = true,
         isSealed = modifiers.contains(Modifier.SEALED),
         sealedSubClasses = subclasses.map { it.toClassName() },
         explicitGenerationRequested = false,
         superTypes = emptyList(),
-        fields = if (sharedOptions.useKspPolymorphism)
-            classNamesToOneOfField(
-                fieldName = protobufName(),
-                subclassesWithProtoNumber = sealedSubclassWithIndex
-            )
-        else emptyList(),
+        fields = classNamesToOneOfField(
+            fieldName = protobufName(),
+            subclassesWithProtoNumber = sealedSubclassWithIndex,
+            deprecateOneOf = emptyList(), // TODO: Support deprecation on sealed classes
+        ),
         isInlineClass = false,
         originalFile = containingFile,
     )

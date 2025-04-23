@@ -77,7 +77,7 @@ fun FieldInterface.resolvedExternalTypes(): List<String> {
             }
         }
 
-        is OneOfField -> this.fields.flatMap { it.resolvedExternalTypes() }
+        is OneOfField -> this.activeFields.flatMap { it.resolvedExternalTypes() }
     }
 }
 

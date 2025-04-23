@@ -6,6 +6,7 @@ import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
 import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.glureau.k2pb.compiler.struct.MessageNode
+import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.emitNullabilityProto
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.containingFile
@@ -95,6 +96,15 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                     val number = it.getArg<Int>(ProtoPolymorphism.Pair::number)
                     className to number
                 }
+                val deprecateOneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::deprecateOneOf)
+                val deprecateOneOf = deprecateOneOfAnnotations.map {
+                    OneOfField.DeprecatedField(
+                        protoName = it.getArg<String>(ProtoPolymorphism.Deprecated::protoName),
+                        protoNumber = it.getArg<Int>(ProtoPolymorphism.Deprecated::protoNumber),
+                        deprecationReason = it.getArg<String>(ProtoPolymorphism.Deprecated::deprecationReason),
+                        publishedInProto = it.getArg<Boolean>(ProtoPolymorphism.Deprecated::publishedInProto),
+                    )
+                }
                 val protoName = annotation.getArg<String?>(ProtoPolymorphism::name)
 
                 protobufAggregator.recordNode(
@@ -111,7 +121,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                         comment = null, // TODO: Should we just remove that variable?
                         fields = classNamesToOneOfField(
                             fieldName = parent.simpleName,
-                            subclassesWithProtoNumber = oneOf
+                            subclassesWithProtoNumber = oneOf,
+                            deprecateOneOf = deprecateOneOf,
                         ),
                         originalFile = symbol.containingFile,
                         sealedSubClasses = emptyList(),

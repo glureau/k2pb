@@ -6,13 +6,18 @@ import com.glureau.k2pb.compiler.struct.TypedField
 import com.squareup.kotlinpoet.ClassName
 import java.util.Locale
 
-fun classNamesToOneOfField(fieldName: String, subclassesWithProtoNumber: List<Pair<ClassName, Int>>) =
+fun classNamesToOneOfField(
+    fieldName: String,
+    subclassesWithProtoNumber: List<Pair<ClassName, Int>>,
+    deprecateOneOf: List<OneOfField.DeprecatedField>
+) =
     listOf(
         OneOfField(
             comment = null,
             name = fieldName.replaceFirstChar { it.lowercase(Locale.US) },
             protoNumber = 1,
-            fields = subclassesWithProtoNumber.map { (childClassName, number) ->
+            deprecatedFields = deprecateOneOf,
+            activeFields = subclassesWithProtoNumber.map { (childClassName, number) ->
                 TypedField(
                     comment = null,
                     type = ReferenceType(

@@ -522,6 +522,43 @@ option java_outer_classname = "ObjectClassProto";
 
 message ObjectClass { }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/PolymorphicMigration.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "PolymorphicMigrationProto";
+
+message PolymorphicMigration {
+  // Removed field Three (number=3)
+  // This has been removed in 2.1.0 with the blipbloup feature
+  reserved "Three";
+  reserved 3;
+
+  oneof polymorphicMigration {
+    PolymorphicMigration.One one = 1;
+    PolymorphicMigration.Two two = 2;
+    // The protoNumber 4 is not defined, if it's not used anymore consider using @ProtoPolymorphism.Deprecated annotation.
+    PolymorphicMigration.Five five = 5;
+    // Deprecated field PolymorphicMigration.Six 6
+    // Will be removed soon
+    PolymorphicMigration.Six six = 6;
+  }
+  message Six {
+    int64 b = 1;
+  }
+  message Three {
+    int32 a = 1;
+  }
+  message Five {
+    int64 b = 1;
+  }
+  message One { }
+  message Two {
+    string a = 1;
+  }
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/StandardClass.proto
 syntax = "proto3";
 
