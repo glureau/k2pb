@@ -1,4 +1,4 @@
-package com.glureau.k2pb
+package com.glureau.k2pb.annotation
 
 import kotlin.reflect.KClass
 

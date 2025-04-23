@@ -1,6 +1,6 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.ProtoPolymorphism
+import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.sample.PolymorphicMigration.Five
 import com.glureau.sample.PolymorphicMigration.One

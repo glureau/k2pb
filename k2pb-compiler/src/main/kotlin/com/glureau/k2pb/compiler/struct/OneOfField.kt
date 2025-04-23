@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.ProtoPolymorphism
+import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.FunSpec

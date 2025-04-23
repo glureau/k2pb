@@ -1,7 +1,7 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.ProtoPolymorphism
-import com.glureau.k2pb.ProtoPolymorphism.Child
+import com.glureau.k2pb.annotation.ProtoPolymorphism
+import com.glureau.k2pb.annotation.ProtoPolymorphism.Child
 import com.glureau.k2pb.annotation.ProtoMessage
 
 abstract class AbstractClass {

@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler
 
-import com.glureau.k2pb.ProtoPolymorphism
+import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
 import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation

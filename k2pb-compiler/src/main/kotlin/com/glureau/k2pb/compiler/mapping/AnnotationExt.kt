@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.CustomConverter
-import com.glureau.k2pb.ProtoPolymorphism
+import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.annotation.NullableMigration
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
