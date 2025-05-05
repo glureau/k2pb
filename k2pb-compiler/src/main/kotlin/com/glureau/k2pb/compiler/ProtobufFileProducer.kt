@@ -39,7 +39,7 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                         locallyDeclaredReferences = node.declaredReferences,
                         importResolver = importResolver
                     ) +
-                            computeDeprecatedProtoImports(listOf(node)))
+                            computeDeprecatedProtoImports(listOf(node), importResolver))
                         .distinct()
                         .sorted()
                     Logger.warn("imports for ${node.name} = $imports")

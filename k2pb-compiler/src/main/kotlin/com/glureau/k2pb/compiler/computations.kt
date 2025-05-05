@@ -102,7 +102,7 @@ fun FieldType.resolvedExternalTypes(): List<String> {
     }
 }
 
-fun computeDeprecatedProtoImports(nodes: List<Node>): List<String> {
+fun computeDeprecatedProtoImports(nodes: List<Node>, importResolver: ImportResolver): List<String> {
     val selfRef = nodes.map { it.protoName }
     Logger.warn("computeDeprecatedProtoImports : $selfRef")
 
@@ -122,8 +122,7 @@ fun computeDeprecatedProtoImports(nodes: List<Node>): List<String> {
             }
         }
         .filter { it.publishedInProto }
-        // Only import the highest level parent
-        .map { it.protoName.substringBefore(".") } -
-            selfRef
+        .map { importResolver.resolve(it.protoName) } -
+            selfRef.map { importResolver.resolve(it) }
 
 }
