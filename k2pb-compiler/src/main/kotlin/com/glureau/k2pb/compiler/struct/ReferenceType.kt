@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ReferenceType(
     val className: ClassName,
+    val annotatedProtoName: String?,
     val name: String,
     override val isNullable: Boolean,
     val isEnum: Boolean,

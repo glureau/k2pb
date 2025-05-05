@@ -1,6 +1,8 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.protofile.ProtobufFile
+import com.glureau.k2pb.compiler.protofile.computeDeprecatedProtoImports
+import com.glureau.k2pb.compiler.protofile.computeImports
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.ProtoSyntax

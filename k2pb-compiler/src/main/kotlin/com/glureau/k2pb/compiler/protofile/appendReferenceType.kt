@@ -8,12 +8,14 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
     // Protobuf name COULD be simplified in function of the location, but a bit more complex to implement and
     // both solutions are valid for protobuf.
 
+    type.annotatedProtoName?.let { append(it) }
+
     type.inlineOf?.let { inlined ->
         appendFieldType(inlined, type.inlineAnnotatedCodec)
         return
     }
 
-    TypeResolver.qualifiedNameToProtobufName[type.name]?.let { resolvedType: String ->
+    TypeResolver.resolveName(type.name)?.let { resolvedType: String ->
         append(resolvedType)
         return
     }

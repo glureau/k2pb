@@ -27,9 +27,12 @@ import java.util.Collections.emptyList
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
+private var sharedResolver: Resolver? = null
 internal lateinit var sharedOptions: OptionManager
 
 internal object Logger : KSPLogger by sharedLogger
+
+internal val Resolver: Resolver get() = sharedResolver!!
 
 data class CompileOptions(private val options: Map<String, String>) {
     val protoPackageName by lazy { options["com.glureau.k2pb.protoPackageName"] }
@@ -53,6 +56,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         if (runDone) {
             return emptyList()
         }
+        sharedResolver = resolver
         runDone = true
         compileOptions = CompileOptions(environment.options)
         val symbols = resolver.getSymbolsWithAnnotation(ProtoMessage::class.qualifiedName!!)
@@ -62,10 +66,12 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             }
         }
 
-        resolvePolymorphism(resolver)
+        resolvePolymorphism()
 
-        resolveDependencies(resolver)
+        resolveDependencies()
 
+        // TODO: remove the hacky implem asap
+        // val moduleName = resolver.getModuleName().asString()
         val moduleName = moduleName(resolver)
         ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
             environment.writeProtobufFile(
@@ -83,11 +89,12 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         ProtobufCodecProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
             protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
         }
+        sharedResolver = null
         return emptyList()
     }
 
-    private fun resolvePolymorphism(resolver: Resolver) {
-        resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
+    private fun resolvePolymorphism() {
+        Resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
             symbol.protoPolymorphismAnnotation()?.let { annotation ->
                 val parentKClass = annotation.getArg<KSType>(ProtoPolymorphism::parent)
                 val parent = parentKClass.toClassName()
@@ -142,7 +149,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         }
     }
 
-    private fun resolveDependencies(resolver: Resolver) {
+    private fun resolveDependencies() {
         val lastSignatures = mutableSetOf<String>()
         do {
             var done = true
@@ -150,15 +157,15 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             unknownReferences
                 //.filter { it != nullabilityQualifiedName }
                 .forEach {
-                    val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
+                    Logger.warn("LOOKUP ${it}")
+                    val reference = Resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
+                        //?: return@forEach
                     if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
                         Logger.warn("$it is referenced but not annotated with @ProtoMessage")
                         // TODO: Should be an error?
                     }
 
-                    TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
-                            //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
-                        reference.simpleName.asString()
+                    TypeResolver.record(reference)
                     //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
                     done = false
                 }

@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.compiler.protofile.resolvedExternalTypes
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.nullabilityQualifiedName
@@ -15,9 +16,7 @@ class ProtobufAggregator {
             qualifiedNameSet.contains(node.qualifiedName).not()
         ) { "Duplicated qualified name: ${node.qualifiedName}" }
         qualifiedNameSet += node.qualifiedName
-        TypeResolver.qualifiedNameToProtobufName[node.qualifiedName] =
-            //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
-                    node.name
+        TypeResolver.recordNode(node)
     }
 
     fun unknownReferences(): Set<String> {
