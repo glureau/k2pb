@@ -70,7 +70,7 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
     val subclasses = getSealedSubclasses().toList()
     val possibleValuesText = if (subclasses.isNotEmpty()) {
         "Possible values are:\n" +
-                subclasses.joinToString("\n") { "- '${it.serialName}'" }
+                subclasses.joinToString("\n") { "- '${it.annotatedNameOrSimpleName}'" }
     } else {
         "(subclasses cannot be listed automatically)"
     }
@@ -82,8 +82,8 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        protoName = serialNameOrNull ?: protobufName(),
-        comment = "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${serialName}'\n$possibleValuesText",
+        protoName = annotatedNameOrNull ?: protobufName(),
+        comment = "${docString?.let { "$it\n" } ?: ""}Polymorphism structure for '${annotatedNameOrSimpleName}'\n$possibleValuesText",
         isPolymorphic = true,
         isSealed = modifiers.contains(Modifier.SEALED),
         sealedSubClasses = subclasses.map { it.toClassName() },
@@ -112,7 +112,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             .firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
 
         if (prop.annotations.any { it.shortName.asString() == "Transient" }) {
-            Logger.info("Ignored transient field ${prop.serialName} on ${(qualifiedName ?: simpleName).asString()}")
+            Logger.info("Ignored transient field ${prop.annotatedName} on ${(qualifiedName ?: simpleName).asString()}")
             return@mapNotNull null
         }
         val resolvedType = prop.type.resolve()
@@ -148,7 +148,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                 TypedField(
                     name = propName,
-                    annotatedName = prop.serialName.decapitalizeUS(),
+                    annotatedName = prop.annotatedName.decapitalizeUS(),
                     type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                     comment = prop.docString,
                     annotatedConverter = annotatedConverter,
@@ -163,10 +163,10 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 Logger.warn("You can use ksp arguments to replace a type with a custom codec by another type")// TODO doc
                 TypedField(
                     name = propName,
-                    annotatedName = prop.serialName,
+                    annotatedName = prop.annotatedName,
                     type = annotatedDerivedType ?: ReferenceType(
                         className = prop.type.resolve().toClassName(),
-                        name = prop.type.toString(),
+                        name = (prop.type.resolve() as KSClassDeclaration).annotatedNameOrNull ?: "",//prop.type.toString(),
                         isNullable = prop.type.resolve().isMarkedNullable,
                         isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
                     ),
@@ -183,7 +183,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                 val type = annotatedDerivedType ?: prop.type.toProtobufFieldType() // TODO: Common to 3 branches?
                 TypedField(
                     name = propName,
-                    annotatedName = prop.serialName,
+                    annotatedName = prop.annotatedName,
                     type = type,
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
@@ -206,7 +206,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         packageName = this.packageName.asString(),
         qualifiedName = this.qualifiedName!!.asString(),
         name = protobufName(),
-        protoName = serialNameOrNull ?: protobufName(),
+        protoName = annotatedNameOrNull ?: protobufName(),
         isPolymorphic = false,
         isSealed = false,
         explicitGenerationRequested = false,
@@ -304,7 +304,7 @@ private fun mapQfnToFieldType(
                 val inlineAnnotatedCodec = inlined.customConverter()
                 ReferenceType(
                     className = type.toClassName(),
-                    name = qfn,
+                    name = typeDecl.annotatedNameOrSimpleName,//OrNull ?: qfn,
                     isNullable = type.isMarkedNullable == true,// inlinedFieldType.isNullable,
                     inlineOf = inlinedFieldType,
                     inlineName = inlined.simpleName.asString(),
@@ -316,7 +316,7 @@ private fun mapQfnToFieldType(
                 // val converter = type?.annotations?.customConverter()
                 ReferenceType(
                     className = typeDecl?.toClassName() ?: error("No type for $qfn"),
-                    name = qfn,
+                    name = typeDecl.annotatedNameOrSimpleName,//OrNull ?: qfn,
                     isNullable = type.isMarkedNullable == true,
                     isEnum = isEnum,
                     enumFirstEntry = if (isEnum) {
@@ -340,18 +340,18 @@ fun KSClassDeclaration.protobufName(): String {
             simpleName.asString()
 }
 
-val KSClassDeclaration.serialNameOrNull: String?
+val KSClassDeclaration.annotatedNameOrNull: String?
     get() = protoMessageAnnotation()
         ?.getArg<String?>(ProtoMessage::name)
         ?.takeIf { it.isNotBlank() }
 
-val KSClassDeclaration.serialName: String
+val KSClassDeclaration.annotatedNameOrSimpleName: String
     get() = protoMessageAnnotation()
         ?.getArg<String?>(ProtoMessage::name)
         ?.takeIf { it.isNotBlank() }
         ?: simpleName.asString()
 
-val KSPropertyDeclaration.serialName: String
+val KSPropertyDeclaration.annotatedName: String
     get() = protoFieldAnnotation()
         ?.getArg<String?>(ProtoField::name)
         ?.takeIf { it.isNotBlank() }

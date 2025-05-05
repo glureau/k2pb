@@ -12,7 +12,7 @@ fun KSClassDeclaration.mapEnumNode(): EnumNode {
         .filterIsInstance<KSClassDeclaration>()
         .filter { it.classKind == ClassKind.ENUM_ENTRY }
         .map { entry ->
-            val name = entry.serialName
+            val name = entry.annotatedNameOrSimpleName
             EnumEntry(
                 name = name,
                 comment = entry.docString,
@@ -23,7 +23,7 @@ fun KSClassDeclaration.mapEnumNode(): EnumNode {
         packageName = this.packageName.asString(),
         qualifiedName = qualifiedName!!.asString(),
         name = protobufName(),
-        protoName = serialNameOrNull ?: protobufName(),
+        protoName = annotatedNameOrNull ?: protobufName(),
         comment = docString,
         entries = entries,
         originalFile = containingFile,

@@ -1,6 +1,8 @@
 package com.glureau.k2pb.compiler
 
 import com.glureau.k2pb.compiler.protofile.ProtobufFile
+import com.glureau.k2pb.compiler.protofile.computeDeprecatedProtobufImports
+import com.glureau.k2pb.compiler.protofile.computeProtobufImports
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.Node
 import com.glureau.k2pb.compiler.struct.ProtoSyntax
@@ -34,12 +36,12 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                         return@forEach
                     }
 
-                    val imports = (computeImports(
+                    val imports = (computeProtobufImports(
                         nodes = listOf(node),
                         locallyDeclaredReferences = node.declaredReferences,
                         importResolver = importResolver
                     ) +
-                            computeDeprecatedProtoImports(listOf(node), importResolver))
+                            computeDeprecatedProtobufImports(listOf(node), importResolver))
                         .distinct()
                         .sorted()
                     Logger.warn("imports for ${node.name} = $imports")

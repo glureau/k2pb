@@ -156,10 +156,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                         // TODO: Should be an error?
                     }
 
-                    TypeResolver.qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
-                            //(compileOptions.protoPackageName?.let { "$it." } ?: "") +
-                        reference.simpleName.asString()
-                    //protobufAggregator.recordKSClassDeclaration(requireNotNull(reference))
+                    TypeResolver.record(reference)
+
                     done = false
                 }
 

@@ -13,7 +13,7 @@ fun StringBuilder.appendReferenceType(type: ReferenceType) {
         return
     }
 
-    TypeResolver.qualifiedNameToProtobufName[type.name]?.let { resolvedType: String ->
+    TypeResolver.resolveName(type.className.canonicalName)?.let { resolvedType: String ->
         append(resolvedType)
         return
     }

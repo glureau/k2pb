@@ -100,7 +100,7 @@ fun FunSpec.Builder.generateDataClassCodecDecode(
                     if (it.nullabilitySubField != null) {
                         val nameOrDefault = when {
                             it.type is ReferenceType && it.type.inlineOf is ScalarFieldType -> {
-                                "(${it.name} ?: ${it.type.name}(${it.type.inlineOf.defaultValue}))"
+                                "(${it.name} ?: ${it.type.className.simpleName}(${it.type.inlineOf.defaultValue}))"
                             }
                             /*
 
