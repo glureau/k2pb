@@ -223,6 +223,19 @@ message InlinedCollection {
   repeated string valueClassOfNullableStringList = 4;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClassesHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "KtxClassesHolderProto";
+
+import "com/glureau/k2pb_sample/CustomNameKtxClasses.proto";
+
+message KtxClassesHolder {
+  CustomNameKtxClasses delegated = 1;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
 syntax = "proto3";
 

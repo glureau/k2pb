@@ -10,3 +10,9 @@ data class KtxClasses(
     @ProtoField(converter = InstantIsoDateTimeOffsetConverter::class)
     val instant: Instant,
 )
+
+// Ensures the generated protobuf file uses the correct name
+@ProtoMessage
+data class KtxClassesHolder(
+    val delegated: KtxClasses,
+)
