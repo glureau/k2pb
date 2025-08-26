@@ -3,10 +3,10 @@ package com.glureau.k2pb.compiler
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
+import com.glureau.k2pb.compiler.mapping.mapToDeprecatedField
 import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.glureau.k2pb.compiler.struct.MessageNode
-import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.emitNullabilityProto
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.containingFile
@@ -19,7 +19,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.impl.hasAnnotation
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -98,23 +97,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                     className to number
                 }
                 val deprecateOneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::deprecateOneOf)
-                val deprecateOneOf = deprecateOneOfAnnotations.map {
-                    val migrationDecoderType = it.getArg<KSType?>(ProtoPolymorphism.Deprecated::migrationDecoder)
-                    val migrationDecoderDeclaration = migrationDecoderType?.declaration as? KSClassDeclaration
-                    val migrationDecoderSuper =
-                        migrationDecoderDeclaration?.superTypes?.firstOrNull() as? KSTypeReference
-                    val migrationDecoderParameterType = migrationDecoderSuper?.resolve()?.arguments?.firstOrNull()?.type
-                    val migrationDecoderParameterClassName = migrationDecoderParameterType?.resolve()?.toClassName()
-
-                    OneOfField.DeprecatedField(
-                        protoName = it.getArg<String>(ProtoPolymorphism.Deprecated::protoName),
-                        protoNumber = it.getArg<Int>(ProtoPolymorphism.Deprecated::protoNumber),
-                        deprecationReason = it.getArg<String?>(ProtoPolymorphism.Deprecated::deprecationReason),
-                        publishedInProto = it.getArg<Boolean?>(ProtoPolymorphism.Deprecated::publishedInProto) ?: true,
-                        migrationDecoder = migrationDecoderType?.toClassName(),
-                        migrationTargetClass = migrationDecoderParameterClassName
-                    )
-                }
+                val deprecateOneOf = deprecateOneOfAnnotations.map { it.mapToDeprecatedField() }
                 val protoName = annotation.getArg<String?>(ProtoPolymorphism::name)
 
                 protobufAggregator.recordNode(
@@ -134,6 +117,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                             subclassesWithProtoNumber = oneOf,
                             deprecateOneOf = deprecateOneOf,
                         ),
+                        deprecatedFields = emptyList(),// TODO: polymorphism only defines one field so far
                         originalFile = symbol.containingFile,
                         sealedSubClasses = emptyList(),
                     )
@@ -141,6 +125,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             }
         }
     }
+
 
     private fun resolveDependencies(resolver: Resolver) {
         val lastSignatures = mutableSetOf<String>()

@@ -17,7 +17,7 @@ data class TypedField(
     override val protoNumber: Int,
     private val annotatedName: String?,
     val annotatedConverter: KSType? = null,
-    val annotatedNullableMigration: NullableMigration?,
+    val annotatedNullabilityMigration: NullableMigration?,
     val nullabilitySubField: NullabilitySubField?,
 ) : FieldInterface {
     val resolvedName = annotatedName ?: name

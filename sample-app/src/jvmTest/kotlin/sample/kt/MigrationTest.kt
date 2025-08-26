@@ -7,6 +7,8 @@ import com.glureau.sample.NullableEnumHolderUnspecifiedNull
 import com.glureau.sample.NullableNativeTypeEventUnspecifiedDefault
 import com.glureau.sample.NullableNativeTypeEventUnspecifiedNull
 import com.glureau.sample.ObjectClass
+import com.glureau.sample.OptionalToRequiredEnd
+import com.glureau.sample.OptionalToRequiredStart
 import com.glureau.sample.lib.AnEnum
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
@@ -108,4 +110,31 @@ class MigrationTest : BaseEncodingTest() {
         )
     }
 
+    @Test
+    fun `migration from optional to required with custom nullability proto number DEFAULT`() {
+        assertMigration(
+            before = OptionalToRequiredStart(
+                enum = AnEnum.AnEnum_B,
+                b = "test"
+            ),
+            expectedAfter = OptionalToRequiredEnd(
+                enum = AnEnum.AnEnum_B,
+                b = "test"
+            )
+        )
+    }
+
+    @Test
+    fun `migration from optional to required with custom nullability proto number`() {
+        assertMigration(
+            before = OptionalToRequiredStart(
+                enum = null,
+                b = "test"
+            ),
+            expectedAfter = OptionalToRequiredEnd(
+                enum = AnEnum.AnEnum_A,
+                b = "test"
+            )
+        )
+    }
 }

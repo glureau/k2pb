@@ -13,7 +13,7 @@ val K2PBNullabilityClassName =
     ExplicitNullability::class.asClassName()// ClassName(nullabilityPackage, nullabilityClass)
 private val nullabilityPackage = K2PBNullabilityClassName.packageName
 val nullabilityClass = K2PBNullabilityClassName.simpleName
-val nullabilityQualifiedName = K2PBNullabilityClassName.canonicalName
+val nullabilityQualifiedName = K2PBNullabilityClassName.canonicalName // com.glureau.k2pb.ExplicitNullability
 val nullabilityImport = "${nullabilityPackage.replace(".", "/")}/$nullabilityClass"
 
 fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {

@@ -8,6 +8,7 @@ public annotation class ProtoField(
     val name: String = "",
     val number: Int = -1,
     val nullabilityMigration: NullableMigration = NullableMigration.DEFAULT,
+    val nullabilityNumber: Int = -1,
     val converter: KClass<out CustomConverter<*, *>> = CustomConverter::class,
 )
 

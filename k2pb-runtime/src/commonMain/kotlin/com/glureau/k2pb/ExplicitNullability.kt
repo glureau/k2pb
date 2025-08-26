@@ -25,5 +25,8 @@ public enum class ExplicitNullability {
      * The associated value could be the protobuf default ("" != null).
      * During deserialization, K2PB requires that the associated value is not null, or else throws.
      */
-    NOT_NULL,
+    NOT_NULL;
+    public companion object {
+        public const val PROTO_TYPE: String = "ExplicitNullability"
+    }
 }

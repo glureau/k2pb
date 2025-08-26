@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.mapping
 
+import com.glureau.k2pb.compiler.struct.DeprecatedField
 import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.TypedField
@@ -9,7 +10,7 @@ import java.util.Locale
 fun classNamesToOneOfField(
     fieldName: String,
     subclassesWithProtoNumber: List<Pair<ClassName, Int>>,
-    deprecateOneOf: List<OneOfField.DeprecatedField>
+    deprecateOneOf: List<DeprecatedField>,
 ) =
     listOf(
         OneOfField(
@@ -30,7 +31,7 @@ fun classNamesToOneOfField(
                     protoNumber = number,
                     annotatedName = null,
                     annotatedConverter = null,
-                    annotatedNullableMigration = null,
+                    annotatedNullabilityMigration = null,
                     nullabilitySubField = null,
                 )
             }

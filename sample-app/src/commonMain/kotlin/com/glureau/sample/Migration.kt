@@ -1,5 +1,7 @@
 package com.glureau.sample
 
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.annotation.DeprecatedField
 import com.glureau.k2pb.annotation.NullableMigration
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
@@ -8,7 +10,7 @@ import com.glureau.sample.lib.AnEnum
 
 @ProtoMessage
 data class NullableEnumHolderUnspecifiedNull(
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val enum: AnEnum?
+    @ProtoField(nullabilityMigration = NullableMigration.NULL) val enum: AnEnum?,
 )
 
 @ProtoMessage
@@ -164,3 +166,44 @@ data class NativeTypeEventUnspecifiedDefault(
         return result
     }
 }
+
+@ProtoMessage
+data class OptionalToRequiredStart(
+    val enum: AnEnum?,
+    val b: String,
+)
+
+@ProtoMessage(
+    deprecatedFields = [
+        DeprecatedField(
+            protoName = "isEnumNull",
+            protoNumber = 2,
+            protoType = ExplicitNullability.PROTO_TYPE,
+            deprecationReason = "Field 'enum' has been made required",
+            publishedInProto = true
+        ),
+        DeprecatedField(
+            protoName = "anotherField",
+            protoNumber = 5,
+            deprecationReason = "Field 'enum' has been made required",
+            publishedInProto = false
+        ),
+    ]
+)
+data class OptionalToRequiredEnd(
+    val enum: AnEnum,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalStart(
+    val enum: AnEnum,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalEnd(
+    @ProtoField(nullabilityNumber = 3)
+    val enum: AnEnum?,
+    val b: String,
+)

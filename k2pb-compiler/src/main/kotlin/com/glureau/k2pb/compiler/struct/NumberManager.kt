@@ -3,9 +3,9 @@ package com.glureau.k2pb.compiler.struct
 import com.glureau.k2pb.compiler.Logger
 
 // 1 instance for a given 'message' or 'enum'
-class NumberManager(private val startAt: Int = 1) {
+class NumberManager(private val startAt: Int = 1, deprecatedProtoNumbers: List<Int>) {
+    private val deprecatedNumbers = deprecatedProtoNumbers.toSet()
     private val numberByName = mutableMapOf<String, Int>()
-    val nextNumberPreview get() = (numberByName.values.maxOrNull() ?: (startAt - 1)) + 1
 
     fun resolve(name: String, annotatedNumber: Int?): Int {
         numberByName[name]?.let {
@@ -14,7 +14,14 @@ class NumberManager(private val startAt: Int = 1) {
             }
             return it
         }
-        val resolvedNumber = annotatedNumber ?: nextNumberPreview
+        val resolvedNumber = annotatedNumber ?: run {
+            val used = deprecatedNumbers + numberByName.values
+            var current = startAt
+            while (used.contains(current)) {
+                current++
+            }
+            current
+        }
         numberByName[name] = resolvedNumber
         return resolvedNumber
     }

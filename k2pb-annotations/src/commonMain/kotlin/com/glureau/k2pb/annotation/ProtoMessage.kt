@@ -8,5 +8,6 @@ package com.glureau.k2pb.annotation
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPEALIAS)
 public annotation class ProtoMessage(
-    val name: String = ""
+    val name: String = "",
+    val deprecatedFields: Array<DeprecatedField> = [],
 )

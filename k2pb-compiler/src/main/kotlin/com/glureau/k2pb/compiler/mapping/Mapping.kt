@@ -22,6 +22,7 @@ import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
@@ -94,19 +95,21 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
             subclassesWithProtoNumber = sealedSubclassWithIndex,
             deprecateOneOf = emptyList(), // TODO: Support deprecation on sealed classes
         ),
+        deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() },
         isInlineClass = false,
         originalFile = containingFile,
     )
 }
 
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
-    val numberManager = NumberManager(1)
     val primaryCtor = primaryConstructor
     if (primaryCtor == null) {
         Logger.error("${this.simpleName.asString()} should have a primary constructor", this)
         Thread.sleep(3000)
         error("Primary constructor is required")
     }
+    val deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() }
+    val numberManager = NumberManager(1, deprecatedFields.map { it.protoNumber })
     val fields = primaryCtor.parameters.mapNotNull { param ->
         val prop = this.getDeclaredProperties()
             .firstOrNull { it.simpleName == param.name } ?: return@mapNotNull null
@@ -143,7 +146,8 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         }
         val annotatedNumber = prop.protoNumberInternal
         val propName = prop.simpleName.asString()
-        val annotatedNullableMigration = prop.nullableMigration()
+        val annotatedNullabilityMigration = prop.nullabilityMigration()
+        val annotatedNullabilityNumber = prop.nullabilityNumber()
         when {
             resolvedDeclaration.modifiers.contains(Modifier.SEALED) -> {
                 TypedField(
@@ -152,7 +156,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     type = annotatedDerivedType ?: prop.type.toProtobufFieldType(),
                     comment = prop.docString,
                     annotatedConverter = annotatedConverter,
-                    annotatedNullableMigration = annotatedNullableMigration,
+                    annotatedNullabilityMigration = annotatedNullabilityMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
                 )
@@ -166,14 +170,15 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     annotatedName = prop.annotatedName,
                     type = annotatedDerivedType ?: ReferenceType(
                         className = prop.type.resolve().toClassName(),
-                        name = (prop.type.resolve() as KSClassDeclaration).annotatedNameOrNull ?: "",//prop.type.toString(),
+                        name = (prop.type.resolve() as KSClassDeclaration).annotatedNameOrNull
+                            ?: "",//prop.type.toString(),
                         isNullable = prop.type.resolve().isMarkedNullable,
                         isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
                     ),
                     comment = prop.docString,
                     //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
-                    annotatedNullableMigration = annotatedNullableMigration,
+                    annotatedNullabilityMigration = annotatedNullabilityMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null, // TODO: handle nullability
                 )
@@ -186,12 +191,11 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     annotatedName = prop.annotatedName,
                     type = type,
                     comment = prop.docString,
-                    //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
-                    annotatedNullableMigration = annotatedNullableMigration,
+                    annotatedNullabilityMigration = annotatedNullabilityMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
-                ).withNullabilitySubFieldIfNeeded(numberManager)
+                ).withNullabilitySubFieldIfNeeded(numberManager, annotatedNullabilityNumber)
             }
         }
     }
@@ -216,6 +220,7 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
             .toList(),
         comment = docString, // because it's a data class
         fields = fields.toList(),
+        deprecatedFields = deprecatedFields,
         originalFile = containingFile,
         sealedSubClasses = emptyList(),
     )
@@ -229,18 +234,29 @@ private fun TypedField.useNullabilitySubField(): Boolean =
             (type is ReferenceType && type.inlineAnnotatedCodec is NullableStringConverter<*>) ||
             (type.isNullable && type is ReferenceType && type.isEnum)
 
-private fun TypedField.withNullabilitySubFieldIfNeeded(numberManager: NumberManager): TypedField {
+private fun TypedField.withNullabilitySubFieldIfNeeded(
+    numberManager: NumberManager,
+    annotatedNullabilityNumber: Int?,
+): TypedField {
+    val nullFieldName = "is" + name.capitalizeUS() + "Null"
     return if (useNullabilitySubField()) {
-        val nullFieldName = "is" + name.capitalizeUS() + "Null"
         copy(
             nullabilitySubField = NullabilitySubField(
                 fieldName = nullFieldName,
-                /* TODO : handle a custom number in annotation for this nullability field */
-                protoNumber = numberManager.resolve(nullFieldName, null),
-                nullableMigration = annotatedNullableMigration ?: NullableMigration.DEFAULT,
+                protoNumber = numberManager.resolve(nullFieldName, annotatedNullabilityNumber),
+                nullableMigration = annotatedNullabilityMigration ?: NullableMigration.DEFAULT,
             )
         )
     } else {
+        if (annotatedNullabilityNumber != null) {
+            Logger.error(
+                "Field '$name' doesn't need a nullability sub-field," +
+                        " but a number was specified ($annotatedNullabilityNumber). " +
+                        "You can either remove the useless nullabilityNumber param, or use",
+            )
+            // Record the old number usage
+            numberManager.resolve(nullFieldName, annotatedNullabilityNumber)
+        }
         this
     }
 }
@@ -350,6 +366,11 @@ val KSClassDeclaration.annotatedNameOrSimpleName: String
         ?.getArg<String?>(ProtoMessage::name)
         ?.takeIf { it.isNotBlank() }
         ?: simpleName.asString()
+
+val KSClassDeclaration.deprecatedFields: List<KSAnnotation>
+    get() = protoMessageAnnotation()
+        ?.getArg<List<KSAnnotation>?>(ProtoMessage::deprecatedFields)
+        .orEmpty()
 
 val KSPropertyDeclaration.annotatedName: String
     get() = protoFieldAnnotation()
