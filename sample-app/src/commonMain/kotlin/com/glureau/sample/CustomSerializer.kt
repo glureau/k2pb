@@ -7,9 +7,11 @@ import java.math.BigDecimal
 
 
 class BigDecimalConverter : NullableStringConverter<BigDecimal> {
-    override fun encode(value: BigDecimal): String = value.toPlainString()
+    override fun encode(value: BigDecimal): String? =
+        value.toPlainString()
 
-    override fun decode(data: String?): BigDecimal? = data?.takeIf { it.isNotBlank() }?.toBigDecimal()
+    override fun decode(data: String?): BigDecimal? =
+        data?.takeIf { it.isNotBlank() }?.toBigDecimal()
 }
 
 // Here the compiler cannot infer the replacement type (KSP only give access to signatures, not runtime information)

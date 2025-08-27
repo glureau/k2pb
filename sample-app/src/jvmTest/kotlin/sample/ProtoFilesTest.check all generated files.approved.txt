@@ -542,10 +542,31 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "OptionalToRequiredEndProto";
 
+import "com/glureau/k2pb_sample/CommonClass.proto";
+
+message OptionalToRequiredEnd {
+  // Removed field anotherField (number=5)
+  // Field 'enum' has been made required
+  reserved "anotherField";
+  reserved 5;
+
+  CommonClass item = 1;
+  string b = 2;
+  // The protoNumber 3 is not defined, if it's not used anymore consider using deprecated annotation.
+  // The protoNumber 4 is not defined, if it's not used anymore consider using deprecated annotation.
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/OptionalToRequiredEnumEnd.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "OptionalToRequiredEnumEndProto";
+
 import "com/glureau/k2pb/ExplicitNullability.proto";
 import "com/glureau/k2pb_sample/AnEnum.proto";
 
-message OptionalToRequiredEnd {
+message OptionalToRequiredEnumEnd {
   // Removed field anotherField (number=5)
   // Field 'enum' has been made required
   reserved "anotherField";
@@ -559,6 +580,22 @@ message OptionalToRequiredEnd {
   // The protoNumber 4 is not defined, if it's not used anymore consider using deprecated annotation.
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/OptionalToRequiredEnumStart.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "OptionalToRequiredEnumStartProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message OptionalToRequiredEnumStart {
+  AnEnum enum = 1;
+  com.glureau.k2pb.ExplicitNullability isEnumNull = 2;
+  string b = 3;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/OptionalToRequiredStart.proto
 syntax = "proto3";
 
@@ -566,13 +603,11 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "OptionalToRequiredStartProto";
 
-import "com/glureau/k2pb/ExplicitNullability.proto";
-import "com/glureau/k2pb_sample/AnEnum.proto";
+import "com/glureau/k2pb_sample/CommonClass.proto";
 
 message OptionalToRequiredStart {
-  AnEnum enum = 1;
-  com.glureau.k2pb.ExplicitNullability isEnumNull = 2;
-  string b = 3;
+  CommonClass item = 1;
+  string b = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/PolymorphicMigration.proto
@@ -623,12 +658,40 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "RequiredToOptionalEndProto";
 
+import "com/glureau/k2pb_sample/CommonClass.proto";
+
+message RequiredToOptionalEnd {
+  CommonClass item = 1;
+  string b = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/RequiredToOptionalEnumEnd.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "RequiredToOptionalEnumEndProto";
+
 import "com/glureau/k2pb/ExplicitNullability.proto";
 import "com/glureau/k2pb_sample/AnEnum.proto";
 
-message RequiredToOptionalEnd {
+message RequiredToOptionalEnumEnd {
   AnEnum enum = 1;
   com.glureau.k2pb.ExplicitNullability isEnumNull = 3;
+  string b = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/RequiredToOptionalEnumStart.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "RequiredToOptionalEnumStartProto";
+
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message RequiredToOptionalEnumStart {
+  AnEnum enum = 1;
   string b = 2;
 }
 
@@ -639,10 +702,10 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "RequiredToOptionalStartProto";
 
-import "com/glureau/k2pb_sample/AnEnum.proto";
+import "com/glureau/k2pb_sample/CommonClass.proto";
 
 message RequiredToOptionalStart {
-  AnEnum enum = 1;
+  CommonClass item = 1;
   string b = 2;
 }
 

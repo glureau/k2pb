@@ -4,9 +4,11 @@ import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
+import com.glureau.k2pb.runtime.DefaultCodecImpl
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ReferenceType(
@@ -43,7 +45,11 @@ fun FunSpec.Builder.encodeReferenceType(
             beginControlFlow("if ($fieldAccess != null)")
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
-        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")})", annCodec.toClassName())
+        addStatement(
+            "val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")}, %T(protoCodec))",
+            annCodec.toClassName(),
+            DefaultCodecImpl::class.asClassName()
+        )
         annCodec.customConverterType()?.let { customType ->
             if (tag != null) {
                 addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
@@ -203,8 +209,9 @@ fun FunSpec.Builder.decodeInLocalVar(
 ): String {
     val decodedTmpName = "${fieldName.replace(".", "_")}Decoded"
     addStatement(
-        "val $decodedTmpName = %T().decode(${encodedType.readMethod()})",
-        annotatedCodec.toClassName()
+        "val $decodedTmpName = %T().decode(${encodedType.readMethod()}, %T(protoCodec))",
+        annotatedCodec.toClassName(),
+        DefaultCodecImpl::class.asClassName()
     )
     return decodedTmpName
 }

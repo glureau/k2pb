@@ -1,6 +1,7 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.DefaultCodec
+import com.glureau.k2pb.NullableByteArrayConverter
 import com.glureau.k2pb.annotation.DeprecatedField
 import com.glureau.k2pb.annotation.DeprecatedNullabilityField
 import com.glureau.k2pb.annotation.NullableMigration
@@ -212,16 +213,9 @@ data class OptionalToRequiredStart(
             publishedInProto = false
         ),
     ],
-    deprecatedNullabilityFields = [
-        DeprecatedNullabilityField(
-            protoName = "item",
-            protoNumber = 2,
-            deprecationReason = "Field 'item' has been made required",
-            publishedInProto = true
-        ),
-    ]
 )
 data class OptionalToRequiredEnd(
+    // Decoding a null value will throw an exception.
     val item: CommonClass,
     val b: String,
 )

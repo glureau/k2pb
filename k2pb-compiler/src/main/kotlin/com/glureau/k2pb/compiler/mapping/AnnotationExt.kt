@@ -66,7 +66,8 @@ fun KSAnnotation.mapToDeprecatedField(): DeprecatedField {
 
 
 fun KSAnnotation.mapToDeprecatedNullabilityField(): DeprecatedNullabilityField {
-    val protoName = nullabilityNameForField(getArg<String>(AnnotationDeprecatedNullabilityField::protoName))
+    val targetName = getArg<String>(AnnotationDeprecatedNullabilityField::protoName)
+    val protoName = nullabilityNameForField(targetName)
     return DeprecatedNullabilityField(
         protoName = protoName,
         protoNumber = getArg<Int>(AnnotationDeprecatedNullabilityField::protoNumber),

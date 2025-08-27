@@ -18,7 +18,9 @@ import com.glureau.sample.RequiredToOptionalEnumStart
 import com.glureau.sample.RequiredToOptionalStart
 import com.glureau.sample.lib.AnEnum
 import org.junit.Test
+import org.junit.jupiter.api.fail
 import sample.kt.tools.BaseEncodingTest
+import kotlin.test.assertEquals
 
 class MigrationTest : BaseEncodingTest() {
 
@@ -163,16 +165,25 @@ class MigrationTest : BaseEncodingTest() {
                 b = "test",
             )
         )
-        assertMigration(
-            before = OptionalToRequiredStart(
-                item = null,
-                b = "test"
-            ),
-            expectedAfter = OptionalToRequiredEnd(
-                item = CommonClass(""), // We need to assume default value here
-                b = "test"
+        try {
+            assertMigration(
+                before = OptionalToRequiredStart(
+                    item = null,
+                    b = "test"
+                ),
+                expectedAfter = OptionalToRequiredEnd(
+                    // CRASH, this can't be decoded in the current configuration,
+                    // there's no data on that proto number, so we can't fabricate a value.
+                    // It's still possible to use a custom converter on OptionalToRequiredEnd but more complex.
+                    item = CommonClass(""),
+                    b = "test"
+                )
             )
-        )
+            fail { "This should have failed already" }
+        } catch (t: IllegalArgumentException) {
+            assertEquals("Required value was null.", t.message)
+
+        }
     }
 
     @Test
@@ -220,6 +231,7 @@ class MigrationTest : BaseEncodingTest() {
             )
         )
     }
+
     @Test
     fun `migration from required to optional with custom nullability proto number`() {
         assertMigration(

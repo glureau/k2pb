@@ -2,6 +2,7 @@ package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
+import com.glureau.k2pb.runtime.DefaultCodecImpl
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -194,8 +195,9 @@ fun FunSpec.Builder.encodeScalarFieldType(
     (annotatedCodec?.let { s ->
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
         addStatement(
-            "val $encodedTmpName = %T().encode($instanceName.${fieldName})",
-            s.toClassName()
+            "val $encodedTmpName = %T().encode($instanceName.${fieldName}, %T(protoCodec))",
+            s.toClassName(),
+            DefaultCodecImpl::class.asClassName()
         )
         addCode(fieldType.safeWriteMethod(encodedTmpName, tag, nullabilitySubField?.protoNumber, false))
     } ?: addCode(fieldType.safeWriteMethod("$instanceName.${fieldName}", tag, nullabilitySubField?.protoNumber, false)))
