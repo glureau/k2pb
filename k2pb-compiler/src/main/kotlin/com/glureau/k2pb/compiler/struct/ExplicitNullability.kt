@@ -54,13 +54,18 @@ fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
 }
 
 fun FunSpec.Builder.encodeNullability(nullabilitySubField: NullabilitySubField, isNull: Boolean) {
+    encodeNullability(nullabilitySubField.protoNumber, isNull)
+}
+
+fun FunSpec.Builder.encodeNullability(protoNumber: Int, isNull: Boolean) {
     val explicitNullability = if (isNull) ExplicitNullability.NULL else ExplicitNullability.NOT_NULL
     addStatement(
-        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = ${nullabilitySubField.protoNumber}, format = %T)",
+        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = ${protoNumber}, format = %T)",
         K2PBNullabilityClassName,
         ProtoIntegerTypeDefault,
     )
 }
+
 fun CodeBlock.Builder.encodeScalarNullability(nullabilityTag: Int, isNull: Boolean) {
     val explicitNullability = if (isNull) ExplicitNullability.NULL else ExplicitNullability.NOT_NULL
     addStatement(

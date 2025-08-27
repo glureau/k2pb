@@ -10,4 +10,5 @@ package com.glureau.k2pb.annotation
 public annotation class ProtoMessage(
     val name: String = "",
     val deprecatedFields: Array<DeprecatedField> = [],
+    val deprecatedNullabilityFields: Array<DeprecatedNullabilityField> = [],
 )

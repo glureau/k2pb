@@ -2,6 +2,7 @@ package com.glureau.sample
 
 import com.glureau.k2pb.ExplicitNullability
 import com.glureau.k2pb.annotation.DeprecatedField
+import com.glureau.k2pb.annotation.DeprecatedNullabilityField
 import com.glureau.k2pb.annotation.NullableMigration
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
@@ -168,7 +169,7 @@ data class NativeTypeEventUnspecifiedDefault(
 }
 
 @ProtoMessage
-data class OptionalToRequiredStart(
+data class OptionalToRequiredEnumStart(
     val enum: AnEnum?,
     val b: String,
 )
@@ -176,34 +177,77 @@ data class OptionalToRequiredStart(
 @ProtoMessage(
     deprecatedFields = [
         DeprecatedField(
-            protoName = "isEnumNull",
+            protoName = "anotherField",
+            protoNumber = 5,
+            deprecationReason = "Field 'enum' has been made required",
+            publishedInProto = false
+        ),
+    ],
+    deprecatedNullabilityFields = [
+        DeprecatedNullabilityField(
+            protoName = "enum",
             protoNumber = 2,
-            protoType = ExplicitNullability.PROTO_TYPE,
             deprecationReason = "Field 'enum' has been made required",
             publishedInProto = true
         ),
+    ]
+)
+data class OptionalToRequiredEnumEnd(
+    val enum: AnEnum,
+    val b: String,
+)
+
+@ProtoMessage
+data class OptionalToRequiredStart(
+    val item: CommonClass?,
+    val b: String,
+)
+
+@ProtoMessage(
+    deprecatedFields = [
         DeprecatedField(
             protoName = "anotherField",
             protoNumber = 5,
             deprecationReason = "Field 'enum' has been made required",
             publishedInProto = false
         ),
+    ],
+    deprecatedNullabilityFields = [
+        DeprecatedNullabilityField(
+            protoName = "item",
+            protoNumber = 2,
+            deprecationReason = "Field 'item' has been made required",
+            publishedInProto = true
+        ),
     ]
 )
 data class OptionalToRequiredEnd(
+    val item: CommonClass,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalEnumStart(
     val enum: AnEnum,
     val b: String,
 )
 
 @ProtoMessage
+data class RequiredToOptionalEnumEnd(
+    @ProtoField(nullabilityNumber = 3)
+    val enum: AnEnum?,
+    val b: String,
+)
+
+@ProtoMessage
 data class RequiredToOptionalStart(
-    val enum: AnEnum,
+    val item: CommonClass,
     val b: String,
 )
 
 @ProtoMessage
 data class RequiredToOptionalEnd(
     @ProtoField(nullabilityNumber = 3)
-    val enum: AnEnum?,
+    val item: CommonClass?,
     val b: String,
 )

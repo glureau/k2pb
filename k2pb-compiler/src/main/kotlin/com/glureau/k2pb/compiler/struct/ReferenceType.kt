@@ -152,7 +152,7 @@ fun FunSpec.Builder.encodeReferenceType(
 fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
     fieldName: String,
     type: ReferenceType,
-    nullabilitySubField: NullabilitySubField?
+    nullabilitySubField: NullabilitySubField?,
 ) {
     addStatement("var $fieldName: %T? = null", type.className)
     nullabilitySubField?.let {
@@ -171,9 +171,9 @@ fun FunSpec.Builder.decodeReferenceType(
             val decodedTmpName = decodeInLocalVar(fieldName, annotatedCodec, customCodecType)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
-                    addStatement("${fieldType.className}($decodedTmpName) /* P */")
+                    addStatement("${fieldType.className}($decodedTmpName)")
                 } else {
-                    addStatement("$decodedTmpName?.let { ${fieldType.className}($decodedTmpName) } /* O */")
+                    addStatement("$decodedTmpName?.let { ${fieldType.className}($decodedTmpName) }")
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.

@@ -7,6 +7,7 @@ import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.compiler.getArg
 import com.glureau.k2pb.compiler.struct.DeprecatedField
+import com.glureau.k2pb.compiler.struct.DeprecatedNullabilityField
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -15,6 +16,7 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.glureau.k2pb.annotation.DeprecatedField as AnnotationDeprecatedField
+import com.glureau.k2pb.annotation.DeprecatedNullabilityField as AnnotationDeprecatedNullabilityField
 
 
 fun KSAnnotated.protoMessageAnnotation(): KSAnnotation? =
@@ -59,5 +61,16 @@ fun KSAnnotation.mapToDeprecatedField(): DeprecatedField {
         publishedInProto = getArg<Boolean?>(AnnotationDeprecatedField::publishedInProto) ?: true,
         migrationDecoder = migrationDecoderType?.toClassName(),
         migrationTargetClass = migrationDecoderParameterClassName
+    )
+}
+
+
+fun KSAnnotation.mapToDeprecatedNullabilityField(): DeprecatedNullabilityField {
+    val protoName = nullabilityNameForField(getArg<String>(AnnotationDeprecatedNullabilityField::protoName))
+    return DeprecatedNullabilityField(
+        protoName = protoName,
+        protoNumber = getArg<Int>(AnnotationDeprecatedNullabilityField::protoNumber),
+        deprecationReason = getArg<String?>(AnnotationDeprecatedNullabilityField::deprecationReason),
+        publishedInProto = getArg<Boolean?>(AnnotationDeprecatedNullabilityField::publishedInProto) ?: true,
     )
 }

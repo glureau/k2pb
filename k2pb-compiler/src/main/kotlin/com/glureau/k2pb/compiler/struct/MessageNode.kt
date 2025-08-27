@@ -18,7 +18,7 @@ data class MessageNode(
     val superTypes: List<ClassName>,
     val comment: String?,
     val fields: List<FieldInterface>,
-    val deprecatedFields: List<DeprecatedField>,
+    val deprecatedFields: List<IDeprecatedField>,
     override val originalFile: KSFile?,
     val sealedSubClasses: List<ClassName>,
 ) : Node() {

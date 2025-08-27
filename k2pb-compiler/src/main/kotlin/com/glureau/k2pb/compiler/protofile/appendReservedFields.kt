@@ -1,10 +1,10 @@
 package com.glureau.k2pb.compiler.protofile
 
-import com.glureau.k2pb.compiler.struct.DeprecatedField
+import com.glureau.k2pb.compiler.struct.IDeprecatedField
 
 fun StringBuilder.appendReservedFields(
     indentLevel: Int,
-    deprecatedFields: List<DeprecatedField>,
+    deprecatedFields: List<IDeprecatedField>,
 ) {
     deprecatedFields.filter { !it.publishedInProto }.forEach { deprecatedField ->
         appendLineWithIndent(

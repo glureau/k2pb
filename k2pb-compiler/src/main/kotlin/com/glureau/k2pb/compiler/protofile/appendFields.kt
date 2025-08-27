@@ -3,8 +3,8 @@ package com.glureau.k2pb.compiler.protofile
 import com.glureau.k2pb.ExplicitNullability
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.decapitalizeUS
-import com.glureau.k2pb.compiler.struct.DeprecatedField
 import com.glureau.k2pb.compiler.struct.FieldInterface
+import com.glureau.k2pb.compiler.struct.IDeprecatedField
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.nullabilityQualifiedName
 import kotlin.math.max
@@ -12,7 +12,7 @@ import kotlin.math.max
 fun StringBuilder.appendFields(
     indentLevel: Int,
     activeFields: List<FieldInterface>,
-    deprecatedFields: List<DeprecatedField>,
+    deprecatedFields: List<IDeprecatedField>,
     debugName: String,
 ) {
     val maxProtoNumber = max(

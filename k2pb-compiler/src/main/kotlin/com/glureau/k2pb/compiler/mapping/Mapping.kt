@@ -95,7 +95,8 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
             subclassesWithProtoNumber = sealedSubclassWithIndex,
             deprecateOneOf = emptyList(), // TODO: Support deprecation on sealed classes
         ),
-        deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() },
+        deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() } +
+                deprecatedNullabilityFields.map { it.mapToDeprecatedNullabilityField() },
         isInlineClass = false,
         originalFile = containingFile,
     )
@@ -108,7 +109,8 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         Thread.sleep(3000)
         error("Primary constructor is required")
     }
-    val deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() }
+    val deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() } +
+            deprecatedNullabilityFields.map { it.mapToDeprecatedNullabilityField() }
     val numberManager = NumberManager(1, deprecatedFields.map { it.protoNumber })
     val fields = primaryCtor.parameters.mapNotNull { param ->
         val prop = this.getDeclaredProperties()
@@ -234,11 +236,14 @@ private fun TypedField.useNullabilitySubField(): Boolean =
             (type is ReferenceType && type.inlineAnnotatedCodec is NullableStringConverter<*>) ||
             (type.isNullable && type is ReferenceType && type.isEnum)
 
+fun nullabilityNameForField(fieldName: String): String =
+    "is" + fieldName.capitalizeUS() + "Null"
+
 private fun TypedField.withNullabilitySubFieldIfNeeded(
     numberManager: NumberManager,
     annotatedNullabilityNumber: Int?,
 ): TypedField {
-    val nullFieldName = "is" + name.capitalizeUS() + "Null"
+    val nullFieldName = nullabilityNameForField(name)
     return if (useNullabilitySubField()) {
         copy(
             nullabilitySubField = NullabilitySubField(
@@ -249,7 +254,8 @@ private fun TypedField.withNullabilitySubFieldIfNeeded(
         )
     } else {
         if (annotatedNullabilityNumber != null) {
-            Logger.error(
+             // TODO : !!!!!
+            Logger.info(
                 "Field '$name' doesn't need a nullability sub-field," +
                         " but a number was specified ($annotatedNullabilityNumber). " +
                         "You can either remove the useless nullabilityNumber param, or use",
@@ -370,6 +376,11 @@ val KSClassDeclaration.annotatedNameOrSimpleName: String
 val KSClassDeclaration.deprecatedFields: List<KSAnnotation>
     get() = protoMessageAnnotation()
         ?.getArg<List<KSAnnotation>?>(ProtoMessage::deprecatedFields)
+        .orEmpty()
+
+val KSClassDeclaration.deprecatedNullabilityFields: List<KSAnnotation>
+    get() = protoMessageAnnotation()
+        ?.getArg<List<KSAnnotation>?>(ProtoMessage::deprecatedNullabilityFields)
         .orEmpty()
 
 val KSPropertyDeclaration.annotatedName: String
