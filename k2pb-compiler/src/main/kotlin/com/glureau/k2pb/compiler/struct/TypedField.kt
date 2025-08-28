@@ -26,14 +26,13 @@ data class TypedField(
 fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
     val tag = field.protoNumber
     when (field.type) {
-        is ListType -> encodeListType(instanceName, field.name, field.type, tag, field.nullabilitySubField)
+        is ListType -> encodeListType(instanceName, field.name, field.type, tag)
         is MapType -> encodeMapType(instanceName, field.name, field.type, tag)
         is ReferenceType -> encodeReferenceType(
             "$instanceName.${field.name}",
             field.type,
             tag,
-            field.annotatedConverter,
-            field.nullabilitySubField
+            field.annotatedConverter
         )
 
         is ScalarFieldType -> encodeScalarFieldType(

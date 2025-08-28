@@ -14,22 +14,20 @@ import com.squareup.kotlinpoet.FunSpec
 
 fun FunSpec.Builder.generateInlineCodecEncode(
     messageNode: MessageNode,
-    instanceName: String,
-    protoCodecName: String
+    instanceName: String
 ): FunSpec.Builder {
     addStatement("if ($instanceName == null) return")
     require(messageNode.fields.size == 1) { "Only one field is allowed in an inline class: $messageNode" }
     val inlinedField = messageNode.fields.first()
     if (inlinedField is TypedField && inlinedField.type is ScalarFieldType) {
-        addCode(inlinedField.type.safeWriteMethodNoTag("$instanceName.${inlinedField.name} /* M2 */", null, true))
+        addCode(inlinedField.type.safeWriteMethodNoTag("$instanceName.${inlinedField.name}",  true))
         addStatement("")
     } else if (inlinedField is TypedField && inlinedField.type is ReferenceType) {
         encodeReferenceType(
             "$instanceName.${inlinedField.name}",
             inlinedField.type,
             tag = null,
-            inlinedField.annotatedConverter,
-            inlinedField.nullabilitySubField
+            inlinedField.annotatedConverter
         )
     }
     return this

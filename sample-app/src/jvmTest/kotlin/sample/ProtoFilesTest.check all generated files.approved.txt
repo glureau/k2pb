@@ -677,8 +677,8 @@ import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message RequiredToOptionalEnumEnd {
   AnEnum enum = 1;
-  com.glureau.k2pb.ExplicitNullability isEnumNull = 3;
   string b = 2;
+  com.glureau.k2pb.ExplicitNullability isEnumNull = 3;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/RequiredToOptionalEnumStart.proto

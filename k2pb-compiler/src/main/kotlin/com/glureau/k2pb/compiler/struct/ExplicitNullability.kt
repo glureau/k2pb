@@ -5,7 +5,6 @@ import com.glureau.k2pb.annotation.NullableMigration
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.writeProtobufFile
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 
@@ -53,23 +52,10 @@ fun emitNullabilityProto(environment: SymbolProcessorEnvironment) {
     )
 }
 
-fun FunSpec.Builder.encodeNullability(nullabilitySubField: NullabilitySubField, isNull: Boolean) {
-    encodeNullability(nullabilitySubField.protoNumber, isNull)
-}
-
 fun FunSpec.Builder.encodeNullability(protoNumber: Int, isNull: Boolean) {
     val explicitNullability = if (isNull) ExplicitNullability.NULL else ExplicitNullability.NOT_NULL
     addStatement(
-        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = ${protoNumber}, format = %T)",
-        K2PBNullabilityClassName,
-        ProtoIntegerTypeDefault,
-    )
-}
-
-fun CodeBlock.Builder.encodeScalarNullability(nullabilityTag: Int, isNull: Boolean) {
-    val explicitNullability = if (isNull) ExplicitNullability.NULL else ExplicitNullability.NOT_NULL
-    addStatement(
-        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = $nullabilityTag, format = %T)",
+        "writeInt(value = %T.${explicitNullability.name}.ordinal, tag = $protoNumber, format = %T)",
         K2PBNullabilityClassName,
         ProtoIntegerTypeDefault,
     )

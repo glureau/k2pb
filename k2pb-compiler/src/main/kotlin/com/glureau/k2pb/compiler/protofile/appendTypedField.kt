@@ -13,9 +13,4 @@ fun StringBuilder.appendTypedField(indentLevel: Int, field: TypedField) {
     append(" = ")
     append(field.protoNumber)
     appendLine(";")
-
-    if (field.nullabilitySubField != null) {
-        append(indentation(indentLevel))
-        appendNullabilityField(field.nullabilitySubField)
-    }
 }

@@ -27,7 +27,6 @@ fun FunSpec.Builder.encodeReferenceType(
     type: ReferenceType,
     tag: Int?,
     annotatedCodec: KSType?,
-    nullabilitySubField: NullabilitySubField?,
     forceEncodeDefault: Boolean = false,
 ) {
     (annotatedCodec ?: type.inlineAnnotatedCodec)?.let { annCodec ->
@@ -52,15 +51,16 @@ fun FunSpec.Builder.encodeReferenceType(
         )
         annCodec.customConverterType()?.let { customType ->
             if (tag != null) {
-                addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
+                addCode(customType.safeWriteMethod(encodedTmpName, tag, forceEncodeDefault))
             } else {
-                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null, forceEncodeDefault))
+                addCode(customType.safeWriteMethodNoTag(encodedTmpName, forceEncodeDefault))
             }
             addStatement("")
         }
             ?: error("Not supported yet")
 
         if (checkNullability) {
+            /*
             if (nullabilitySubField != null) {
                 encodeNullability(nullabilitySubField, isNull = false)
             }
@@ -70,6 +70,8 @@ fun FunSpec.Builder.encodeReferenceType(
                 encodeNullability(nullabilitySubField, isNull = true)
                 endControlFlow()
             }
+            */
+            endControlFlow()
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
@@ -99,15 +101,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (checkNullability) {
-            if (nullabilitySubField != null) {
-                encodeNullability(nullabilitySubField, isNull = false)
-            }
             endControlFlow() // if (checkNullability)
-            if (nullabilitySubField != null) {
-                beginControlFlow("else")
-                encodeNullability(nullabilitySubField, isNull = true)
-                endControlFlow() // else
-            }
         }
     } ?: run {
         if (type.isNullable) {
@@ -122,7 +116,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (!type.isEnum) {
-            beginControlFlow("%M($tag) /* TTT */ ", writeMessageExt)
+            beginControlFlow("%M($tag)", writeMessageExt)
         } else if (tag != null) {
             addStatement("writeInt(%T.VARINT.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
@@ -141,16 +135,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (type.isNullable) {
-            if (nullabilitySubField != null) {
-                encodeNullability(nullabilitySubField, isNull = false)
-            }
             endControlFlow() // if (!null)
-        }
-
-        if (nullabilitySubField != null) {
-            beginControlFlow("else")
-            encodeNullability(nullabilitySubField, isNull = true)
-            endControlFlow() // else
         }
     }
 }
