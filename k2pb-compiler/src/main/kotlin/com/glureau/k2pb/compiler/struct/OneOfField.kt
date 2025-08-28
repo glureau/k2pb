@@ -1,10 +1,8 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.ProtoDecoder
-import com.glureau.k2pb.annotation.ProtoPolymorphism
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import kotlin.math.max
 
@@ -28,17 +26,7 @@ data class OneOfField(
     val deprecatedFields: List<DeprecatedField>,
     val activeFields: List<FieldInterface>,
 ) : FieldInterface {
-    /**
-     * Copy of [ProtoPolymorphism.Deprecated]
-     */
-    data class DeprecatedField(
-        val protoName: String,
-        val protoNumber: Int,
-        val deprecationReason: String?,
-        val publishedInProto: Boolean,
-        val migrationDecoder: ClassName?,
-        val migrationTargetClass: ClassName?,
-    )
+
 }
 
 fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfField) {
@@ -95,7 +83,8 @@ fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
             deprecatedField != null -> {
                 if (deprecatedField.migrationDecoder != null &&
                     deprecatedField.migrationDecoder != ProtoDecoder::class &&
-                    deprecatedField.migrationTargetClass != null) {
+                    deprecatedField.migrationTargetClass != null
+                ) {
                     // 3 -> return@readMessage with(PolymorphicMigration.SevenDecoder()) { decode(PolymorphicMigration.Seven::class)}
                     addComment("migration of old %L", deprecatedField.protoName)
                     addStatement(

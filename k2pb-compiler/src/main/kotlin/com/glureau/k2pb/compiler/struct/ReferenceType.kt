@@ -4,9 +4,11 @@ import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
+import com.glureau.k2pb.runtime.DefaultCodecImpl
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.toClassName
 
 data class ReferenceType(
@@ -25,7 +27,6 @@ fun FunSpec.Builder.encodeReferenceType(
     type: ReferenceType,
     tag: Int?,
     annotatedCodec: KSType?,
-    nullabilitySubField: NullabilitySubField?,
     forceEncodeDefault: Boolean = false,
 ) {
     (annotatedCodec ?: type.inlineAnnotatedCodec)?.let { annCodec ->
@@ -43,27 +44,23 @@ fun FunSpec.Builder.encodeReferenceType(
             beginControlFlow("if ($fieldAccess != null)")
         }
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
-        addStatement("val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")})", annCodec.toClassName())
+        addStatement(
+            "val $encodedTmpName = %T().encode(${fieldAccess.replace("?", "")}, %T(protoCodec))",
+            annCodec.toClassName(),
+            DefaultCodecImpl::class.asClassName()
+        )
         annCodec.customConverterType()?.let { customType ->
             if (tag != null) {
-                addCode(customType.safeWriteMethod(encodedTmpName, tag, null, forceEncodeDefault))
+                addCode(customType.safeWriteMethod(encodedTmpName, tag, forceEncodeDefault))
             } else {
-                addCode(customType.safeWriteMethodNoTag(encodedTmpName, null, forceEncodeDefault))
+                addCode(customType.safeWriteMethodNoTag(encodedTmpName, forceEncodeDefault))
             }
             addStatement("")
         }
             ?: error("Not supported yet")
 
         if (checkNullability) {
-            if (nullabilitySubField != null) {
-                encodeNullability(nullabilitySubField, isNull = false)
-            }
             endControlFlow()
-            if (nullabilitySubField != null) {
-                beginControlFlow("else")
-                encodeNullability(nullabilitySubField, isNull = true)
-                endControlFlow()
-            }
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
@@ -85,7 +82,7 @@ fun FunSpec.Builder.encodeReferenceType(
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoCodec)")
-        addStatement("encode(${fieldName}, %T::class) /* FF */", type.className)
+        addStatement("encode(${fieldName}, %T::class)", type.className)
         endControlFlow()
 
         if (!forceEncodeDefault && condition.isNotEmpty()) {
@@ -93,15 +90,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (checkNullability) {
-            if (nullabilitySubField != null) {
-                encodeNullability(nullabilitySubField, isNull = false)
-            }
             endControlFlow() // if (checkNullability)
-            if (nullabilitySubField != null) {
-                beginControlFlow("else")
-                encodeNullability(nullabilitySubField, isNull = true)
-                endControlFlow() // else
-            }
         }
     } ?: run {
         if (type.isNullable) {
@@ -116,7 +105,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (!type.isEnum) {
-            beginControlFlow("%M($tag) /* TTT */ ", writeMessageExt)
+            beginControlFlow("%M($tag)", writeMessageExt)
         } else if (tag != null) {
             addStatement("writeInt(%T.VARINT.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
@@ -135,16 +124,7 @@ fun FunSpec.Builder.encodeReferenceType(
         }
 
         if (type.isNullable) {
-            if (nullabilitySubField != null) {
-                encodeNullability(nullabilitySubField, isNull = false)
-            }
             endControlFlow() // if (!null)
-        }
-
-        if (nullabilitySubField != null) {
-            beginControlFlow("else")
-            encodeNullability(nullabilitySubField, isNull = true)
-            endControlFlow() // else
         }
     }
 }
@@ -152,7 +132,7 @@ fun FunSpec.Builder.encodeReferenceType(
 fun FunSpec.Builder.decodeReferenceTypeVariableDefinition(
     fieldName: String,
     type: ReferenceType,
-    nullabilitySubField: NullabilitySubField?
+    nullabilitySubField: NullabilitySubField?,
 ) {
     addStatement("var $fieldName: %T? = null", type.className)
     nullabilitySubField?.let {
@@ -171,9 +151,9 @@ fun FunSpec.Builder.decodeReferenceType(
             val decodedTmpName = decodeInLocalVar(fieldName, annotatedCodec, customCodecType)
             if (fieldType.inlineOf != null) {
                 if (fieldType.inlineOf.isNullable == true) {
-                    addStatement("${fieldType.className}($decodedTmpName) /* P */")
+                    addStatement("${fieldType.className}($decodedTmpName)")
                 } else {
-                    addStatement("$decodedTmpName?.let { ${fieldType.className}($decodedTmpName) } /* O */")
+                    addStatement("$decodedTmpName?.let { ${fieldType.className}($decodedTmpName) }")
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.
@@ -203,8 +183,9 @@ fun FunSpec.Builder.decodeInLocalVar(
 ): String {
     val decodedTmpName = "${fieldName.replace(".", "_")}Decoded"
     addStatement(
-        "val $decodedTmpName = %T().decode(${encodedType.readMethod()})",
-        annotatedCodec.toClassName()
+        "val $decodedTmpName = %T().decode(${encodedType.readMethod()}, %T(protoCodec))",
+        annotatedCodec.toClassName(),
+        DefaultCodecImpl::class.asClassName()
     )
     return decodedTmpName
 }

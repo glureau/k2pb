@@ -15,7 +15,6 @@ fun FunSpec.Builder.encodeListType(
     fieldName: String,
     listType: ListType,
     tag: Int,
-    nullabilitySubField: NullabilitySubField?
 ) {
     if (listType.isNullable) {
         beginControlFlow("if ($instanceName.$fieldName != null)")
@@ -26,16 +25,16 @@ fun FunSpec.Builder.encodeListType(
             // https://protobuf.dev/programming-guides/encoding/#packed
             when (listType.repeatedType.protoType) {
                 ScalarType.string, ScalarType.bytes -> {
-                    beginControlFlow("$instanceName.$fieldName.forEach /* scalar bs */")
-                    addCode(listType.repeatedType.safeWriteMethod("it", tag, null, true))
+                    beginControlFlow("$instanceName.$fieldName.forEach")
+                    addCode(listType.repeatedType.safeWriteMethod("it", tag, true))
                     addStatement("")
                     endControlFlow() // forEach
                 }
 
                 else -> {
                     beginControlFlow("%M($tag)", writeMessageExt)
-                    beginControlFlow("$instanceName.$fieldName.forEach /* scalar */")
-                    addCode(listType.repeatedType.safeWriteMethodNoTag("it", null, true))
+                    beginControlFlow("$instanceName.$fieldName.forEach")
+                    addCode(listType.repeatedType.safeWriteMethodNoTag("it", true))
                     addStatement("")
                     endControlFlow() // forEach
                     endControlFlow() // writeMessage {}
@@ -44,13 +43,12 @@ fun FunSpec.Builder.encodeListType(
         }
 
         is ReferenceType -> {
-            beginControlFlow("$instanceName.$fieldName.forEach /* ref */")
+            beginControlFlow("$instanceName.$fieldName.forEach")
             encodeReferenceType(
                 fieldName = "it",
                 type = listType.repeatedType,
                 tag = tag,
                 annotatedCodec = null,
-                nullabilitySubField = null,
                 forceEncodeDefault = true,
             )
             endControlFlow()
@@ -62,22 +60,14 @@ fun FunSpec.Builder.encodeListType(
     }
 
     if (listType.isNullable) {
-        if (nullabilitySubField != null) {
-            encodeNullability(nullabilitySubField, isNull = false)
-        }
         endControlFlow() // if
-        if (nullabilitySubField != null) {
-            beginControlFlow("else")
-            encodeNullability(nullabilitySubField, isNull = true)
-            endControlFlow() // else
-        }
     }
 }
 
 fun FunSpec.Builder.decodeListTypeVariableDefinition(
     fieldName: String,
     listType: ListType,
-    nullabilitySubField: NullabilitySubField?
+    nullabilitySubField: NullabilitySubField?,
 ) {
     val typeName = StringBuilder().appendKotlinDefinition(listType)
     addStatement("val ${fieldName}: Mutable${typeName.removeSuffix("?")} = mutableListOf()")

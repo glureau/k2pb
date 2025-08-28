@@ -43,7 +43,7 @@ internal fun FieldType.useEnumAsKey(): Boolean = this is ReferenceType && this.i
 
 private fun FieldType.write(name: String, tag: Int): CodeBlock =
     when (this) {
-        is ScalarFieldType -> safeWriteMethod(name, tag, null, true)
+        is ScalarFieldType -> safeWriteMethod(name, tag, true)
         is ReferenceType -> CodeBlock.of(
             "writeMessage(%L) { with(protoCodec) { encode(%L, %T::class) } }\n",
             tag,

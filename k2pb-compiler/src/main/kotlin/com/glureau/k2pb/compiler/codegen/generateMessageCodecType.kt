@@ -17,10 +17,10 @@ fun FileSpec.Builder.generateMessageCodecType(messageNode: MessageNode) = genera
                 generatePolymorphicCodecEncode(messageNode, instanceName, protoCodecName)
 
             messageNode.isInlineClass ->
-                generateInlineCodecEncode(messageNode, instanceName, protoCodecName)
+                generateInlineCodecEncode(messageNode, instanceName)
 
             else ->
-                generateDataClassCodecEncode(messageNode, instanceName, protoCodecName)
+                generateDataClassCodecEncode(messageNode, instanceName)
         }
     },
     decodeContent = { instanceName: String, protoCodecName: String ->

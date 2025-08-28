@@ -7,7 +7,8 @@ import kotlin.reflect.KClass
 public annotation class ProtoField(
     val name: String = "",
     val number: Int = -1,
-    val nullabilityMigration: NullableMigration = NullableMigration.DEFAULT,
+    val nullabilityMigration: NullabilityMigration = NullabilityMigration.DEFAULT,
+    val nullabilityNumber: Int = -1,
     val converter: KClass<out CustomConverter<*, *>> = CustomConverter::class,
 )
 
@@ -33,7 +34,7 @@ public annotation class ProtoField(
  * So because in both cases, the previously encoded ByteArray is strictly equivalent, but as a developer we have
  * different expectations, based on a code history which is not available, we need to specify the behavior explicitly.
  */
-public enum class NullableMigration {
+public enum class NullabilityMigration {
     /**
      * To be used when adding a new nullable field.
      */

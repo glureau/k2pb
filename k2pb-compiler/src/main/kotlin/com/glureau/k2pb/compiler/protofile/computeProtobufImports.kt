@@ -3,7 +3,6 @@ package com.glureau.k2pb.compiler.protofile
 import com.glureau.k2pb.compiler.ImportResolver
 import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
-import com.glureau.k2pb.compiler.declaredReferences
 import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.struct.EnumNode
 import com.glureau.k2pb.compiler.struct.FieldInterface
@@ -94,22 +93,22 @@ fun computeDeprecatedProtobufImports(nodes: List<Node>, importResolver: ImportRe
     Logger.warn("computeDeprecatedProtobufImports : $selfRef")
 
     return nodes.flatMap { it.allNodes() }
-        .flatMap {
-            it.declaredReferences
-            when (it) {
-                is MessageNode -> it.fields.flatMap {
-                    when (it) {
-                        is OneOfField -> it.deprecatedFields
-                        else -> emptyList()
+        .flatMap { node ->
+            when (node) {
+                is MessageNode ->
+                    node.deprecatedFields + node.fields.flatMap {
+                        when (it) {
+                            is OneOfField -> it.deprecatedFields
+                            else -> emptyList()
+                        }
                     }
-                }
 
                 is EnumNode -> emptyList()
                 is ObjectNode -> emptyList()
             }
         }
         .filter { it.publishedInProto }
-        .map { importResolver.resolve(it.protoName) } -
-            selfRef.map { importResolver.resolve(it) }
+        .map { importResolver.resolve(it.protoType) } -
+            selfRef.map { importResolver.resolve(it) }.toSet()
 
 }

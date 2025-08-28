@@ -17,10 +17,28 @@ public interface DelegateProtoCodec {
     public fun <T : Any> ProtobufReader.decode(instanceClass: KClass<T>): T?
 }
 
-public interface CustomConverter<Data : Any?, Output : Any?> {
-    public fun encode(value: Data): Output
-    public fun decode(data: Output): Data?
+public interface DefaultCodec {
+    public fun encode(instance: Any?, instanceClass: KClass<*>): ByteArray
+    public fun <T : Any> decode(byteArray: ByteArray, instanceClass: KClass<T>): T?
 }
 
-public interface NullableStringConverter<T : Any> : CustomConverter<T, String?>
+public interface CustomConverter<Data : Any?, Output : Any?> {
+    public fun encode(value: Data, defaultCodec: DefaultCodec): Output
+    public fun decode(data: Output, defaultCodec: DefaultCodec): Data?
+}
+
+public interface NullableStringConverter<T : Any> : CustomConverter<T, String?> {
+    override fun encode(value: T, defaultCodec: DefaultCodec): String? {
+        return encode(value)
+    }
+
+    public fun encode(value: T): String?
+
+    override fun decode(data: String?, defaultCodec: DefaultCodec): T? {
+        return if (data == null) null else decode(data)
+    }
+
+    public fun decode(data: String?): T?
+}
+
 public interface NullableByteArrayConverter<T : Any> : CustomConverter<T, ByteArray?>

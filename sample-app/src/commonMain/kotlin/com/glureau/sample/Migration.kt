@@ -1,6 +1,8 @@
 package com.glureau.sample
 
-import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.DeprecatedField
+import com.glureau.k2pb.annotation.DeprecatedNullabilityField
+import com.glureau.k2pb.annotation.NullabilityMigration
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.sample.lib.AnEnum
@@ -8,26 +10,26 @@ import com.glureau.sample.lib.AnEnum
 
 @ProtoMessage
 data class NullableEnumHolderUnspecifiedNull(
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val enum: AnEnum?
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val enum: AnEnum?,
 )
 
 @ProtoMessage
 data class NullableEnumHolderUnspecifiedDefault(
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val enum: AnEnum?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val enum: AnEnum?,
 )
 
 @ProtoMessage
 data class NullableNativeTypeEventUnspecifiedNull(
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val integer: Int?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val long: Long?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val float: Float?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val double: Double?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val string: String?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val short: Short?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val char: Char?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val boolean: Boolean?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val byte: Byte?,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val byteArray: ByteArray?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val integer: Int?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val long: Long?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val float: Float?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val double: Double?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val string: String?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val short: Short?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val char: Char?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val boolean: Boolean?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val byte: Byte?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val byteArray: ByteArray?,
 ) : EventInterface {
 
     // ByteArray requires to generate equals & hashcode, as data class doesn't compare ByteArray content
@@ -69,16 +71,16 @@ data class NullableNativeTypeEventUnspecifiedNull(
 
 @ProtoMessage
 data class NullableNativeTypeEventUnspecifiedDefault(
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val integer: Int?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val long: Long?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val float: Float?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val double: Double?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val string: String?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val short: Short?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val char: Char?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val boolean: Boolean?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byte: Byte?,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byteArray: ByteArray?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val integer: Int?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val long: Long?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val float: Float?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val double: Double?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val string: String?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val short: Short?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val char: Char?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val boolean: Boolean?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val byte: Byte?,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val byteArray: ByteArray?,
 ) : EventInterface {
 
     // ByteArray requires to generate equals & hashcode, as data class doesn't compare ByteArray content
@@ -119,16 +121,16 @@ data class NullableNativeTypeEventUnspecifiedDefault(
 
 @ProtoMessage
 data class NativeTypeEventUnspecifiedDefault(
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val integer: Int,
-    @ProtoField(nullabilityMigration = NullableMigration.NULL) val long: Long,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val float: Float,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val double: Double,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val string: String,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val short: Short,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val char: Char,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val boolean: Boolean,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byte: Byte,
-    @ProtoField(nullabilityMigration = NullableMigration.DEFAULT) val byteArray: ByteArray,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val integer: Int,
+    @ProtoField(nullabilityMigration = NullabilityMigration.NULL) val long: Long,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val float: Float,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val double: Double,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val string: String,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val short: Short,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val char: Char,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val boolean: Boolean,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val byte: Byte,
+    @ProtoField(nullabilityMigration = NullabilityMigration.DEFAULT) val byteArray: ByteArray,
 ) : EventInterface {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -164,3 +166,79 @@ data class NativeTypeEventUnspecifiedDefault(
         return result
     }
 }
+
+@ProtoMessage
+data class OptionalToRequiredEnumStart(
+    val enum: AnEnum?,
+    val b: String,
+)
+
+@ProtoMessage(
+    deprecatedFields = [
+        DeprecatedField(
+            protoName = "anotherField",
+            protoNumber = 5,
+            deprecationReason = "Field 'enum' has been made required",
+            publishedInProto = false
+        ),
+    ],
+    deprecatedNullabilityFields = [
+        DeprecatedNullabilityField(
+            protoName = "enum",
+            protoNumber = 2,
+            deprecationReason = "Field 'enum' has been made required",
+            publishedInProto = true
+        ),
+    ]
+)
+data class OptionalToRequiredEnumEnd(
+    val enum: AnEnum,
+    val b: String,
+)
+
+@ProtoMessage
+data class OptionalToRequiredStart(
+    val item: CommonClass?,
+    val b: String,
+)
+
+@ProtoMessage(
+    deprecatedFields = [
+        DeprecatedField(
+            protoName = "anotherField",
+            protoNumber = 5,
+            deprecationReason = "Field 'enum' has been made required",
+            publishedInProto = false
+        ),
+    ],
+)
+data class OptionalToRequiredEnd(
+    // Decoding a null value will throw an exception.
+    val item: CommonClass,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalEnumStart(
+    val enum: AnEnum,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalEnumEnd(
+    @ProtoField(nullabilityNumber = 3)
+    val enum: AnEnum?,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalStart(
+    val item: CommonClass,
+    val b: String,
+)
+
+@ProtoMessage
+data class RequiredToOptionalEnd(
+    val item: CommonClass?,
+    val b: String,
+)

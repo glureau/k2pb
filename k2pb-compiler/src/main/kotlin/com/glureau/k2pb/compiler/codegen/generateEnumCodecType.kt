@@ -10,7 +10,7 @@ fun FileSpec.Builder.generateEnumCodecType(enumNode: EnumNode) = generateCodecTy
     node = enumNode,
     encodeContent = { instanceName: String, protoCodecName: String ->
         addStatement("if ($instanceName == null) return")
-        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("$instanceName.ordinal", null, false))
+        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("$instanceName.ordinal", false))
     },
     decodeContent = { instanceName: String, protoCodecName: String ->
         addStatement(

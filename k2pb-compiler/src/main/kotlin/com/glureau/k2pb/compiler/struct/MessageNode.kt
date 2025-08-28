@@ -18,10 +18,10 @@ data class MessageNode(
     val superTypes: List<ClassName>,
     val comment: String?,
     val fields: List<FieldInterface>,
+    val deprecatedFields: List<IDeprecatedField>,
     override val originalFile: KSFile?,
     val sealedSubClasses: List<ClassName>,
 ) : Node() {
-    val numberManager = NumberManager()
 
     // If the generation is not explicitly requested, polymorphic unsealed classes are skipped,
     // as they are generated in the final module (via an explicit annotation).
@@ -29,17 +29,6 @@ data class MessageNode(
         get() = explicitGenerationRequested ||
                 !isPolymorphic ||
                 isSealed
-    /*
-        val dependencies: List<KSFile>
-            get() {
-                val result = mutableListOf<KSFile>()
-                originalFile?.let { result.add(it) }
-                nestedNodes.forEach { node ->
-                    node.originalFile?.let { result.add(it) }
-                }
-                return result
-            }
-    */
 }
 
 fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))

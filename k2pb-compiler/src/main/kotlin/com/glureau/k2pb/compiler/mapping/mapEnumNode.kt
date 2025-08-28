@@ -7,7 +7,8 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 
 fun KSClassDeclaration.mapEnumNode(): EnumNode {
-    val numberManager = NumberManager(0)
+    val deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() }
+    val numberManager = NumberManager(0, deprecatedFields.map { it.protoNumber })
     val entries = declarations.toList()
         .filterIsInstance<KSClassDeclaration>()
         .filter { it.classKind == ClassKind.ENUM_ENTRY }

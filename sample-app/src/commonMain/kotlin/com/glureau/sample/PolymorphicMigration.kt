@@ -3,21 +3,26 @@ package com.glureau.sample
 import com.glureau.k2pb.DelegateProtoCodec
 import com.glureau.k2pb.ProtoDecoder
 import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.annotation.DeprecatedField
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoPolymorphism
-import com.glureau.sample.PolymorphicMigration.*
+import com.glureau.sample.PolymorphicMigration.Five
+import com.glureau.sample.PolymorphicMigration.One
+import com.glureau.sample.PolymorphicMigration.Seven
+import com.glureau.sample.PolymorphicMigration.SixToSevenMigrationDecoder
+import com.glureau.sample.PolymorphicMigration.Two
 
 @ProtoPolymorphism(
     parent = PolymorphicMigration::class,
     name = "PolymorphicMigration",
     deprecateOneOf = [
-        ProtoPolymorphism.Deprecated(
+        DeprecatedField(
             protoName = "Three",
             protoNumber = 3,
             deprecationReason = "This has been removed in 2.1.0 with the blipbloup feature",
             publishedInProto = false,
         ),
-        ProtoPolymorphism.Deprecated(
+        DeprecatedField(
             protoName = "PolymorphicMigration.Six",
             protoNumber = 6,
             deprecationReason = "Will be removed soon, should be migrated to Seven",

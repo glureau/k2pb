@@ -1,13 +1,13 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.NullabilityMigration
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.FunSpec
 
 data class NullabilitySubField(
     val fieldName: String,
     val protoNumber: Int,
-    val nullableMigration: NullableMigration,
+    val nullabilityMigration: NullabilityMigration,
 )
 
 data class TypedField(
@@ -17,7 +17,7 @@ data class TypedField(
     override val protoNumber: Int,
     private val annotatedName: String?,
     val annotatedConverter: KSType? = null,
-    val annotatedNullableMigration: NullableMigration?,
+    val annotatedNullabilityMigration: NullabilityMigration?,
     val nullabilitySubField: NullabilitySubField?,
 ) : FieldInterface {
     val resolvedName = annotatedName ?: name
@@ -26,14 +26,13 @@ data class TypedField(
 fun FunSpec.Builder.encodeTypedField(instanceName: String, field: TypedField) {
     val tag = field.protoNumber
     when (field.type) {
-        is ListType -> encodeListType(instanceName, field.name, field.type, tag, field.nullabilitySubField)
+        is ListType -> encodeListType(instanceName, field.name, field.type, tag)
         is MapType -> encodeMapType(instanceName, field.name, field.type, tag)
         is ReferenceType -> encodeReferenceType(
             "$instanceName.${field.name}",
             field.type,
             tag,
-            field.annotatedConverter,
-            field.nullabilitySubField
+            field.annotatedConverter
         )
 
         is ScalarFieldType -> encodeScalarFieldType(

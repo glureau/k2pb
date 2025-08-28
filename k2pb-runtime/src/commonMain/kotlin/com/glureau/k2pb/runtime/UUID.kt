@@ -2,6 +2,7 @@
 
 package com.glureau.k2pb.runtime
 
+import com.glureau.k2pb.DefaultCodec
 import com.glureau.k2pb.NullableByteArrayConverter
 import com.glureau.k2pb.NullableStringConverter
 import kotlin.uuid.ExperimentalUuidApi
@@ -11,8 +12,11 @@ import kotlin.uuid.Uuid
  * Optimized converter for [Uuid] to/from [ByteArray].
  */
 public class UuidBytesConverter : NullableByteArrayConverter<Uuid> {
-    override fun encode(value: Uuid): ByteArray? = value.toByteArray()
-    override fun decode(data: ByteArray?): Uuid? = data?.let { Uuid.fromByteArray(it) }
+    override fun encode(value: Uuid, defaultCodec: DefaultCodec): ByteArray? =
+        value.toByteArray()
+
+    override fun decode(data: ByteArray?, defaultCodec: DefaultCodec): Uuid? =
+        data?.let { Uuid.fromByteArray(it) }
 }
 
 /**

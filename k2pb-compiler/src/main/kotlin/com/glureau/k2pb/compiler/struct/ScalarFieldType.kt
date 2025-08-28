@@ -2,6 +2,7 @@ package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
+import com.glureau.k2pb.runtime.DefaultCodecImpl
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -20,12 +21,12 @@ data class ScalarFieldType(
     val readMethodNoTag: () -> CodeBlock,
     override val isNullable: Boolean = false,
 ) : FieldType {
-    val safeWriteMethod: (fieldName: String, tag: Int, nullableTag: Int?, forceEncodeDefault: Boolean) -> CodeBlock =
-        { f, t, nt, fed -> safeWrite(f, nt, fed) { writeMethod(f, t) } }
-    val safeWriteMethodNoTag: (fieldName: String, nullableTag: Int?, forceEncodeDefault: Boolean) -> CodeBlock =
-        { f, nt, fed -> safeWrite(f, nt, fed) { writeMethodNoTag(f) } }
+    val safeWriteMethod: (fieldName: String, tag: Int, forceEncodeDefault: Boolean) -> CodeBlock =
+        { f, t, fed -> safeWrite(f, fed) { writeMethod(f, t) } }
+    val safeWriteMethodNoTag: (fieldName: String, forceEncodeDefault: Boolean) -> CodeBlock =
+        { f, fed -> safeWrite(f, fed) { writeMethodNoTag(f) } }
 
-    private fun safeWrite(fieldName: String, nullableTag: Int?, forceEncodeDefault: Boolean, method: () -> CodeBlock) =
+    private fun safeWrite(fieldName: String, forceEncodeDefault: Boolean, method: () -> CodeBlock) =
         CodeBlock.builder()
             .also { builder -> if (isNullable) builder.beginControlFlow("if ($fieldName != null)") }
             .also { if (!forceEncodeDefault) it.beginControlFlow("if (${shouldEncodeDefault(fieldName)})") }
@@ -38,15 +39,7 @@ data class ScalarFieldType(
             }
             .apply {
                 if (isNullable) {
-                    if (nullableTag != null) {
-                        encodeScalarNullability(nullableTag, isNull = false)
-                        endControlFlow()
-                        beginControlFlow("else")
-                        encodeScalarNullability(nullableTag, isNull = true)
-                        endControlFlow()
-                    } else {
-                        endControlFlow()
-                    }
+                    endControlFlow()
                 }
             }
             .build()
@@ -189,16 +182,17 @@ fun FunSpec.Builder.encodeScalarFieldType(
     fieldType: ScalarFieldType,
     tag: Int,
     annotatedCodec: KSType?,
-    nullabilitySubField: NullabilitySubField?
+    nullabilitySubField: NullabilitySubField?,
 ) {
     (annotatedCodec?.let { s ->
         val encodedTmpName = "${fieldName.replace(".", "_")}Encoded"
         addStatement(
-            "val $encodedTmpName = %T().encode($instanceName.${fieldName})",
-            s.toClassName()
+            "val $encodedTmpName = %T().encode($instanceName.${fieldName}, %T(protoCodec))",
+            s.toClassName(),
+            DefaultCodecImpl::class.asClassName()
         )
-        addCode(fieldType.safeWriteMethod(encodedTmpName, tag, nullabilitySubField?.protoNumber, false))
-    } ?: addCode(fieldType.safeWriteMethod("$instanceName.${fieldName}", tag, nullabilitySubField?.protoNumber, false)))
+        addCode(fieldType.safeWriteMethod(encodedTmpName, tag, false))
+    } ?: addCode(fieldType.safeWriteMethod("$instanceName.${fieldName}", tag, false)))
         .also { addStatement("") }
 }
 
@@ -206,7 +200,7 @@ fun FunSpec.Builder.decodeScalarTypeVariableDefinition(
     fieldName: String,
     type: ScalarFieldType,
     annotatedCodec: KSType?,
-    nullabilitySubField: NullabilitySubField?
+    nullabilitySubField: NullabilitySubField?,
 ) {
     annotatedCodec.customConverterType()?.let { customCodecType ->
         // TODO: String should be derived from customCodecType
