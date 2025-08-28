@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.struct
 
 import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.NullabilityMigration
 import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
 import com.glureau.k2pb.compiler.writeProtobufFile
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -96,9 +96,9 @@ fun FunSpec.Builder.buildNullable(
 ): String {
     return """when (${nullabilitySubField.fieldName}) {
         |  $nullabilityClass.UNKNOWN -> ${
-        when (nullabilitySubField.nullableMigration) {
-            NullableMigration.NULL -> "null"
-            NullableMigration.DEFAULT -> nameOrDefault
+        when (nullabilitySubField.nullabilityMigration) {
+            NullabilityMigration.NULL -> "null"
+            NullabilityMigration.DEFAULT -> nameOrDefault
         }
     }
         |  $nullabilityClass.NULL -> null

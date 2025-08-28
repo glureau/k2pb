@@ -194,10 +194,6 @@ Current known limitations:
 - Support reserved fields (dedicated annotation? Real usage?)
 - Support upgrading proto files (checking that the newly generated files are compatible with the current ones)
 
-### Development Notes
-
-- Avoid committing `java_pid*.hprof` files to the repository. These heap dump files are generated when Java applications crash or when heap dumps are manually triggered, and they can be very large.
-
 ## Testing
 
 Tests are located in the 2 samples modules. It's asserting that protobuf files are stable.

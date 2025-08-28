@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.CustomConverter
-import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.NullabilityMigration
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.annotation.ProtoPolymorphism
@@ -32,9 +32,9 @@ fun KSAnnotated.customConverter(): KSType? = protoFieldAnnotation()
     ?.getArg<KSType?>(ProtoField::converter)
     ?.takeIf { it.toClassName() != CustomConverter::class.asClassName() }
 
-fun KSAnnotated.nullabilityMigration(): NullableMigration? = protoFieldAnnotation()
+fun KSAnnotated.nullabilityMigration(): NullabilityMigration? = protoFieldAnnotation()
     ?.getArg<KSType?>(ProtoField::nullabilityMigration)
-    ?.let { NullableMigration.valueOf(it.declaration.simpleName.getShortName()) }
+    ?.let { NullabilityMigration.valueOf(it.declaration.simpleName.getShortName()) }
 
 fun KSAnnotated.nullabilityNumber(): Int? = protoFieldAnnotation()
     ?.getArg<Int?>(ProtoField::nullabilityNumber)

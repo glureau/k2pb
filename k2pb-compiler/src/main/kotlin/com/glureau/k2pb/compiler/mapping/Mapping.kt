@@ -1,7 +1,7 @@
 package com.glureau.k2pb.compiler.mapping
 
 import com.glureau.k2pb.NullableStringConverter
-import com.glureau.k2pb.annotation.NullableMigration
+import com.glureau.k2pb.annotation.NullabilityMigration
 import com.glureau.k2pb.annotation.ProtoField
 import com.glureau.k2pb.annotation.ProtoMessage
 import com.glureau.k2pb.compiler.Logger
@@ -253,7 +253,7 @@ private fun TypedField.withNullabilitySubFieldIfNeeded(
             nullabilitySubField = NullabilitySubField(
                 fieldName = nullFieldName,
                 protoNumber = numberManager.resolve(nullFieldName, annotatedNullabilityNumber),
-                nullableMigration = annotatedNullabilityMigration ?: NullableMigration.DEFAULT,
+                nullabilityMigration = annotatedNullabilityMigration ?: NullabilityMigration.DEFAULT,
             )
         )
     } else {
