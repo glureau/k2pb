@@ -70,7 +70,6 @@ fun FunSpec.Builder.addNullabilityStatement(nullabilitySubField: NullabilitySubF
 }
 
 fun FunSpec.Builder.decodeNullability(nullabilitySubField: NullabilitySubField) {
-    //decodeScalarType(nullabilitySubField.fieldName, ScalarFieldType.Boolean, null)
     addStatement(
         "${nullabilitySubField.fieldName} = " +
                 "%T.entries.getOrElse(${ScalarFieldType.Int.readMethodNoTag()}) { %T.UNKNOWN }",

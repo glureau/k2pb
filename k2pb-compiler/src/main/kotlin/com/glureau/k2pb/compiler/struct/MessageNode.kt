@@ -29,17 +29,6 @@ data class MessageNode(
         get() = explicitGenerationRequested ||
                 !isPolymorphic ||
                 isSealed
-    /*
-        val dependencies: List<KSFile>
-            get() {
-                val result = mutableListOf<KSFile>()
-                originalFile?.let { result.add(it) }
-                nestedNodes.forEach { node ->
-                    node.originalFile?.let { result.add(it) }
-                }
-                return result
-            }
-    */
 }
 
 fun Node.asClassName(): ClassName = ClassName(packageName, name.split("."))

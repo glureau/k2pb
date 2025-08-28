@@ -241,7 +241,6 @@ data class RequiredToOptionalStart(
 
 @ProtoMessage
 data class RequiredToOptionalEnd(
-    @ProtoField(nullabilityNumber = 3)
     val item: CommonClass?,
     val b: String,
 )

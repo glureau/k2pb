@@ -9,10 +9,6 @@ object TypeResolver {
 
     fun record(reference: KSClassDeclaration) {
         qualifiedNameToProtobufName[reference.qualifiedName!!.asString()] =
-            /*reference.serialNameOrNull?.let { sn ->
-                //compileOptions.protoPackageName?.let { packageName -> "$packageName.$sn" } ?: sn
-                sn
-            } ?: */
             reference.simpleName.asString()
     }
 

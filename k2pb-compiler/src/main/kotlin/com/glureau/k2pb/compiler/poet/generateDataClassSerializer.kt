@@ -114,43 +114,39 @@ fun FunSpec.Builder.generateDataClassCodecDecode(
 
     beginControlFlow("while (!eof)")
     beginControlFlow("when (val tag = readTag())")
-    messageNode.fields.forEach { f ->
-        beginControlFlow("${f.protoNumber} ->")
-        decodeField(f)
-        endControlFlow()
-        if (f is TypedField && f.nullabilitySubField != null) {
-            beginControlFlow("${f.nullabilitySubField.protoNumber} ->")
-            decodeNullability(f.nullabilitySubField)
+
+    sortFields(
+        location = messageNode.name,
+        activeFields = messageNode.fields,
+        deprecatedFields = messageNode.deprecatedFields,
+        onActiveField = { f ->
+            beginControlFlow("${f.protoNumber} ->")
+            decodeField(f)
             endControlFlow()
-        }
-    }
-    if (messageNode.deprecatedFields.isNotEmpty()) {
-        addStatement("")
-        addStatement("// ---------- Deprecated fields ----------")
-        addStatement("")
-        messageNode.deprecatedFields.sortedBy { it.protoNumber }.forEach { f ->
+        },
+        onDeprecatedField = { f ->
             beginControlFlow("${f.protoNumber} ->")
             addComment("Deprecated field ${f.protoName}, need to be consumed but value is ignored.")
             when (f) {
                 is DeprecatedField -> {
                     addComment("Any ignored message can be interpreted as a byte array")
-                    // TODO: deprecation still need to consume fully the message.
-                    //  problem here, the type is unknown, so we cannot consume it properly.
-                    //  if it's a scalar type
-                    // addCode(ScalarFieldType.ByteArray.readMethodNoTag())
                 }
 
                 is DeprecatedNullabilityField -> {
                     addComment("Nullability field are encoded/decoded as int")
-                    // addCode(ScalarFieldType.Int.readMethodNoTag())
-                    //addStatement("")// new line (code readability)
                 }
             }
             addStatement("skipElement()")// new line (code readability)
 
             endControlFlow()
-        }
-    }
+        },
+        onActiveNullabilityField = { f, t ->
+            beginControlFlow("${f.protoNumber} ->")
+            decodeNullability(f)
+            endControlFlow()
+        },
+        onUnusedProtoNumber = {},
+    )
 
     beginControlFlow("else ->")
     //addStatement("pushBackTag()") // ???
@@ -173,23 +169,23 @@ fun FunSpec.Builder.generateDataClassCodecDecode(
                 val str = if ((it.type is ReferenceType) && it.type.isNullable == false) {
                     when {
                         it.type.inlineOf?.isNullable == true -> {
-                            "${it.name} ?: ${it.type.className}(null), /* C */"
+                            "${it.name} ?: ${it.type.className}(null),"
                         }
 
                         it.type.isEnum -> {
-                            "${it.name} ?: ${it.type.enumFirstEntry}, /* EE */"
+                            "${it.name} ?: ${it.type.enumFirstEntry},"
                         }
 
                         (it.type.inlineOf is ReferenceType) && it.type.inlineOf.isEnum -> {
-                            "${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}), /* ED */"
+                            "${it.name} ?: ${it.type.className}(${it.type.inlineOf.enumFirstEntry}),"
                         }
 
                         (it.type.inlineOf is ScalarFieldType) -> {
-                            "${it.name} ?: ${it.type.className}(${it.type.inlineOf.defaultValue}), /* E */"
+                            "${it.name} ?: ${it.type.className}(${it.type.inlineOf.defaultValue}),"
                         }
 
                         else -> {
-                            "requireNotNull(${it.name}), /* D */"
+                            "requireNotNull(${it.name}),"
                         }
                     }
                 } else {
@@ -213,7 +209,7 @@ fun FunSpec.Builder.generateDataClassCodecDecode(
                             nameOrDefault = nameOrDefault,
                         ) + ","
                     } else {
-                        "${it.nameOrDefault()}, /* EKL */"
+                        "${it.nameOrDefault()},"
                     }
                 }
                 addStatement("  ${it.name} = " + str)

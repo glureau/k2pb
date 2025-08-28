@@ -60,17 +60,6 @@ fun FunSpec.Builder.encodeReferenceType(
             ?: error("Not supported yet")
 
         if (checkNullability) {
-            /*
-            if (nullabilitySubField != null) {
-                encodeNullability(nullabilitySubField, isNull = false)
-            }
-            endControlFlow()
-            if (nullabilitySubField != null) {
-                beginControlFlow("else")
-                encodeNullability(nullabilitySubField, isNull = true)
-                endControlFlow()
-            }
-            */
             endControlFlow()
         }
     } ?: (type.inlineOf)?.let { inlinedType: FieldType ->
@@ -93,7 +82,7 @@ fun FunSpec.Builder.encodeReferenceType(
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoCodec)")
-        addStatement("encode(${fieldName}, %T::class) /* FF */", type.className)
+        addStatement("encode(${fieldName}, %T::class)", type.className)
         endControlFlow()
 
         if (!forceEncodeDefault && condition.isNotEmpty()) {

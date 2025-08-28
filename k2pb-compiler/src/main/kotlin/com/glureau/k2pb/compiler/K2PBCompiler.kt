@@ -133,7 +133,6 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             var done = true
             val unknownReferences = protobufAggregator.unknownReferences()
             unknownReferences
-                //.filter { it != nullabilityQualifiedName }
                 .forEach {
                     val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
                     if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {

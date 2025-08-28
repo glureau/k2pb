@@ -67,18 +67,6 @@ fun FunSpec.Builder.generateInlineCodecDecode(
     if (!inlinedField.type.isNullable) {
         addCode(")")
     }
-    /*
-
-    if (inlinedField.type is ScalarFieldType) {
-        if (inlinedField.type.isNullable) {
-            addCode("${inlinedField.name} = ${inlinedField.type.readMethodNoTag()} /* U1 */")
-        } else {
-            addCode("${inlinedField.name} = requireNotNull(${inlinedField.type.readMethodNoTag()}) /* U2 */")
-        }
-    } else if (inlinedField.type is ReferenceType) {
-        addCode("${inlinedField.name} = ${localVar ?: "ooo"} /* U */")
-    }
-     */
     addCode(")")
 
     return this

@@ -178,7 +178,6 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                         isEnum = prop.type.resolve().declaration.modifiers.contains(Modifier.ENUM),
                     ),
                     comment = prop.docString,
-                    //annotatedNumber = annotatedNumber,
                     annotatedConverter = annotatedConverter,
                     annotatedNullabilityMigration = annotatedNullabilityMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
@@ -197,7 +196,11 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
                     annotatedNullabilityMigration = annotatedNullabilityMigration,
                     protoNumber = numberManager.resolve(propName, annotatedNumber),
                     nullabilitySubField = null,
-                ).withNullabilitySubFieldIfNeeded(numberManager, annotatedNullabilityNumber)
+                ).withNullabilitySubFieldIfNeeded(
+                    numberManager = numberManager,
+                    annotatedNullabilityNumber = annotatedNullabilityNumber,
+                    location = this.qualifiedName!!.asString()
+                )
             }
         }
     }
@@ -242,6 +245,7 @@ fun nullabilityNameForField(fieldName: String): String =
 private fun TypedField.withNullabilitySubFieldIfNeeded(
     numberManager: NumberManager,
     annotatedNullabilityNumber: Int?,
+    location: String,
 ): TypedField {
     val nullFieldName = nullabilityNameForField(name)
     return if (useNullabilitySubField()) {
@@ -254,9 +258,9 @@ private fun TypedField.withNullabilitySubFieldIfNeeded(
         )
     } else {
         if (annotatedNullabilityNumber != null) {
-             // TODO : !!!!!
-            Logger.info(
-                "Field '$name' doesn't need a nullability sub-field," +
+            // TODO : !!!!!
+            Logger.error(
+                "Field '$location.$name' doesn't need a nullability sub-field," +
                         " but a number was specified ($annotatedNullabilityNumber). " +
                         "You can either remove the useless nullabilityNumber param, or use",
             )
