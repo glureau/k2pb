@@ -18,7 +18,7 @@ Add the plugin (coming from the gradle plugin portal and maven central):
 ```kotlin
 plugins {
   kotlin("multiplatform")
-  id("com.glureau.k2pb") version "<!--$ GRADLE_PROPERTIES version -->0.9.17<!-- END $-->"
+  id("com.glureau.k2pb") version "<!--$ GRADLE_PROPERTIES version -->0.9.20<!-- END $-->"
 }
 ```
 

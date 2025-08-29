@@ -5,13 +5,12 @@ plugins {
 
 android {
     namespace = "com.glureau.k2pb.runtime"
-    compileSdk = 33
-    buildToolsVersion = "33.0.0"
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 33
     }
 
     compileOptions {
@@ -27,7 +26,9 @@ kotlin {
         browser()
         nodejs()
     }
-    android { publishLibraryVariants("release", "debug") }
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+    }
     jvm {
         val main by compilations.getting {
             compilerOptions.configure {
@@ -36,10 +37,13 @@ kotlin {
         }
     }
     applyDefaultHierarchyTemplate()
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
-    tvos()
-    watchos()
+    tvosArm64()
+    tvosSimulatorArm64()
+    watchosArm32()
+    watchosArm64()
     macosArm64()
     macosX64()
 
@@ -77,4 +81,4 @@ rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJ
     rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "18.13.0"
 }*/
 
-setupPublishing()
+setupPublishing2()

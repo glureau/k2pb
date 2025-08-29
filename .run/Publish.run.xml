@@ -11,7 +11,7 @@
       <option name="taskNames">
         <list>
           <option value="allTests" />
-          <option value="publish" />
+          <option value="publishToMavenCentral" />
           <option value="k2pb-gradle-plugin:publishPlugins" />
           <option value="grip" />
         </list>
