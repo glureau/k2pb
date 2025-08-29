@@ -26,9 +26,9 @@ dependencies {
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.9")
     testImplementation("junit:junit:4.13.2")
     //testImplementation(kotlin("test"))
-    testImplementation("org.junit.platform:junit-platform-runner:1.10.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-    testImplementation("com.approvaltests:approvaltests:18.4.0")
+    testImplementation("org.junit.platform:junit-platform-runner:1.13.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
+    testImplementation("com.approvaltests:approvaltests:25.0.23")
 }
 
 kotlin.sourceSets.main {
@@ -45,15 +45,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
-    withJavadocJar()
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "k2pb-compiler"
-            from(components["java"])
-        }
-    }
-}
-setupPublishing()
+setupPublishing2()
