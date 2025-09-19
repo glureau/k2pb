@@ -49,6 +49,7 @@ public fun K2PB(configure: K2PBConfig.() -> Unit = {}): K2PB {
 public class K2PBConfig internal constructor() {
     internal val codecs: MutableMap<KClass<*>, ProtoCodec<*>> = mutableMapOf()
     internal val messageNames: MutableMap<KClass<*>, String> = mutableMapOf()
+    public var onUnknownProtoNumber: ((instanceClass: KClass<*>, protoNumber: Int) -> Unit)? = null
 
     private val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
 
@@ -57,7 +58,7 @@ public class K2PBConfig internal constructor() {
     public fun registerCodec(
         targetType: KClass<*>,
         codec: ProtoCodec<*>,
-        protoMessageName: String
+        protoMessageName: String,
     ) {
         codecs[targetType] = codec
         messageNames[targetType] = protoMessageName
@@ -100,6 +101,12 @@ internal class ConfiguredProtoCodec(private val config: K2PBConfig) : DelegatePr
                 return decode(this@ConfiguredProtoCodec) as? T
             }
         } ?: throw IllegalArgumentException("Unsupported type: $instanceClass")
+    }
+
+    override fun onUnknownProtoNumber(instanceClass: KClass<*>, protoNumber: Int) {
+        config.onUnknownProtoNumber?.invoke(instanceClass, protoNumber)
+            // Default basic logging if no custom handler
+            ?: println("Unknown proto number $protoNumber for class $instanceClass" )
     }
 }
 

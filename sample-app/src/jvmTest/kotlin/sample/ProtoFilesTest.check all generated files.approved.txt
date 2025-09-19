@@ -52,6 +52,18 @@ message AbstractSubClass {
   string bar = 2;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AfterAddingField.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "AfterAddingFieldProto";
+
+message AfterAddingField {
+  string a = 1;
+  int32 b = 2;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/AnEnum.proto
 syntax = "proto3";
 
@@ -77,6 +89,17 @@ import "com/glureau/k2pb_sample/CommonClass.proto";
 
 message BarEvent {
   CommonClass common = 1;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BeforeAddingField.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "BeforeAddingFieldProto";
+
+message BeforeAddingField {
+  string a = 1;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BigDecimalHolder.proto
