@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.poet
 
+import com.glureau.k2pb.DelegateProtoCodec
 import com.glureau.k2pb.ExplicitNullability
 import com.glureau.k2pb.compiler.mapping.nullabilityNameForField
 import com.glureau.k2pb.compiler.struct.DeprecatedField
@@ -149,10 +150,9 @@ fun FunSpec.Builder.generateDataClassCodecDecode(
     )
 
     beginControlFlow("else ->")
-    //addStatement("pushBackTag()") // ???
-    // TODO: Incomplete implementation, ignoring a tag should also ignore the next data...
-    addStatement("// Ignore unknown tag??")
-    addStatement("error(\"Ignoring unknown tag: \$tag\")")
+    addStatement("// Ignore unknown tag, basic forward compatibility")
+    addStatement("$protoCodecName.${DelegateProtoCodec::onUnknownProtoNumber.name}(${messageNode.name}::class, tag)")
+    addStatement("skipElement()")
     endControlFlow()
 
     endControlFlow() // when (tag)

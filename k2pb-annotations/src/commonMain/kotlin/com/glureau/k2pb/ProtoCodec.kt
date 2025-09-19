@@ -15,6 +15,7 @@ public interface ProtoCodec<T> : ProtoEncoder<T>, ProtoDecoder<T>
 public interface DelegateProtoCodec {
     public fun ProtobufWriter.encode(instance: Any?, instanceClass: KClass<*>)
     public fun <T : Any> ProtobufReader.decode(instanceClass: KClass<T>): T?
+    public fun onUnknownProtoNumber(instanceClass: KClass<*>, protoNumber: Int)
 }
 
 public interface DefaultCodec {
