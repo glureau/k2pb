@@ -181,8 +181,7 @@ class MigrationTest : BaseEncodingTest() {
             )
             fail { "This should have failed already" }
         } catch (t: IllegalArgumentException) {
-            assertEquals("Required value was null.", t.message)
-
+            assertEquals("Field 'item' is declared as not nullable but is null", t.message)
         }
     }
 

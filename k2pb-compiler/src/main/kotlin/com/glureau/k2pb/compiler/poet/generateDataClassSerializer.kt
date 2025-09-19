@@ -185,7 +185,7 @@ fun FunSpec.Builder.generateDataClassCodecDecode(
                         }
 
                         else -> {
-                            "requireNotNull(${it.name}),"
+                            "requireNotNull(${it.name}) { \"Field·'${it.name}'·is·declared·as·not·nullable·but·is·null\" },"
                         }
                     }
                 } else {

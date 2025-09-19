@@ -105,7 +105,7 @@ fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
         }
     }
 
-    addStatement("else -> error(\"Ignoring unknown tag: \$oneOfTag\")")
+    addStatement("else -> null")
     endControlFlow()
     endControlFlow()
     endControlFlow()

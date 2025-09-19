@@ -51,9 +51,11 @@ class K2PBSerializationTest {
             stringList = listOf("a", "b", "c"),
             maybeIntegerList = listOf(4, 5, 6),
             mapStringInt = mapOf("one" to 1, "two" to 2),
-            dataClassList = listOf(com.glureau.sample.lib.DataClassFromLib(7))
+            dataClassList = listOf(com.glureau.sample.lib.DataClassFromLib(7)),
+            mapStringObject = mapOf("height" to com.glureau.sample.lib.DataClassFromLib(8)),
         )
         val serialized = serializer.encodeToByteArray<CollectionType>(collectionType)
+        println("serialized: ${serialized.joinToString(" ") { it.toHexString() }}")
         val deserialized = serializer.decodeFromByteArray<CollectionType>(serialized)
         assertEquals(collectionType, deserialized)
     }

@@ -141,6 +141,7 @@ message CollectionType {
   com.glureau.k2pb.ExplicitNullability isMaybeIntegerListNull = 4;
   map<string, int32> mapStringInt = 5;
   repeated DataClassFromLib dataClassList = 6;
+  map<string, DataClassFromLib> mapStringObject = 7;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommentedClass.proto
@@ -353,6 +354,19 @@ import "com/glureau/k2pb/ExplicitNullability.proto";
 message NullableBigDecimalValueClassHolder {
   string nullableBdValue = 1;
   com.glureau.k2pb.ExplicitNullability isNullableBdValueNull = 2;
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableCollection.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NullableCollectionProto";
+
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
+
+message NullableCollection {
+  map<string, DataClassFromLib> mapStringObject = 1;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableDataClassHolder.proto

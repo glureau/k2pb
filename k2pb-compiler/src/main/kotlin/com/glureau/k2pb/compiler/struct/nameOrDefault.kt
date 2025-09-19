@@ -11,7 +11,7 @@ fun FieldType.nameOrDefault(name: String): String {
         is ReferenceType -> when {
             isNullable && isEnum -> "$name ?: $enumFirstEntry"
             isNullable -> name
-            else -> "requireNotNull($name)"
+            else -> "requireNotNull($name) { \"Field·'$name'·is·declared·as·not·nullable·but·is·null\" }"
         }
         ScalarFieldType.Double,
         ScalarFieldType.DoubleNullable -> "$name ?: 0.0"

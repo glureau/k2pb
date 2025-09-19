@@ -9,7 +9,7 @@ import com.squareup.kotlinpoet.FunSpec
 data class MapType(
     val keyType: FieldType,
     val valueType: FieldType,
-    override val isNullable: Boolean = false
+    override val isNullable: Boolean = false,
 ) : FieldType
 
 fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
@@ -73,14 +73,28 @@ fun FunSpec.Builder.decodeMapType(fieldName: String, type: MapType) {
             )
         )
     } else {
-        addCode(type.keyType.readNoTag())
+        addCode(type.keyType.readNoTag(fieldName, "key"))
     }
     addStatement("")
 
     addStatement("readTag()") // Should be 2
     addCode("val value = ")
-    addCode(type.valueType.readNoTag())
+    addCode(type.valueType.readNoTag(fieldName, "value"))
     addStatement("")
     addStatement("${fieldName}[key] = value")
     endControlFlow()
 }
+
+private fun FieldType.readNoTag(fieldName: String, string: String): CodeBlock =
+    when (this) {
+        is ScalarFieldType -> readMethodNoTag()
+        // TODO: improve this very basic implementation that uses requireNotNul...
+        //   (only not-null maps are supported for now)
+        is ReferenceType -> CodeBlock.of(
+            "readMessage { with(protoCodec) { requireNotNull(decode(%T::class)) " +
+                    "{ \"Map·'${fieldName}'·contains·a·$string·which·is·declared·as·not·nullable·but·is·null\" } " +
+                    "} }", className
+        )
+
+        else -> TODO("Doesn't support readNoTag on $this")
+    }

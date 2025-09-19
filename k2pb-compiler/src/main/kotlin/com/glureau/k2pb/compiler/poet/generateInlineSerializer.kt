@@ -65,7 +65,7 @@ fun FunSpec.Builder.generateInlineCodecDecode(
         decodeReferenceType("oot", inlinedField.type as ReferenceType, inlinedField.annotatedConverter)
     }
     if (!inlinedField.type.isNullable) {
-        addCode(")")
+        addCode(")  { \"Field·'${inlinedField.name}'·is·declared·as·not·nullable·but·is·null\" }")
     }
     addCode(")")
 

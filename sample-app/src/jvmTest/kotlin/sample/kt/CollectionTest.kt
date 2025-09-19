@@ -47,6 +47,9 @@ class CollectionTest : BaseEncodingTest() {
                     "b" to 4,
                 ),
                 dataClassList = listOf(DataClassFromLib(33), DataClassFromLib(34)),
+                mapStringObject = mapOf(
+                    "d" to DataClassFromLib(68)
+                )
             ),
             protocInstance = CollectionTypeProto.CollectionType.newBuilder()
                 // Randomized order => preserve proto number sorting in serialization
@@ -71,6 +74,7 @@ class CollectionTest : BaseEncodingTest() {
                 .addStringList("aaa")
                 .addStringList("bbb")
                 .addStringList("ccc")
+                .putMapStringObject("d", dataClassFromLib { myInt = 68 })
                 .build()
         )
     }
@@ -87,6 +91,9 @@ class CollectionTest : BaseEncodingTest() {
                     "" to 0,
                 ),
                 dataClassList = listOf(DataClassFromLib(0)),
+                mapStringObject = mapOf(
+                    "" to DataClassFromLib(0)
+                )
             ),
             protocInstance = CollectionTypeProto.CollectionType.newBuilder()
                 .addIntegerList(0)
@@ -104,6 +111,7 @@ class CollectionTest : BaseEncodingTest() {
                         myInt = 0
                     }
                 )
+                .putMapStringObject("", dataClassFromLib { myInt = 0 })
                 .build()
         )
     }
