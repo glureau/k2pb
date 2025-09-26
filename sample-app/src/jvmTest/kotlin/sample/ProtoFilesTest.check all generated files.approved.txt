@@ -783,6 +783,20 @@ message User {
   Vehicle vehicle = 2;
 }
 
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/User2.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "User2Proto";
+
+import "com/glureau/k2pb_sample/Vehicle2.proto";
+
+message User2 {
+  string name = 1;
+  Vehicle2 vehicle = 2;
+}
+
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/UuidsHolder.proto
 syntax = "proto3";
 
@@ -843,6 +857,31 @@ message Vehicle {
     string brand = 1;
   }
   message Car {
+    string brand = 1;
+  }
+}
+
+File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/Vehicle2.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "Vehicle2Proto";
+
+// Polymorphism structure for 'Vehicle2'
+// Possible values are:
+// - 'Vehicle2.Bike2'
+// - 'Vehicle2.Car2'
+message Vehicle2 {
+  oneof vehicle2 {
+    // The protoNumber 1 is not defined, if it's not used anymore consider using deprecated annotation.
+    Vehicle2.Bike2 bike2 = 2;
+    Vehicle2.Car2 car2 = 3;
+  }
+  message Bike2 {
+    string brand = 1;
+  }
+  message Car2 {
     string brand = 1;
   }
 }

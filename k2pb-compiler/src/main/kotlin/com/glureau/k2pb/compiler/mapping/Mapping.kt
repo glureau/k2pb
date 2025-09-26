@@ -76,8 +76,13 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
         "(subclasses cannot be listed automatically)"
     }
     val sealedSubclassWithIndex: List<Pair<ClassName, Int>> =
-        // TODO : Handle proto-numbers for sealed subclasses!
-        subclasses.mapIndexed { i, c -> c.toClassName() to i + 1 }
+        sealedProtoNumbers
+            .also {
+                require(sealedProtoNumbers.map { it.second }.distinct().size == sealedProtoNumbers.size) {
+                    "Duplicate numbers in sealedProtoNumbers for ${this.qualifiedName!!.asString()}"
+                }
+            }
+            .ifEmpty { subclasses.mapIndexed { i, c -> c.toClassName() to i + 1 } }
 
     return MessageNode(
         packageName = this.packageName.asString(),
@@ -386,6 +391,21 @@ val KSClassDeclaration.deprecatedNullabilityFields: List<KSAnnotation>
     get() = protoMessageAnnotation()
         ?.getArg<List<KSAnnotation>?>(ProtoMessage::deprecatedNullabilityFields)
         .orEmpty()
+
+val KSClassDeclaration.sealedProtoNumbers: List<Pair<ClassName, Int>>
+    get() {
+        val list = protoMessageAnnotation()
+            ?.getArg<List<KSAnnotation>?>(ProtoMessage::sealedProtoNumbers)
+            .orEmpty()
+
+        val oneOf: List<Pair<ClassName, Int>> = list.map {
+            val className = it.getArg<KSType>(ProtoMessage.SealedChild::kClass).toClassName()
+            val number = it.getArg<Int>(ProtoMessage.SealedChild::number)
+            className to number
+        }
+
+        return oneOf
+    }
 
 val KSPropertyDeclaration.annotatedName: String
     get() = protoFieldAnnotation()

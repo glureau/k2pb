@@ -10,10 +10,12 @@ import com.glureau.sample.FooEvent
 import com.glureau.sample.NullableNativeTypeEvent
 import com.glureau.sample.TransientField
 import com.glureau.sample.User
+import com.glureau.sample.User2
 import com.glureau.sample.UuidBytesValueClass
 import com.glureau.sample.UuidStringValueClass
 import com.glureau.sample.UuidsHolder
 import com.glureau.sample.Vehicle
+import com.glureau.sample.Vehicle2
 import com.glureau.sample.WithNestClassA
 import com.glureau.sample.WithNestClassB
 import com.glureau.sample.lib.AnEnum
@@ -156,6 +158,35 @@ class K2PBSerializationTest {
         )
         val serializedBike = serializer.encodeToByteArray<User>(userWithBike)
         val deserializedBike = serializer.decodeFromByteArray<User>(serializedBike)
+        assertEquals(userWithBike, deserializedBike)
+    }
+
+    @Test
+    fun `test sealed polymorphic serialization with custom numbers`() {
+        val user = User2(
+            name = "John",
+            vehicle = Vehicle2.Car2("Tesla")
+        )
+        val serialized = serializer.encodeToByteArray<User2>(user)
+        println("serialized: ${serialized.joinToString("") { it.toHexString() }}")
+        val deserialized = serializer.decodeFromByteArray<User2>(serialized)
+        assertEquals(user, deserialized)
+
+        val serializedBinary = "0a044a6f686e12091a070a055465736c61" // uses the proto number "3"
+        val deserializedBinary = serializer.decodeFromByteArray<User2>(
+            serializedBinary
+                .chunked(2)
+                .map { it.toUByte(16).toByte() }
+                .toByteArray()
+        )
+        assertEquals(user, deserializedBinary)
+
+        val userWithBike = User2(
+            name = "Jane",
+            vehicle = Vehicle2.Bike2("BMW")
+        )
+        val serializedBike = serializer.encodeToByteArray<User2>(userWithBike)
+        val deserializedBike = serializer.decodeFromByteArray<User2>(serializedBike)
         assertEquals(userWithBike, deserializedBike)
     }
 }
