@@ -3,9 +3,7 @@ package sample.kt
 import com.glureau.custom.javapackage.AnEnumProto
 import com.glureau.custom.javapackage.dataClassFromLib
 import com.glureau.custom.javapackage.valueClassList
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.K2PBConstants
-import com.glureau.k2pb.K2PBConstants.ExplicitNullability.*
+import com.glureau.k2pb.K2PBConstants.ExplicitNullability.NOT_NULL
 import com.glureau.k2pb_sample.CollectionTypeProto
 import com.glureau.k2pb_sample.InlinedCollectionProto
 import com.glureau.sample.CollectionType
@@ -49,7 +47,11 @@ class CollectionTest : BaseEncodingTest() {
                 dataClassList = listOf(DataClassFromLib(33), DataClassFromLib(34)),
                 mapStringObject = mapOf(
                     "d" to DataClassFromLib(68)
-                )
+                ),
+                integerSet = setOf(100, 1, 3),
+                stringSet = setOf("zzz", "xxx", "yyy"),
+                maybeIntegerSet = setOf(39, 38),
+                dataClassSet = setOf(DataClassFromLib(37), DataClassFromLib(36)),
             ),
             protocInstance = CollectionTypeProto.CollectionType.newBuilder()
                 // Randomized order => preserve proto number sorting in serialization
@@ -75,6 +77,17 @@ class CollectionTest : BaseEncodingTest() {
                 .addStringList("bbb")
                 .addStringList("ccc")
                 .putMapStringObject("d", dataClassFromLib { myInt = 68 })
+                .addIntegerSet(100)
+                .addIntegerSet(1)
+                .addIntegerSet(3)
+                .addStringSet("zzz")
+                .addStringSet("xxx")
+                .addStringSet("yyy")
+                .addMaybeIntegerSet(39)
+                .addMaybeIntegerSet(38)
+                .setIsMaybeIntegerSetNull(NOT_NULL)
+                .addDataClassSet(dataClassFromLib { myInt = 37 })
+                .addDataClassSet(dataClassFromLib { myInt = 36 })
                 .build()
         )
     }
@@ -93,7 +106,11 @@ class CollectionTest : BaseEncodingTest() {
                 dataClassList = listOf(DataClassFromLib(0)),
                 mapStringObject = mapOf(
                     "" to DataClassFromLib(0)
-                )
+                ),
+                integerSet = setOf(0, 0, 0), // That's a Set, only 1 '0' can exist
+                stringSet = setOf("", ""), // That's a Set, only 1 "" can exist
+                maybeIntegerSet = setOf(0),
+                dataClassSet = setOf(DataClassFromLib(0)),
             ),
             protocInstance = CollectionTypeProto.CollectionType.newBuilder()
                 .addIntegerList(0)
@@ -112,6 +129,11 @@ class CollectionTest : BaseEncodingTest() {
                     }
                 )
                 .putMapStringObject("", dataClassFromLib { myInt = 0 })
+                .addIntegerSet(0)
+                .addStringSet("")
+                .addMaybeIntegerSet(0)
+                .setIsMaybeIntegerSetNull(NOT_NULL)
+                .addDataClassSet(dataClassFromLib { myInt = 0 })
                 .build()
         )
     }
@@ -135,6 +157,25 @@ class CollectionTest : BaseEncodingTest() {
                     ValueClassOfNullableEnum(AnEnum.AnEnum_B),
                 ),
                 valueClassOfNullableStringList = listOf(
+                    NullableValueClassFromLib("a"),
+                    //NullableValueClassFromLib(null),
+                    NullableValueClassFromLib(""),
+                    NullableValueClassFromLib("b"),
+                ),
+                valueClassSet = setOf(
+                    ValueClassFromLib(""),
+                    ValueClassFromLib(""),
+                ),
+                valueClassOfEnumSet = setOf(
+                    ValueClassOfEnum(AnEnum.AnEnum_A),
+                    ValueClassOfEnum(AnEnum.AnEnum_B),
+                ),
+                valueClassOfNullableEnumSet = setOf(
+                    ValueClassOfNullableEnum(AnEnum.AnEnum_A),
+                    //ValueClassOfNullableEnum(null),
+                    ValueClassOfNullableEnum(AnEnum.AnEnum_B),
+                ),
+                valueClassOfNullableStringSet = setOf(
                     NullableValueClassFromLib("a"),
                     //NullableValueClassFromLib(null),
                     NullableValueClassFromLib(""),

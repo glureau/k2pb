@@ -17,6 +17,7 @@ import com.glureau.k2pb.compiler.struct.NullabilitySubField
 import com.glureau.k2pb.compiler.struct.NumberManager
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
+import com.glureau.k2pb.compiler.struct.SetType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getDeclaredProperties
@@ -315,6 +316,13 @@ private fun mapQfnToFieldType(
         "kotlin.collections.List" -> {
             ListType(
                 repeatedType = type!!.arguments[0].type!!.toProtobufFieldType(), // TODO: List<List<Int>> is not supported
+                isNullable = type.isMarkedNullable
+            )
+        }
+
+        "kotlin.collections.Set" -> {
+            SetType(
+                repeatedType = type!!.arguments[0].type!!.toProtobufFieldType(), // TODO: Set<Set<Int>> is not supported
                 isNullable = type.isMarkedNullable
             )
         }

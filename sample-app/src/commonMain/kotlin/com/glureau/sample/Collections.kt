@@ -15,6 +15,10 @@ data class CollectionType(
     val mapStringInt: Map<String, Int>,
     val dataClassList: List<DataClassFromLib>,
     val mapStringObject: Map<String, DataClassFromLib>,
+    val integerSet: Set<Int>,
+    val stringSet: Set<String>,
+    val maybeIntegerSet: Set<Int>?,
+    val dataClassSet: Set<DataClassFromLib>,
 ) : EventInterface
 
 
@@ -24,6 +28,10 @@ data class InlinedCollection(
     val valueClassOfEnumList: List<ValueClassOfEnum>,
     val valueClassOfNullableEnumList: List<ValueClassOfNullableEnum>,
     val valueClassOfNullableStringList: List<NullableValueClassFromLib>,
+    val valueClassSet: Set<ValueClassFromLib>,
+    val valueClassOfEnumSet: Set<ValueClassOfEnum>,
+    val valueClassOfNullableEnumSet: Set<ValueClassOfNullableEnum>,
+    val valueClassOfNullableStringSet: Set<NullableValueClassFromLib>,
 ) : EventInterface
 
 
@@ -33,6 +41,10 @@ data class NullableInlinedCollection(
     val valueClassOfEnumList: List<ValueClassOfEnum?>? = null,
     val valueClassOfNullableEnumList: List<ValueClassOfNullableEnum?>? = null,
     val valueClassOfNullableStringList: List<NullableValueClassFromLib?>? = null,
+    val valueClassSet: Set<ValueClassFromLib?>? = null,
+    val valueClassOfEnumSet: Set<ValueClassOfEnum?>? = null,
+    val valueClassOfNullableEnumSet: Set<ValueClassOfNullableEnum?>? = null,
+    val valueClassOfNullableStringSet: Set<NullableValueClassFromLib?>? = null,
 ) : EventInterface
 
 @ProtoMessage

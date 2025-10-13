@@ -142,6 +142,11 @@ message CollectionType {
   map<string, int32> mapStringInt = 5;
   repeated DataClassFromLib dataClassList = 6;
   map<string, DataClassFromLib> mapStringObject = 7;
+  repeated int32 integerSet = 8;
+  repeated string stringSet = 9;
+  repeated int32 maybeIntegerSet = 10;
+  com.glureau.k2pb.ExplicitNullability isMaybeIntegerSetNull = 11;
+  repeated DataClassFromLib dataClassSet = 12;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommentedClass.proto
@@ -245,6 +250,10 @@ message InlinedCollection {
   repeated AnEnum valueClassOfEnumList = 2;
   repeated AnEnum valueClassOfNullableEnumList = 3;
   repeated string valueClassOfNullableStringList = 4;
+  repeated string valueClassSet = 5;
+  repeated AnEnum valueClassOfEnumSet = 6;
+  repeated AnEnum valueClassOfNullableEnumSet = 7;
+  repeated string valueClassOfNullableStringSet = 8;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClassesHolder.proto
@@ -431,6 +440,14 @@ message NullableInlinedCollection {
   com.glureau.k2pb.ExplicitNullability isValueClassOfNullableEnumListNull = 6;
   repeated string valueClassOfNullableStringList = 7;
   com.glureau.k2pb.ExplicitNullability isValueClassOfNullableStringListNull = 8;
+  repeated string valueClassSet = 9;
+  com.glureau.k2pb.ExplicitNullability isValueClassSetNull = 10;
+  repeated AnEnum valueClassOfEnumSet = 11;
+  com.glureau.k2pb.ExplicitNullability isValueClassOfEnumSetNull = 12;
+  repeated AnEnum valueClassOfNullableEnumSet = 13;
+  com.glureau.k2pb.ExplicitNullability isValueClassOfNullableEnumSetNull = 14;
+  repeated string valueClassOfNullableStringSet = 15;
+  com.glureau.k2pb.ExplicitNullability isValueClassOfNullableStringSetNull = 16;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableNativeTypeEvent.proto

@@ -19,6 +19,7 @@ import com.glureau.sample.Vehicle2
 import com.glureau.sample.WithNestClassA
 import com.glureau.sample.WithNestClassB
 import com.glureau.sample.lib.AnEnum
+import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.EnumHolder
 import com.glureau.sample.lib.registerSampleLibCodecs
 import com.glureau.sample.registerSampleAppCodecs
@@ -53,8 +54,12 @@ class K2PBSerializationTest {
             stringList = listOf("a", "b", "c"),
             maybeIntegerList = listOf(4, 5, 6),
             mapStringInt = mapOf("one" to 1, "two" to 2),
-            dataClassList = listOf(com.glureau.sample.lib.DataClassFromLib(7)),
-            mapStringObject = mapOf("height" to com.glureau.sample.lib.DataClassFromLib(8)),
+            dataClassList = listOf(DataClassFromLib(7)),
+            mapStringObject = mapOf("height" to DataClassFromLib(8)),
+            integerSet = setOf(9, 10, 11),
+            stringSet = setOf("d", "e", "f"),
+            maybeIntegerSet = setOf(12, 13, 14),
+            dataClassSet = setOf(DataClassFromLib(15)),
         )
         val serialized = serializer.encodeToByteArray<CollectionType>(collectionType)
         println("serialized: ${serialized.joinToString(" ") { it.toHexString() }}")

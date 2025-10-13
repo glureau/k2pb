@@ -11,6 +11,7 @@ fun StringBuilder.appendKotlinDefinition(type: FieldType): String {
         is ScalarFieldType -> type.kotlinClass.canonicalName
         is ReferenceType -> type.className.toString()
         is ListType -> appendKotlinListDefinition(type).toString()
+        is SetType -> appendKotlinSetDefinition(type).toString()
         is MapType -> appendKotlinMapDefinition(type).toString()
     }
 }
