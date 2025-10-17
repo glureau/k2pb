@@ -12,6 +12,35 @@ class K2PBGradlePlugin : Plugin<Project> {
         val k2pbExt = K2PBExtension()
         target.extensions.add("k2pb", k2pbExt)
 
+        target.dependencies.apply {
+            val pluginVersion = this@K2PBGradlePlugin.javaClass.`package`?.implementationVersion
+                ?: throw IllegalStateException(
+                    "Cannot determine K2PB plugin version. " +
+                            "Ensure 'implementationVersion' is set in the plugin's build configuration."
+                )
+
+            // TODO: This approach doesn't work nicely yet... may need the ksp() extension dependency
+            // target.logger.warn("K2PB plugin version: $pluginVersion")
+            when {
+                target.configurations.any { it.name.contains("kspCommonMainMetadata") } -> {
+                    add("kspCommonMainMetadata", "com.glureau.k2pb:k2pb-compiler:$pluginVersion")
+                    // target.logger.warn("K2PB plugin setup KMP")
+                }
+
+                target.configurations.any { it.name.contains("kspJvm") } -> {
+                    add("kspJvm", "com.glureau.k2pb:k2pb-compiler:$pluginVersion")
+                    // target.logger.warn("K2PB plugin setup JVM")
+                }
+
+                else -> {
+                    error(
+                        "Can't detect kotlin multiplatform or jvm plugins, impossible to add the ksp dependency. " +
+                                "Please report your issue on https://github.com/glureau/k2pb/issues with " +
+                                "your project configuration."
+                    )
+                }
+            }
+        }
         target.afterEvaluate {
             val kspExt = target.extensions.getByType(KspExtension::class.java)
             k2pbExt.protoPackageName?.let { protoPackageName ->

@@ -23,6 +23,16 @@ dependencies {
     implementation("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:$kspVersion")
 }
 
+tasks.named<Jar>("jar") {
+    manifest {
+        attributes(
+            "Implementation-Title" to project.name,
+            // Critical for the plugin to setup the compiler with the same version.
+            "Implementation-Version" to project.version,
+        )
+    }
+}
+
 gradlePlugin {
     website = "https://github.com/glureau/k2pb"
     vcsUrl = "https://github.com/glureau/k2pb"
