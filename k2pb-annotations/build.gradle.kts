@@ -61,16 +61,7 @@ kotlin {
             // may be related to https://youtrack.jetbrains.com/issue/KT-46636
             kotlinOptions.allWarningsAsErrors = false
         }
-    }/*
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }*/
+    }
 }
-/*
-// For when nodejs.org is down...
-rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "18.13.0"
-}*/
 
-setupPublishing2()
+setupPublishing()

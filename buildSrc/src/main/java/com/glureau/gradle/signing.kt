@@ -1,29 +1,9 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
-import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.plugins.signing.Sign
-import org.gradle.plugins.signing.SigningExtension
-import java.io.File
-import java.net.URI
 
-private fun Project.signPublicationsIfKeyPresent(publication: MavenPublication) {
-    val signingKey: String? = System.getenv("SIGN_KEY")
-    val signingKeyPassphrase: String? = System.getenv("SIGN_KEY_PASSPHRASE")
-
-    if (!signingKey.isNullOrBlank()) {
-        extensions.configure<SigningExtension>("signing") {
-            useInMemoryPgpKeys(signingKey, signingKeyPassphrase)
-            sign(publication)
-        }
-    }
-}
-
-fun Project.setupPublishing2() {
+fun Project.setupPublishing() {
     apply(plugin = "com.vanniktech.maven.publish")
     extensions.getByType(MavenPublishBaseExtension::class).apply {
         publishToMavenCentral()

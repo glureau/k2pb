@@ -47,4 +47,4 @@ java {
     withSourcesJar()
 }
 
-setupPublishing2()
+setupPublishing()
