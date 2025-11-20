@@ -206,7 +206,7 @@ option java_outer_classname = "EnumClassProto";
 enum EnumClass {
   A = 0;
   B = 1;
-  C = 2;
+  Colibri = 2;
 }
 
 File: /Users/gregorylureau/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumHolder.proto

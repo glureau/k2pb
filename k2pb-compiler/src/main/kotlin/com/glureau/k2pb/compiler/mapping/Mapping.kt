@@ -388,6 +388,9 @@ val KSClassDeclaration.annotatedNameOrSimpleName: String
     get() = protoMessageAnnotation()
         ?.getArg<String?>(ProtoMessage::name)
         ?.takeIf { it.isNotBlank() }
+        ?: protoFieldAnnotation() // For enum entries, it's technically a KSClassDeclaration but ProtoField makes sense
+            ?.getArg<String?>(ProtoField::name)
+            ?.takeIf { it.isNotBlank() }
         ?: simpleName.asString()
 
 val KSClassDeclaration.deprecatedFields: List<KSAnnotation>
