@@ -33,8 +33,8 @@ fun KSAnnotated.customConverter(): KSType? = protoFieldAnnotation()
     ?.takeIf { it.toClassName() != CustomConverter::class.asClassName() }
 
 fun KSAnnotated.nullabilityMigration(): NullabilityMigration? = protoFieldAnnotation()
-    ?.getArg<KSType?>(ProtoField::nullabilityMigration)
-    ?.let { NullabilityMigration.valueOf(it.declaration.simpleName.getShortName()) }
+    ?.getArg<KSClassDeclaration?>(ProtoField::nullabilityMigration)
+    ?.let { NullabilityMigration.valueOf(it.simpleName.getShortName()) }
 
 fun KSAnnotated.nullabilityNumber(): Int? = protoFieldAnnotation()
     ?.getArg<Int?>(ProtoField::nullabilityNumber)

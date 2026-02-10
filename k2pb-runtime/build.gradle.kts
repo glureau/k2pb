@@ -55,7 +55,7 @@ kotlin {
         }
         commonMain {
             dependencies {
-                api(project(":k2pb-annotations"))
+                api(project.dependencies.project(":k2pb-annotations"))
             }
         }
         commonTest.dependencies {
@@ -63,22 +63,9 @@ kotlin {
         }
     }
 
-    targets.all {
-        compilations.all {
-            // Cannot enable rn due to native issue (stdlib included more than once)
-            // may be related to https://youtrack.jetbrains.com/issue/KT-46636
-            kotlinOptions.allWarningsAsErrors = false
-        }
-    }/*
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }*/
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+    }
 }
-/*
-// For when nodejs.org is down...
-rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "18.13.0"
-}*/
 
 setupPublishing()

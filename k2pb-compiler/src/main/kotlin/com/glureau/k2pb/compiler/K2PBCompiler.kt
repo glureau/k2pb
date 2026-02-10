@@ -8,6 +8,7 @@ import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.emitNullabilityProto
+import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.KSPLogger
@@ -48,6 +49,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
     private val protobufAggregator = ProtobufAggregator()
     private var runDone = false
+    @OptIn(KspExperimental::class)
     override fun process(resolver: Resolver): List<KSAnnotated> {
         if (runDone) {
             return emptyList()
@@ -65,7 +67,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         resolveDependencies(resolver)
 
-        val moduleName = moduleName(resolver)
+        val moduleName = resolver.getModuleName().asString()
         ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
             environment.writeProtobufFile(
                 protobufFile.toProtoString().toByteArray(),

@@ -18,27 +18,25 @@ k2pb {
 }
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    jvm()
 
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":k2pb-runtime"))
+                implementation(project.dependencies.project(":k2pb-runtime"))
             }
         }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("org.junit.platform:junit-platform-runner:1.10.2")
-                implementation("org.junit.jupiter:junit-jupiter:5.10.2")
-                implementation("com.approvaltests:approvaltests:18.4.0")
-                implementation("com.google.protobuf:protobuf-kotlin:4.26.0")
+                implementation("org.junit.platform:junit-platform-runner:1.14.2")
+                implementation("org.junit.jupiter:junit-jupiter:6.0.2")
+                implementation("com.approvaltests:approvaltests:26.7.1")
+                implementation("com.google.protobuf:protobuf-kotlin:4.33.5")
             }
-            java.sourceSets {
-                getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
-            }
+            //java.sourceSets {
+            //    getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
+            //}
             kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
         }
     }

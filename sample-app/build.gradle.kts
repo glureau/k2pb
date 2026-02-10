@@ -1,10 +1,8 @@
-import kotlin.text.replace
-
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
-    id("com.glureau.k2pb") version "0.9.22"
+    id("com.glureau.k2pb") version "0.9.26"
 }
 
 repositories {
@@ -18,9 +16,7 @@ k2pb {
 }
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    jvm()
 
     sourceSets {
         all {
@@ -29,26 +25,35 @@ kotlin {
         }
         commonMain {
             dependencies {
-                implementation(project(":k2pb-annotations"))
-                implementation(project(":k2pb-runtime"))
-                implementation(project(":k2pb-serializers-datetime"))
-                implementation(project(":sample-lib"))
+                implementation(project.dependencies.project(":k2pb-annotations"))
+                implementation(project.dependencies.project(":k2pb-runtime"))
+                implementation(project.dependencies.project(":k2pb-serializers-datetime"))
+                implementation(project.dependencies.project(":sample-lib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
             }
         }
+        /*
+            implementation(projects.k2pbAnnotations)
+            implementation(projects.k2pbRuntime)
+            implementation(projects.k2pbSerializersDatetime)
+            implementation(projects.k2pbSampleLib)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+
+         */
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("org.junit.platform:junit-platform-runner:1.10.2")
-                implementation("org.junit.jupiter:junit-jupiter:5.10.2")
-                implementation("com.approvaltests:approvaltests:18.4.0")
-                implementation("com.google.protobuf:protobuf-kotlin:4.26.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+                implementation("org.junit.platform:junit-platform-runner:1.14.2")
+                implementation("org.junit.jupiter:junit-jupiter:6.0.2")
+                implementation("com.approvaltests:approvaltests:26.7.1")
+                implementation("com.google.protobuf:protobuf-kotlin:4.33.5")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
             }
-            java.sourceSets {
-                getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
-            }
+            // java.sourceSets {
+                // getByName("test").java.srcDirs("build/generated/ksp/jvm/jvmTest/java")
+            // }
             kotlin.srcDir("build/generated/ksp/jvm/jvmTest/kotlin")
         }
     }
@@ -59,7 +64,12 @@ dependencies {
 }
 
 task("copyProtoFiles", type = Copy::class) {
-    from(rootDir.absolutePath + "/sample-lib/build/generated/ksp/jvm/jvmMain/resources/k2pb/" + customPackage.replace(".", "/"))
+    from(
+        rootDir.absolutePath + "/sample-lib/build/generated/ksp/jvm/jvmMain/resources/k2pb/" + customPackage.replace(
+            ".",
+            "/"
+        )
+    )
     into("build/generated/ksp/jvm/jvmMain/resources/k2pb/" + customPackage.replace(".", "/"))
     dependsOn(":sample-lib:kspKotlinJvm") // files should be generated before copying
     dependsOn(":sample-app:jvmProcessResources") // And are required by gradle at this point?
