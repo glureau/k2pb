@@ -11,6 +11,7 @@ import com.glureau.k2pb.compiler.struct.codecClassName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName
 
 class ProtobufCodecProducer(private val protobufAggregator: ProtobufAggregator) {
     data class CodeFile(
@@ -64,7 +65,7 @@ class ProtobufCodecProducer(private val protobufAggregator: ProtobufAggregator) 
                                                 """|registerPolymorphicChild(
                                                    |parent = %T::class, 
                                                    |child = %T::class,""".trimMargin(),
-                                                superType,
+                                                (superType as? ParameterizedTypeName)?.rawType ?: superType,
                                                 className,
                                             )
                                             addStatement(")")

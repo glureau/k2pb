@@ -15,20 +15,20 @@ dependencies {
 
     implementation(project(":k2pb-annotations"))
     implementation(project(":k2pb-runtime"))
-    implementation("com.squareup:kotlinpoet:1.10.2") {
+    implementation("com.squareup:kotlinpoet:2.2.0") {
         exclude(module = "kotlin-reflect")
     }
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    implementation("com.squareup:kotlinpoet-ksp:1.18.1")
+    implementation("com.squareup:kotlinpoet-ksp:2.2.0")
     implementation("com.google.devtools.ksp:symbol-processing:$kspVersion")
     implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.9")
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.6.0")
     testImplementation("junit:junit:4.13.2")
     //testImplementation(kotlin("test"))
-    testImplementation("org.junit.platform:junit-platform-runner:1.13.4")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
-    testImplementation("com.approvaltests:approvaltests:25.0.23")
+    testImplementation("org.junit.platform:junit-platform-runner:1.14.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")
+    testImplementation("com.approvaltests:approvaltests:26.7.1")
 }
 
 kotlin.sourceSets.main {

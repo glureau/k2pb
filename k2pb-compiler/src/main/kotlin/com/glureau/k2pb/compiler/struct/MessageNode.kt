@@ -2,6 +2,7 @@ package com.glureau.k2pb.compiler.struct
 
 import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.TypeName
 
 data class MessageNode(
     override val packageName: String,
@@ -15,7 +16,7 @@ data class MessageNode(
     val isSealed: Boolean,
     val explicitGenerationRequested: Boolean,
     val isInlineClass: Boolean,
-    val superTypes: List<ClassName>,
+    val superTypes: List<TypeName>,
     val comment: String?,
     val fields: List<FieldInterface>,
     val deprecatedFields: List<IDeprecatedField>,

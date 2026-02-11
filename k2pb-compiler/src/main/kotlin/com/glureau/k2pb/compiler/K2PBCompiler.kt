@@ -6,6 +6,7 @@ import com.glureau.k2pb.compiler.mapping.classNamesToOneOfField
 import com.glureau.k2pb.compiler.mapping.mapToDeprecatedField
 import com.glureau.k2pb.compiler.mapping.protoPolymorphismAnnotation
 import com.glureau.k2pb.compiler.mapping.recordKSClassDeclaration
+import com.glureau.k2pb.compiler.struct.K2PBNullabilityClassName
 import com.glureau.k2pb.compiler.struct.MessageNode
 import com.glureau.k2pb.compiler.struct.emitNullabilityProto
 import com.google.devtools.ksp.KspExperimental
@@ -68,6 +69,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
         resolveDependencies(resolver)
 
         val moduleName = resolver.getModuleName().asString()
+            .removeSuffix("_commonMain")
         ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
             environment.writeProtobufFile(
                 protobufFile.toProtoString().toByteArray(),
@@ -137,7 +139,8 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             unknownReferences
                 .forEach {
                     val reference = resolver.getClassDeclarationByName(KSNameImpl.getCached(it))!!
-                    if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!)) {
+                    if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!) &&
+                        reference.qualifiedName?.asString() != K2PBNullabilityClassName.canonicalName) {
                         Logger.warn("$it is referenced but not annotated with @ProtoMessage")
                         // TODO: Should be an error?
                     }
@@ -156,24 +159,6 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             }
         } while (!done)
     }
-}
-
-/**
- * todo use `resolver.moduleName` when [https://github.com/google/ksp/issues/1015] is done
- * @return gradle module name
- */
-private fun moduleName(resolver: Resolver): String {
-    val moduleDescriptor = resolver::class.java
-        .getDeclaredField("module")
-        .apply { isAccessible = true }
-        .get(resolver)
-    val rawName = moduleDescriptor::class.java
-        .getMethod("getName")
-        .invoke(moduleDescriptor)
-        .toString()
-    return rawName.removeSurrounding("<", ">")
-        // TODO: should we ignore all KMP possible suffixes?
-        .removeSuffix("_commonMain")
 }
 
 class K2PBCompilerProvider : SymbolProcessorProvider {

@@ -37,7 +37,7 @@ fun FunSpec.Builder.encodeOneOfField(instanceName: String, oneOfField: OneOfFiel
         beginControlFlow("is %T ->", subclass.type.className)
         beginControlFlow("%M(%L)", writeMessageExt, subclass.protoNumber)
         beginControlFlow("with(protoCodec)")
-        addStatement("encode($instanceName, %T::class)", subclass.type.className)
+        addStatement("encode($instanceName, %T::class)", subclass.type.className.copy(nullable = false))
         endControlFlow()
         endControlFlow()
         endControlFlow()
@@ -77,7 +77,7 @@ fun FunSpec.Builder.decodeOneOfField(oneOfField: OneOfField) {
             activeField != null -> {
                 activeField as TypedField
                 activeField.type as ReferenceType
-                addStatement("%L -> decode(%T::class)", activeField.protoNumber, activeField.type.className)
+                addStatement("%L -> decode(%T::class)", activeField.protoNumber, activeField.type.className.copy(nullable = false))
             }
 
             deprecatedField != null -> {

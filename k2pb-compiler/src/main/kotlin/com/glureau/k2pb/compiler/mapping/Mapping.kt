@@ -31,6 +31,7 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.ksp.toTypeName
 
 
 val KSClassDeclaration.isClass: Boolean
@@ -226,8 +227,8 @@ private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
         isSealed = false,
         explicitGenerationRequested = false,
         isInlineClass = this.isInlineClass,
-        superTypes = this.getAllSuperTypes().map { it.toClassName() }
-            .filterNot { it.canonicalName == "kotlin.Any" }
+        superTypes = this.getAllSuperTypes().map { it.toTypeName() }
+            // .filterNot { it.canonicalName == "kotlin.Any" }
             .toList(),
         comment = docString, // because it's a data class
         fields = fields.toList(),

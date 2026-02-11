@@ -82,7 +82,7 @@ fun FunSpec.Builder.encodeReferenceType(
             addStatement("writeInt(%T.$wireType.wireIntWithTag($tag))", ProtoWireTypeClassName)
         }
         beginControlFlow("with(protoCodec)")
-        addStatement("encode(${fieldName}, %T::class)", type.className)
+        addStatement("encode(${fieldName}, %T::class)", type.className.copy(nullable = false))
         endControlFlow()
 
         if (!forceEncodeDefault && condition.isNotEmpty()) {
@@ -113,7 +113,7 @@ fun FunSpec.Builder.encodeReferenceType(
         beginControlFlow("with(protoCodec)")
         addStatement(
             "encode(${fieldName}, %T::class)",
-            type.className
+            type.className.copy(nullable = false)
         )
         endControlFlow() // with
 
@@ -150,10 +150,10 @@ fun FunSpec.Builder.decodeReferenceType(
         if (customCodecType != null) {
             val decodedTmpName = decodeInLocalVar(fieldName, annotatedCodec, customCodecType)
             if (fieldType.inlineOf != null) {
-                if (fieldType.inlineOf.isNullable == true) {
-                    addStatement("${fieldType.className}($decodedTmpName)")
+                if (fieldType.inlineOf.isNullable) {
+                    addStatement("${fieldType.className.copy(nullable = false)}($decodedTmpName)")
                 } else {
-                    addStatement("$decodedTmpName?.let { ${fieldType.className}($decodedTmpName) }")
+                    addStatement("$decodedTmpName?.let { ${fieldType.className.copy(nullable = false)}($decodedTmpName) }")
                 }
             } else {
                 // TODO: here generated code could be cleaned, decodedTmpName is useless.
@@ -168,7 +168,7 @@ fun FunSpec.Builder.decodeReferenceType(
             beginControlFlow("%M", readMessageExt)
         }
         beginControlFlow("with(protoCodec) {")
-        addStatement("decode(%T::class)", fieldType.className)
+        addStatement("decode(%T::class)", fieldType.className.copy(nullable = false))
         endControlFlow()
         if (useReadMessage) {
             endControlFlow()
