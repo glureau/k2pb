@@ -24,12 +24,14 @@ class K2PBGradlePlugin : Plugin<Project> {
             when {
                 target.configurations.any { it.name.contains("kspCommonMainMetadata") } -> {
                     add("kspCommonMainMetadata", "com.glureau.k2pb:k2pb-compiler:$pluginVersion")
-                    // target.logger.warn("K2PB plugin setup KMP")
                 }
 
                 target.configurations.any { it.name.contains("kspJvm") } -> {
                     add("kspJvm", "com.glureau.k2pb:k2pb-compiler:$pluginVersion")
-                    // target.logger.warn("K2PB plugin setup JVM")
+                }
+
+                target.configurations.any { it.name == "ksp" } -> {
+                    add("ksp", "com.glureau.k2pb:k2pb-compiler:$pluginVersion")
                 }
 
                 else -> {

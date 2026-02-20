@@ -49,15 +49,14 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
     }
 
     private val protobufAggregator = ProtobufAggregator()
-    private var runDone = false
+    private val generatedFiles = mutableSetOf<String>()
+
     @OptIn(KspExperimental::class)
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (runDone) {
-            return emptyList()
-        }
-        runDone = true
         compileOptions = CompileOptions(environment.options)
         val symbols = resolver.getSymbolsWithAnnotation(ProtoMessage::class.qualifiedName!!)
+        if (!symbols.iterator().hasNext()) return emptyList()
+
         symbols.forEach {
             if (it is KSClassDeclaration) {
                 protobufAggregator.recordKSClassDeclaration(it)
@@ -70,22 +69,30 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         val moduleName = resolver.getModuleName().asString()
             .removeSuffix("_commonMain")
-        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName).forEach { protobufFile ->
-            environment.writeProtobufFile(
-                protobufFile.toProtoString().toByteArray(),
-                packageName = compileOptions.protoPackageName?.let { "k2pb.$it" } ?: "k2pb",
-                fileName = protobufFile.path,
-                dependencies = protobufFile.dependencies
-            )
-        }
+        ProtobufFileProducer(protobufAggregator).buildFiles(moduleName)
+            .filter { generatedFiles.add(it.path) }
+            .forEach { protobufFile ->
+                environment.writeProtobufFile(
+                    protobufFile.toProtoString().toByteArray(),
+                    packageName = compileOptions.protoPackageName?.let { "k2pb.$it" } ?: "k2pb",
+                    fileName = protobufFile.path,
+                    dependencies = protobufFile.dependencies
+                )
+            }
 
         if (compileOptions.emitNullability) {
-            emitNullabilityProto(environment)
+            // Nullability proto file is global, generate only once
+            if (generatedFiles.add("k2pb_nullability.proto")) { // Assuming filename, but let's be careful.
+                emitNullabilityProto(environment)
+            }
         }
 
-        ProtobufCodecProducer(protobufAggregator).buildFileSpecs(moduleName).forEach { protobufFile ->
-            protobufFile.fileSpec.writeTo(environment.codeGenerator, false)
-        }
+        ProtobufCodecProducer(protobufAggregator).buildFileSpecs(moduleName)
+            .filter {
+                generatedFiles.add("kotlin/${it.fileSpec.packageName.replace(".", "/")}/${it.fileSpec.name}.kt") }
+            .forEach {
+                it.fileSpec.writeTo(environment.codeGenerator, false)
+            }
         return emptyList()
     }
 
