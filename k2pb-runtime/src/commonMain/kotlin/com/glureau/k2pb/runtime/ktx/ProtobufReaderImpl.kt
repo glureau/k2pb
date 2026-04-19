@@ -59,16 +59,16 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
     override fun skipElement() {
         when (currentType) {
             ProtoWireType.VARINT -> readInt(ProtoIntegerType.DEFAULT)
-            ProtoWireType.i64 -> readLong(ProtoIntegerType.FIXED)
+            ProtoWireType.I64 -> readLong(ProtoIntegerType.FIXED)
             ProtoWireType.SIZE_DELIMITED -> skipSizeDelimited()
-            ProtoWireType.i32 -> readInt(ProtoIntegerType.FIXED)
-            else -> throw ProtobufDecodingException("Unsupported start group or end group wire type: $currentType")
+            ProtoWireType.I32 -> readInt(ProtoIntegerType.FIXED)
+            else -> throw SerializationException("Unsupported start group or end group wire type: $currentType")
         }
     }
 
     @Suppress("NOTHING_TO_INLINE")
     private inline fun assertWireType(expected: ProtoWireType) {
-        if (currentType != expected) throw ProtobufDecodingException("Expected wire type $expected, but found $currentType")
+        if (currentType != expected) throw SerializationException("Expected wire type $expected, but found $currentType")
     }
 
     override fun readByteArray(): ByteArray {
@@ -101,7 +101,7 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
     }
 
     override fun readInt(format: ProtoIntegerType): Int {
-        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.i32 else ProtoWireType.VARINT
+        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.I32 else ProtoWireType.VARINT
         assertWireType(wireType)
         return decode32(format)
     }
@@ -109,7 +109,7 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
     override fun readInt32NoTag(): Int = decode32()
 
     override fun readLong(format: ProtoIntegerType): Long {
-        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.i64 else ProtoWireType.VARINT
+        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.I64 else ProtoWireType.VARINT
         assertWireType(wireType)
         return decode64(format)
     }
@@ -117,7 +117,7 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
     override fun readLongNoTag(): Long = decode64(ProtoIntegerType.DEFAULT)
 
     override fun readFloat(): Float {
-        assertWireType(ProtoWireType.i32)
+        assertWireType(ProtoWireType.I32)
         return Float.fromBits(readIntLittleEndian())
     }
 
@@ -144,7 +144,7 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
     }
 
     override fun readDouble(): Double {
-        assertWireType(ProtoWireType.i64)
+        assertWireType(ProtoWireType.I64)
         return Double.fromBits(readLongLittleEndian())
     }
 
@@ -167,7 +167,7 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
 
     override fun checkLength(length: Int) {
         if (length < 0) {
-            throw ProtobufDecodingException("Unexpected negative length: $length")
+            throw SerializationException("Unexpected negative length: $length")
         }
     }
 

@@ -27,7 +27,7 @@ fun classNamesToOneOfField(
                         isNullable = false,
                         isEnum = false,
                     ),
-                    name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.UK) },
+                    name = childClassName.simpleName.replaceFirstChar { it.lowercase(Locale.US) },
                     protoNumber = number,
                     annotatedName = null,
                     annotatedConverter = null,

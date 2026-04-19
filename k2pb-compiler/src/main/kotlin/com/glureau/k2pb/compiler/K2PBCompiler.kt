@@ -28,7 +28,6 @@ import java.util.Collections.emptyList
 
 // Trick to share the Logger everywhere without injecting the dependency everywhere
 internal lateinit var sharedLogger: KSPLogger
-internal lateinit var sharedOptions: OptionManager
 
 internal object Logger : KSPLogger by sharedLogger
 
@@ -45,7 +44,6 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
     init {
         sharedLogger = environment.logger
-        sharedOptions = OptionManager(environment.options)
     }
 
     private val protobufAggregator = ProtobufAggregator()

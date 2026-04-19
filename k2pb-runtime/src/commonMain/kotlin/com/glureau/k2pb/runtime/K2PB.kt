@@ -1,6 +1,5 @@
 package com.glureau.k2pb.runtime
 
-import com.glureau.k2pb.CustomConverter
 import com.glureau.k2pb.DelegateProtoCodec
 import com.glureau.k2pb.ProtoCodec
 import com.glureau.k2pb.ProtobufReader
@@ -51,8 +50,6 @@ public class K2PBConfig internal constructor() {
     internal val messageNames: MutableMap<KClass<*>, String> = mutableMapOf()
     public var onUnknownProtoNumber: ((instanceClass: KClass<*>, protoNumber: Int) -> Unit)? = null
 
-    private val converters: MutableMap<KClass<*>, CustomConverter<*, *>> = mutableMapOf()
-
     internal val polymorphics: MutableMap<KClass<*>, MutableList<KClass<*>>> = mutableMapOf()
 
     public fun registerCodec(
@@ -62,11 +59,6 @@ public class K2PBConfig internal constructor() {
     ) {
         codecs[targetType] = codec
         messageNames[targetType] = protoMessageName
-    }
-
-    @Deprecated("Not used YET")
-    public fun registerConverter(kClass: KClass<*>, converter: CustomConverter<*, *>) {
-        converters[kClass] = converter
     }
 
     public fun registerPolymorphicChild(parent: KClass<*>, child: KClass<*>) {
@@ -105,8 +97,8 @@ internal class ConfiguredProtoCodec(private val config: K2PBConfig) : DelegatePr
 
     override fun onUnknownProtoNumber(instanceClass: KClass<*>, protoNumber: Int) {
         config.onUnknownProtoNumber?.invoke(instanceClass, protoNumber)
-            // Default basic logging if no custom handler
-            ?: println("Unknown proto number $protoNumber for class $instanceClass" )
+            // Silently ignore unknown proto numbers if no custom handler is set.
+            // Users can configure onUnknownProtoNumber to log or throw as needed.
     }
 }
 

@@ -29,7 +29,7 @@ internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWr
     }
 
     override fun writeInt(value: Int, tag: Int, format: ProtoIntegerType) {
-        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.i32 else ProtoWireType.VARINT
+        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.I32 else ProtoWireType.VARINT
         out.encode32(wireType.wireIntWithTag(tag))
         out.encode32(value, format)
     }
@@ -39,7 +39,7 @@ internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWr
     }
 
     override fun writeLong(value: Long, tag: Int, format: ProtoIntegerType) {
-        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.i64 else ProtoWireType.VARINT
+        val wireType = if (format == ProtoIntegerType.FIXED) ProtoWireType.I64 else ProtoWireType.VARINT
         out.encode32(wireType.wireIntWithTag(tag))
         out.encode64(value, format)
     }
@@ -59,7 +59,7 @@ internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWr
     }
 
     override fun writeDouble(value: Double, tag: Int) {
-        out.encode32(ProtoWireType.i64.wireIntWithTag(tag))
+        out.encode32(ProtoWireType.I64.wireIntWithTag(tag))
         out.writeLong(value.reverseBytes())
     }
 
@@ -68,7 +68,7 @@ internal class ProtobufWriterImpl(private val out: ByteArrayOutput) : ProtobufWr
     }
 
     override fun writeFloat(value: Float, tag: Int) {
-        out.encode32(ProtoWireType.i32.wireIntWithTag(tag))
+        out.encode32(ProtoWireType.I32.wireIntWithTag(tag))
         out.writeInt(value.reverseBytes())
     }
 

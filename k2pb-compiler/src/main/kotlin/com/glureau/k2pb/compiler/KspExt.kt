@@ -23,7 +23,8 @@ fun SymbolProcessorEnvironment.writeProtobufFile(
             it.close()
         }
     } catch (faee: FileAlreadyExistsException) {
-        // Not sure why yet, to be investigated
+        // KSP may attempt to create the same file twice across rounds
+        Logger.warn("Proto file '$fileName' already exists, skipping: ${faee.message}")
     }
 }
 

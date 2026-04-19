@@ -5,7 +5,7 @@ fun TypedField.nameOrDefault(): String {
 }
 
 fun FieldType.nameOrDefault(name: String): String {
-    return return when (this) {
+    return when (this) {
         is ListType -> name // default value will be the aggregating mutable list (empty)
         is SetType -> name // default value will be the aggregating mutable set (empty)
         is MapType -> name // default value will be the aggregating mutable map (empty)

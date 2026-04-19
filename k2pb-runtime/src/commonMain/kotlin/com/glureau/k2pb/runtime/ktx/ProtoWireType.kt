@@ -3,9 +3,9 @@ package com.glureau.k2pb.runtime.ktx;
 public enum class ProtoWireType(public val typeId: Int) {
     INVALID(-1),
     VARINT(0),
-    i64(1),
+    I64(1),
     SIZE_DELIMITED(2),
-    i32(5),
+    I32(5),
     ;
 
     public companion object {

@@ -67,6 +67,13 @@ internal class ByteArrayInput(private var array: ByteArray, private val endIndex
         return readVarint32SlowPath()
     }
 
+    /**
+     * Reads a varint-encoded 64-bit value from the input.
+     *
+     * @param eofAllowed if true, returns -1 when at EOF instead of throwing.
+     *   Note: -1L is also a valid varint value. This sentinel is safe for tag reading
+     *   (tags cannot be -1) but callers reading data values should use [eofAllowed]=false.
+     */
     fun readVarint64(eofAllowed: Boolean): Long {
         if (position == endIndex) {
             if (eofAllowed) return -1

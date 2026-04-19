@@ -51,8 +51,6 @@ fun StringBuilder.appendFields(
             appendNullabilityField(nullabilityField)
         },
         onUnusedProtoNumber = { index ->
-            activeFields.filterIsInstance<TypedField>()
-                .map { it.nullabilitySubField?.protoNumber }
             val message =
                 "The protoNumber $index is not defined, if it's not used anymore consider using deprecated annotation."
             appendComment(indentLevel, message)
