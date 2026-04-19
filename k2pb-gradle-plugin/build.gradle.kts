@@ -3,6 +3,7 @@ plugins {
     id("maven-publish")
     id("com.gradle.plugin-publish") version "1.3.1"
     `java-gradle-plugin`
+    id("org.jetbrains.kotlinx.kover")
 }
 
 kotlin {

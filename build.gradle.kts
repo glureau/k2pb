@@ -16,6 +16,7 @@ plugins {
     id("com.android.library") apply false
     id("com.glureau.grip") version "0.4.5"
     id("com.vanniktech.maven.publish") apply false
+    id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
 allprojects {
@@ -26,5 +27,22 @@ allprojects {
         mavenLocal()
         mavenCentral()
         google()
+    }
+}
+
+dependencies {
+    kover(project(":k2pb-compiler"))
+    kover(project(":k2pb-runtime"))
+    kover(project(":k2pb-gradle-plugin"))
+    kover(project(":k2pb-serializers-datetime"))
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                packages("com.glureau.k2pb_sample")
+            }
+        }
     }
 }

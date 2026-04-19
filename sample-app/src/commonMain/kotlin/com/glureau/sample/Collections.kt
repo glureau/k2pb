@@ -52,3 +52,9 @@ data class NullableCollection(
     val mapStringObject: Map<String, DataClassFromLib?>,
     // TODO:
 ) : EventInterface
+
+@ProtoMessage
+data class BooleanCollections(
+    val booleanList: List<Boolean> = emptyList(),
+    val booleanSet: Set<Boolean> = emptySet(),
+) : EventInterface

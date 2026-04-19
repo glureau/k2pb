@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm")
     id("maven-publish")
     kotlin("plugin.serialization")
+    id("org.jetbrains.kotlinx.kover")
 }
 
 repositories {
@@ -23,7 +24,7 @@ dependencies {
     implementation("com.google.devtools.ksp:symbol-processing:$kspVersion")
     implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.6.0")
+    testImplementation("dev.zacsweers.kctfork:ksp:0.7.1")
     testImplementation("junit:junit:4.13.2")
     //testImplementation(kotlin("test"))
     testImplementation("org.junit.platform:junit-platform-runner:1.14.2")
@@ -34,6 +35,12 @@ dependencies {
 kotlin.sourceSets.main {
     languageSettings {
         optIn("kotlin.uuid.ExperimentalUuidApi")
+    }
+}
+
+kotlin.sourceSets.test {
+    languageSettings {
+        optIn("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
     }
 }
 
