@@ -521,7 +521,6 @@ internal class EnumClassCodec : ProtoCodec<EnumClass> {
       EnumClass.A -> 0
       EnumClass.B -> 1
       EnumClass.C -> 2
-      else -> return
     }
     if (protoNumber != 0) {
       writeInt(protoNumber)
@@ -1111,7 +1110,6 @@ internal class NonContiguousEnumCodec : ProtoCodec<NonContiguousEnum> {
       NonContiguousEnum.UNKNOWN -> 0
       NonContiguousEnum.ACTIVE -> 5
       NonContiguousEnum.INACTIVE -> 10
-      else -> return
     }
     if (protoNumber != 0) {
       writeInt(protoNumber)
@@ -5528,7 +5526,6 @@ internal class WithNestClassB_NestedClass_NestedEnumCodec : ProtoCodec<WithNestC
       WithNestClassB.NestedClass.NestedEnum.A -> 0
       WithNestClassB.NestedClass.NestedEnum.B -> 1
       WithNestClassB.NestedClass.NestedEnum.C -> 2
-      else -> return
     }
     if (protoNumber != 0) {
       writeInt(protoNumber)
@@ -5614,7 +5611,6 @@ internal class WithNestedEnum_NestedEnumCodec : ProtoCodec<WithNestedEnum.Nested
       WithNestedEnum.NestedEnum.A -> 0
       WithNestedEnum.NestedEnum.B -> 1
       WithNestedEnum.NestedEnum.C -> 2
-      else -> return
     }
     if (protoNumber != 0) {
       writeInt(protoNumber)

@@ -1,7 +1,6 @@
 package com.glureau.k2pb.compiler.protofile
 
 import com.glureau.k2pb.compiler.ImportResolver
-import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.TypeResolver
 import com.glureau.k2pb.compiler.mapping.customConverterType
 import com.glureau.k2pb.compiler.struct.EnumNode
@@ -95,7 +94,6 @@ fun FieldType.resolvedExternalTypes(): List<String> {
 
 fun computeDeprecatedProtobufImports(nodes: List<Node>, importResolver: ImportResolver): List<String> {
     val selfRef = nodes.map { it.protoName }
-    Logger.warn("computeDeprecatedProtobufImports : $selfRef")
 
     return nodes.flatMap { it.allNodes() }
         .flatMap { node ->

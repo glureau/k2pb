@@ -44,8 +44,6 @@ class ProtobufFileProducer(private val aggregator: ProtobufAggregator) {
                             computeDeprecatedProtobufImports(listOf(node), importResolver))
                         .distinct()
                         .sorted()
-                    Logger.warn("imports for ${node.name} = $imports")
-
                     val packageName =
                         compileOptions.protoPackageName ?: node.packageName
 

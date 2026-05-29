@@ -14,7 +14,6 @@ fun FileSpec.Builder.generateEnumCodecType(enumNode: EnumNode) = generateCodecTy
         for (entry in enumNode.entries) {
             addStatement("%T.${entry.kotlinName} -> ${entry.number}", className)
         }
-        addStatement("else -> return")
         endControlFlow()
         addCode(ScalarFieldType.Int.safeWriteMethodNoTag("protoNumber", false))
     },
