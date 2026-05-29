@@ -155,7 +155,9 @@ class ProtobufRoundTripTest {
         val bytes = encode { writeFloat(3.14f, 1) }
         val reader = decode(bytes)
         reader.readTag()
-        assertEquals(3.14f, reader.readFloat())
+        // Compare via toBits() because Kotlin/JS represents Float as Double internally,
+        // so Float.fromBits() returns a slightly different Double than the 3.14f literal.
+        assertEquals(3.14f.toBits(), reader.readFloat().toBits())
     }
 
     @Test
