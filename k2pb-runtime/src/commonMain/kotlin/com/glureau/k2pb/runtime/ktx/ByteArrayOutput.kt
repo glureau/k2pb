@@ -1,6 +1,6 @@
 package com.glureau.k2pb.runtime.ktx
 
-public class ByteArrayOutput() {
+public class ByteArrayOutput(initialCapacity: Int = 32) {
 
     private companion object {
         /*
@@ -12,7 +12,7 @@ public class ByteArrayOutput() {
         }
     }
 
-    private var array: ByteArray = ByteArray(32)
+    private var array: ByteArray = ByteArray(initialCapacity.coerceAtLeast(8))
     private var position: Int = 0
 
     private fun ensureCapacity(elementsToAppend: Int) {
@@ -64,16 +64,24 @@ public class ByteArrayOutput() {
 
     public fun writeInt(intValue: Int) {
         ensureCapacity(4)
-        for (i in 3 downTo 0) {
-            array[position++] = (intValue shr i * 8).toByte()
-        }
+        array[position] = (intValue shr 24).toByte()
+        array[position + 1] = (intValue shr 16).toByte()
+        array[position + 2] = (intValue shr 8).toByte()
+        array[position + 3] = intValue.toByte()
+        position += 4
     }
 
     public fun writeLong(longValue: Long) {
         ensureCapacity(8)
-        for (i in 7 downTo 0) {
-            array[position++] = (longValue shr i * 8).toByte()
-        }
+        array[position] = (longValue shr 56).toByte()
+        array[position + 1] = (longValue shr 48).toByte()
+        array[position + 2] = (longValue shr 40).toByte()
+        array[position + 3] = (longValue shr 32).toByte()
+        array[position + 4] = (longValue shr 24).toByte()
+        array[position + 5] = (longValue shr 16).toByte()
+        array[position + 6] = (longValue shr 8).toByte()
+        array[position + 7] = longValue.toByte()
+        position += 8
     }
 
     public fun encodeVarint32(value: Int) {

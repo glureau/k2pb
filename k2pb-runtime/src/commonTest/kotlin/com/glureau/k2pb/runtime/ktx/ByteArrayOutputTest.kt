@@ -166,4 +166,30 @@ class ByteArrayOutputTest {
         assertEquals(3, outer.size())
         assertTrue(outer.toByteArray().contentEquals(byteArrayOf(10, 20, 30)))
     }
+
+    @Test
+    fun initialCapacity_customSize() {
+        val out = ByteArrayOutput(256)
+        val data = ByteArray(200) { it.toByte() }
+        out.write(data)
+        assertEquals(200, out.size())
+        assertTrue(out.toByteArray().contentEquals(data))
+    }
+
+    @Test
+    fun initialCapacity_smallValueIsCoerced() {
+        val out = ByteArrayOutput(1)
+        out.writeInt(0x01020304)
+        val bytes = out.toByteArray()
+        assertEquals(4, bytes.size)
+        assertEquals(0x01.toByte(), bytes[0])
+        assertEquals(0x04.toByte(), bytes[3])
+    }
+
+    @Test
+    fun initialCapacity_zeroWorks() {
+        val out = ByteArrayOutput(0)
+        out.write(byteArrayOf(1, 2, 3))
+        assertEquals(3, out.size())
+    }
 }

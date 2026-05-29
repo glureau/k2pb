@@ -156,6 +156,37 @@ class ByteArrayInputTest {
     }
 
     @Test
+    fun readIntLittleEndian_basic() {
+        // 0x04030201 in little-endian: bytes 01 02 03 04
+        val input = ByteArrayInput(byteArrayOf(0x01, 0x02, 0x03, 0x04))
+        assertEquals(0x04030201, input.readIntLittleEndian())
+        assertEquals(0, input.availableBytes)
+    }
+
+    @Test
+    fun readIntLittleEndian_insufficientBytes() {
+        val input = ByteArrayInput(byteArrayOf(0x01, 0x02))
+        assertFailsWith<SerializationException> {
+            input.readIntLittleEndian()
+        }
+    }
+
+    @Test
+    fun readLongLittleEndian_basic() {
+        val input = ByteArrayInput(byteArrayOf(0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08))
+        assertEquals(0x0807060504030201L, input.readLongLittleEndian())
+        assertEquals(0, input.availableBytes)
+    }
+
+    @Test
+    fun readLongLittleEndian_insufficientBytes() {
+        val input = ByteArrayInput(byteArrayOf(0x01, 0x02, 0x03))
+        assertFailsWith<SerializationException> {
+            input.readLongLittleEndian()
+        }
+    }
+
+    @Test
     fun varint32_roundTrip_variousValues() {
         val values = listOf(0, 1, 127, 128, 255, 256, 16383, 16384, Int.MAX_VALUE)
         for (v in values) {

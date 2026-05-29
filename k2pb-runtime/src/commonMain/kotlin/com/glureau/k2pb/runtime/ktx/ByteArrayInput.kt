@@ -39,6 +39,30 @@ internal class ByteArrayInput(private var array: ByteArray, private val endIndex
         }
     }
 
+    fun readIntLittleEndian(): Int {
+        ensureEnoughBytes(4)
+        val result = (array[position].toInt() and 0xFF) or
+                ((array[position + 1].toInt() and 0xFF) shl 8) or
+                ((array[position + 2].toInt() and 0xFF) shl 16) or
+                ((array[position + 3].toInt() and 0xFF) shl 24)
+        position += 4
+        return result
+    }
+
+    fun readLongLittleEndian(): Long {
+        ensureEnoughBytes(8)
+        val result = (array[position].toLong() and 0xFF) or
+                ((array[position + 1].toLong() and 0xFF) shl 8) or
+                ((array[position + 2].toLong() and 0xFF) shl 16) or
+                ((array[position + 3].toLong() and 0xFF) shl 24) or
+                ((array[position + 4].toLong() and 0xFF) shl 32) or
+                ((array[position + 5].toLong() and 0xFF) shl 40) or
+                ((array[position + 6].toLong() and 0xFF) shl 48) or
+                ((array[position + 7].toLong() and 0xFF) shl 56)
+        position += 8
+        return result
+    }
+
     fun readString(length: Int): String {
         val result = array.decodeToString(position, position + length)
         position += length

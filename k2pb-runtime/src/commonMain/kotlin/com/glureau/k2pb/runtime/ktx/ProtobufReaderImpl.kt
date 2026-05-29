@@ -119,25 +119,9 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
 
     override fun readFloatNoTag(): Float = Float.fromBits(readIntLittleEndian())
 
-    override fun readIntLittleEndian(): Int {
-        // TODO this could be optimized by extracting method to the IS
-        var result = 0
-        for (i in 0..3) {
-            val byte = input.read() and 0x000000FF
-            result = result or (byte shl (i * 8))
-        }
-        return result
-    }
+    override fun readIntLittleEndian(): Int = input.readIntLittleEndian()
 
-    override fun readLongLittleEndian(): Long {
-        // TODO this could be optimized by extracting method to the IS
-        var result = 0L
-        for (i in 0..7) {
-            val byte = (input.read() and 0x000000FF).toLong()
-            result = result or (byte shl (i * 8))
-        }
-        return result
-    }
+    override fun readLongLittleEndian(): Long = input.readLongLittleEndian()
 
     override fun readDouble(): Double {
         assertWireType(ProtoWireType.I64)
