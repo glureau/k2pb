@@ -480,27 +480,33 @@ internal class BooleanCollectionsCodec : ProtoCodec<BooleanCollections> {
     if (instance == null) return
 
     // Encode booleanList
-    writeMessage(1) {
-      instance.booleanList.forEach {
-        writeInt(if (it) 1 else 0)
+    if (instance.booleanList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.booleanList.forEach {
+          writeInt(if (it) 1 else 0)
 
+        }
       }
     }
 
     // Encode booleanSet
-    writeMessage(2) {
-      instance.booleanSet.forEach {
-        writeInt(if (it) 1 else 0)
+    if (instance.booleanSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.booleanSet.forEach {
+          writeInt(if (it) 1 else 0)
 
+        }
       }
     }
 
     // Encode nullableBooleanList
     if (instance.nullableBooleanList != null) {
-      writeMessage(3) {
-        instance.nullableBooleanList.forEach {
-          writeInt(if (it) 1 else 0)
+      if (instance.nullableBooleanList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableBooleanList.forEach {
+            writeInt(if (it) 1 else 0)
 
+          }
         }
       }
     }
@@ -513,10 +519,12 @@ internal class BooleanCollectionsCodec : ProtoCodec<BooleanCollections> {
 
     // Encode nullableBooleanSet
     if (instance.nullableBooleanSet != null) {
-      writeMessage(5) {
-        instance.nullableBooleanSet.forEach {
-          writeInt(if (it) 1 else 0)
+      if (instance.nullableBooleanSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableBooleanSet.forEach {
+            writeInt(if (it) 1 else 0)
 
+          }
         }
       }
     }
@@ -619,27 +627,33 @@ internal class ByteCollectionsCodec : ProtoCodec<ByteCollections> {
     if (instance == null) return
 
     // Encode byteList
-    writeMessage(1) {
-      instance.byteList.forEach {
-        writeInt(it.toInt())
+    if (instance.byteList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.byteList.forEach {
+          writeInt(it.toInt())
 
+        }
       }
     }
 
     // Encode byteSet
-    writeMessage(2) {
-      instance.byteSet.forEach {
-        writeInt(it.toInt())
+    if (instance.byteSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.byteSet.forEach {
+          writeInt(it.toInt())
 
+        }
       }
     }
 
     // Encode nullableByteList
     if (instance.nullableByteList != null) {
-      writeMessage(3) {
-        instance.nullableByteList.forEach {
-          writeInt(it.toInt())
+      if (instance.nullableByteList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableByteList.forEach {
+            writeInt(it.toInt())
 
+          }
         }
       }
     }
@@ -652,10 +666,12 @@ internal class ByteCollectionsCodec : ProtoCodec<ByteCollections> {
 
     // Encode nullableByteSet
     if (instance.nullableByteSet != null) {
-      writeMessage(5) {
-        instance.nullableByteSet.forEach {
-          writeInt(it.toInt())
+      if (instance.nullableByteSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableByteSet.forEach {
+            writeInt(it.toInt())
 
+          }
         }
       }
     }
@@ -754,27 +770,33 @@ internal class CharCollectionsCodec : ProtoCodec<CharCollections> {
     if (instance == null) return
 
     // Encode charList
-    writeMessage(1) {
-      instance.charList.forEach {
-        writeInt(it.code)
+    if (instance.charList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.charList.forEach {
+          writeInt(it.code)
 
+        }
       }
     }
 
     // Encode charSet
-    writeMessage(2) {
-      instance.charSet.forEach {
-        writeInt(it.code)
+    if (instance.charSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.charSet.forEach {
+          writeInt(it.code)
 
+        }
       }
     }
 
     // Encode nullableCharList
     if (instance.nullableCharList != null) {
-      writeMessage(3) {
-        instance.nullableCharList.forEach {
-          writeInt(it.code)
+      if (instance.nullableCharList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableCharList.forEach {
+            writeInt(it.code)
 
+          }
         }
       }
     }
@@ -787,10 +809,12 @@ internal class CharCollectionsCodec : ProtoCodec<CharCollections> {
 
     // Encode nullableCharSet
     if (instance.nullableCharSet != null) {
-      writeMessage(5) {
-        instance.nullableCharSet.forEach {
-          writeInt(it.code)
+      if (instance.nullableCharSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableCharSet.forEach {
+            writeInt(it.code)
 
+          }
         }
       }
     }
@@ -1048,27 +1072,33 @@ internal class DoubleCollectionsCodec : ProtoCodec<DoubleCollections> {
     if (instance == null) return
 
     // Encode doubleList
-    writeMessage(1) {
-      instance.doubleList.forEach {
-        writeDouble(it)
+    if (instance.doubleList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.doubleList.forEach {
+          writeDouble(it)
 
+        }
       }
     }
 
     // Encode doubleSet
-    writeMessage(2) {
-      instance.doubleSet.forEach {
-        writeDouble(it)
+    if (instance.doubleSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.doubleSet.forEach {
+          writeDouble(it)
 
+        }
       }
     }
 
     // Encode nullableDoubleList
     if (instance.nullableDoubleList != null) {
-      writeMessage(3) {
-        instance.nullableDoubleList.forEach {
-          writeDouble(it)
+      if (instance.nullableDoubleList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableDoubleList.forEach {
+            writeDouble(it)
 
+          }
         }
       }
     }
@@ -1081,10 +1111,12 @@ internal class DoubleCollectionsCodec : ProtoCodec<DoubleCollections> {
 
     // Encode nullableDoubleSet
     if (instance.nullableDoubleSet != null) {
-      writeMessage(5) {
-        instance.nullableDoubleSet.forEach {
-          writeDouble(it)
+      if (instance.nullableDoubleSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableDoubleSet.forEach {
+            writeDouble(it)
 
+          }
         }
       }
     }
@@ -1204,27 +1236,33 @@ internal class FloatCollectionsCodec : ProtoCodec<FloatCollections> {
     if (instance == null) return
 
     // Encode floatList
-    writeMessage(1) {
-      instance.floatList.forEach {
-        writeFloat(it)
+    if (instance.floatList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.floatList.forEach {
+          writeFloat(it)
 
+        }
       }
     }
 
     // Encode floatSet
-    writeMessage(2) {
-      instance.floatSet.forEach {
-        writeFloat(it)
+    if (instance.floatSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.floatSet.forEach {
+          writeFloat(it)
 
+        }
       }
     }
 
     // Encode nullableFloatList
     if (instance.nullableFloatList != null) {
-      writeMessage(3) {
-        instance.nullableFloatList.forEach {
-          writeFloat(it)
+      if (instance.nullableFloatList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableFloatList.forEach {
+            writeFloat(it)
 
+          }
         }
       }
     }
@@ -1237,10 +1275,12 @@ internal class FloatCollectionsCodec : ProtoCodec<FloatCollections> {
 
     // Encode nullableFloatSet
     if (instance.nullableFloatSet != null) {
-      writeMessage(5) {
-        instance.nullableFloatSet.forEach {
-          writeFloat(it)
+      if (instance.nullableFloatSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableFloatSet.forEach {
+            writeFloat(it)
 
+          }
         }
       }
     }
@@ -1579,27 +1619,33 @@ internal class IntCollectionsCodec : ProtoCodec<IntCollections> {
     if (instance == null) return
 
     // Encode integerList
-    writeMessage(1) {
-      instance.integerList.forEach {
-        writeInt(it)
+    if (instance.integerList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.integerList.forEach {
+          writeInt(it)
 
+        }
       }
     }
 
     // Encode integerSet
-    writeMessage(2) {
-      instance.integerSet.forEach {
-        writeInt(it)
+    if (instance.integerSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.integerSet.forEach {
+          writeInt(it)
 
+        }
       }
     }
 
     // Encode nullableIntegerList
     if (instance.nullableIntegerList != null) {
-      writeMessage(3) {
-        instance.nullableIntegerList.forEach {
-          writeInt(it)
+      if (instance.nullableIntegerList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableIntegerList.forEach {
+            writeInt(it)
 
+          }
         }
       }
     }
@@ -1612,10 +1658,12 @@ internal class IntCollectionsCodec : ProtoCodec<IntCollections> {
 
     // Encode nullableIntegerSet
     if (instance.nullableIntegerSet != null) {
-      writeMessage(5) {
-        instance.nullableIntegerSet.forEach {
-          writeInt(it)
+      if (instance.nullableIntegerSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableIntegerSet.forEach {
+            writeInt(it)
 
+          }
         }
       }
     }
@@ -1818,27 +1866,33 @@ internal class LongCollectionsCodec : ProtoCodec<LongCollections> {
     if (instance == null) return
 
     // Encode longList
-    writeMessage(1) {
-      instance.longList.forEach {
-        writeLong(it)
+    if (instance.longList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.longList.forEach {
+          writeLong(it)
 
+        }
       }
     }
 
     // Encode longSet
-    writeMessage(2) {
-      instance.longSet.forEach {
-        writeLong(it)
+    if (instance.longSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.longSet.forEach {
+          writeLong(it)
 
+        }
       }
     }
 
     // Encode nullableLongList
     if (instance.nullableLongList != null) {
-      writeMessage(3) {
-        instance.nullableLongList.forEach {
-          writeLong(it)
+      if (instance.nullableLongList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableLongList.forEach {
+            writeLong(it)
 
+          }
         }
       }
     }
@@ -1851,10 +1905,12 @@ internal class LongCollectionsCodec : ProtoCodec<LongCollections> {
 
     // Encode nullableLongSet
     if (instance.nullableLongSet != null) {
-      writeMessage(5) {
-        instance.nullableLongSet.forEach {
-          writeLong(it)
+      if (instance.nullableLongSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableLongSet.forEach {
+            writeLong(it)
 
+          }
         }
       }
     }
@@ -6000,27 +6056,33 @@ internal class ShortCollectionsCodec : ProtoCodec<ShortCollections> {
     if (instance == null) return
 
     // Encode shortList
-    writeMessage(1) {
-      instance.shortList.forEach {
-        writeInt(it.toInt())
+    if (instance.shortList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.shortList.forEach {
+          writeInt(it.toInt())
 
+        }
       }
     }
 
     // Encode shortSet
-    writeMessage(2) {
-      instance.shortSet.forEach {
-        writeInt(it.toInt())
+    if (instance.shortSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.shortSet.forEach {
+          writeInt(it.toInt())
 
+        }
       }
     }
 
     // Encode nullableShortList
     if (instance.nullableShortList != null) {
-      writeMessage(3) {
-        instance.nullableShortList.forEach {
-          writeInt(it.toInt())
+      if (instance.nullableShortList.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableShortList.forEach {
+            writeInt(it.toInt())
 
+          }
         }
       }
     }
@@ -6033,10 +6095,12 @@ internal class ShortCollectionsCodec : ProtoCodec<ShortCollections> {
 
     // Encode nullableShortSet
     if (instance.nullableShortSet != null) {
-      writeMessage(5) {
-        instance.nullableShortSet.forEach {
-          writeInt(it.toInt())
+      if (instance.nullableShortSet.isNotEmpty()) {
+        writeMessage(5) {
+          instance.nullableShortSet.forEach {
+            writeInt(it.toInt())
 
+          }
         }
       }
     }

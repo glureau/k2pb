@@ -32,12 +32,14 @@ fun FunSpec.Builder.encodeSetType(
                 }
 
                 else -> {
+                    beginControlFlow("if ($instanceName.$fieldName.isNotEmpty())")
                     beginControlFlow("%M($tag)", writeMessageExt)
                     beginControlFlow("$instanceName.$fieldName.forEach")
                     addCode(setType.repeatedType.safeWriteMethodNoTag("it", true))
                     addStatement("")
                     endControlFlow() // forEach
                     endControlFlow() // writeMessage {}
+                    endControlFlow() // isNotEmpty
                 }
             }
         }
