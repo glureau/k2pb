@@ -13,14 +13,6 @@ Legend:
 
 These issues were independently identified by both analyses and are still present.
 
-### 2. `readString` missing bounds check
-**File:** `k2pb-runtime/.../ktx/ByteArrayInput.kt:42-45`
-**Priority:** P0 — Can read past logical buffer boundary into adjacent data.
-
-### 3. Boolean writeMethod hardcodes `writeInt(1, ...)`
-**File:** `k2pb-compiler/.../struct/ScalarFieldType.kt:154`
-**Priority:** P0 — `false` values in maps are encoded as `true`. (the bug is **map-values only**)
-
 ### 5. Nested collections silently drop data
 **Files:** `k2pb-compiler/.../struct/ListType.kt:57-59`, `SetType.kt:57-59`
 **Priority:** P0 — `List<List<Int>>` etc. emit only a comment, data silently lost.

@@ -118,6 +118,32 @@ class ByteArrayInputTest {
     }
 
     @Test
+    fun readString_insufficientBytes() {
+        val input = ByteArrayInput(byteArrayOf(0x68, 0x69)) // "hi"
+        assertFailsWith<SerializationException> {
+            input.readString(10)
+        }
+    }
+
+    @Test
+    fun readString_insufficientBytesAfterPartialRead() {
+        val input = ByteArrayInput("hello".encodeToByteArray())
+        assertEquals("hel", input.readString(3))
+        assertFailsWith<SerializationException> {
+            input.readString(5) // only 2 bytes left
+        }
+    }
+
+    @Test
+    fun readString_respectsEndIndex() {
+        val bytes = "helloworld".encodeToByteArray()
+        val input = ByteArrayInput(bytes, endIndex = 5)
+        assertFailsWith<SerializationException> {
+            input.readString(10)
+        }
+    }
+
+    @Test
     fun slice_isolatesSubRange() {
         val input = ByteArrayInput(byteArrayOf(10, 20, 30, 40, 50))
         val sliced = input.slice(3)

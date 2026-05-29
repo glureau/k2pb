@@ -64,6 +64,7 @@ internal class ByteArrayInput(private var array: ByteArray, private val endIndex
     }
 
     fun readString(length: Int): String {
+        ensureEnoughBytes(length)
         val result = array.decodeToString(position, position + length)
         position += length
         return result
