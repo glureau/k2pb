@@ -4,10 +4,14 @@ import com.glureau.custom.javapackage.AnEnumProto
 import com.glureau.custom.javapackage.dataClassFromLib
 import com.glureau.custom.javapackage.valueClassList
 import com.glureau.k2pb.K2PBConstants.ExplicitNullability.NOT_NULL
-import com.glureau.k2pb_sample.CollectionTypeProto
+import com.glureau.k2pb_sample.DataClassCollectionsProto
 import com.glureau.k2pb_sample.InlinedCollectionProto
-import com.glureau.sample.CollectionType
+import com.glureau.k2pb_sample.IntCollectionsProto
+import com.glureau.k2pb_sample.StringCollectionsProto
+import com.glureau.sample.DataClassCollections
 import com.glureau.sample.InlinedCollection
+import com.glureau.sample.IntCollections
+import com.glureau.sample.StringCollections
 import com.glureau.sample.lib.AnEnum
 import com.glureau.sample.lib.DataClassFromLib
 import com.glureau.sample.lib.NullableValueClassFromLib
@@ -21,7 +25,6 @@ import kotlin.test.Ignore
 
 class CollectionTest : BaseEncodingTest() {
 
-
     @Test
     fun listOfValueClass() {
         assertCompatibleSerialization(
@@ -34,106 +37,137 @@ class CollectionTest : BaseEncodingTest() {
     }
 
     @Test
-    fun checkCollectionTypeEvent() {
+    fun checkIntCollections() {
         assertCompatibleSerialization(
-            ktInstance = CollectionType(
+            ktInstance = IntCollections(
                 integerList = listOf(1, 3, 5),
-                stringList = listOf("aaa", "bbb", "ccc"),
-                maybeIntegerList = listOf(42, 51),
-                mapStringInt = mapOf(
-                    "a" to 2,
-                    "b" to 4,
-                ),
-                dataClassList = listOf(DataClassFromLib(33), DataClassFromLib(34)),
-                mapStringObject = mapOf(
-                    "d" to DataClassFromLib(68)
-                ),
                 integerSet = setOf(100, 1, 3),
-                stringSet = setOf("zzz", "xxx", "yyy"),
-                maybeIntegerSet = setOf(39, 38),
-                dataClassSet = setOf(DataClassFromLib(37), DataClassFromLib(36)),
+                nullableIntegerList = listOf(42, 51),
+                nullableIntegerSet = setOf(39, 38),
             ),
-            protocInstance = CollectionTypeProto.CollectionType.newBuilder()
-                // Randomized order => preserve proto number sorting in serialization
+            protocInstance = IntCollectionsProto.IntCollections.newBuilder()
                 .addIntegerList(1)
-                .addDataClassList(
-                    dataClassFromLib {
-                        myInt = 33
-                    }
-                )
                 .addIntegerList(3)
-                .addDataClassList(
-                    dataClassFromLib {
-                        myInt = 34
-                    }
-                )
-                .putMapStringInt("a", 2)
                 .addIntegerList(5)
-                .putMapStringInt("b", 4)
-                .addMaybeIntegerList(42)
-                .addMaybeIntegerList(51)
-                .setIsMaybeIntegerListNull(NOT_NULL)
-                .addStringList("aaa")
-                .addStringList("bbb")
-                .addStringList("ccc")
-                .putMapStringObject("d", dataClassFromLib { myInt = 68 })
                 .addIntegerSet(100)
                 .addIntegerSet(1)
                 .addIntegerSet(3)
-                .addStringSet("zzz")
-                .addStringSet("xxx")
-                .addStringSet("yyy")
-                .addMaybeIntegerSet(39)
-                .addMaybeIntegerSet(38)
-                .setIsMaybeIntegerSetNull(NOT_NULL)
-                .addDataClassSet(dataClassFromLib { myInt = 37 })
-                .addDataClassSet(dataClassFromLib { myInt = 36 })
+                .addNullableIntegerList(42)
+                .addNullableIntegerList(51)
+                .setIsNullableIntegerListNull(NOT_NULL)
+                .addNullableIntegerSet(39)
+                .addNullableIntegerSet(38)
+                .setIsNullableIntegerSetNull(NOT_NULL)
                 .build()
         )
     }
 
+    @Test
+    fun checkIntCollections_defaults() {
+        assertCompatibleSerialization(
+            ktInstance = IntCollections(
+                integerList = listOf(0, 0, 0),
+                integerSet = setOf(0),
+                nullableIntegerList = listOf(0, 0),
+                nullableIntegerSet = setOf(0),
+            ),
+            protocInstance = IntCollectionsProto.IntCollections.newBuilder()
+                .addIntegerList(0)
+                .addIntegerList(0)
+                .addIntegerList(0)
+                .addIntegerSet(0)
+                .addNullableIntegerList(0)
+                .addNullableIntegerList(0)
+                .setIsNullableIntegerListNull(NOT_NULL)
+                .addNullableIntegerSet(0)
+                .setIsNullableIntegerSetNull(NOT_NULL)
+                .build()
+        )
+    }
 
     @Test
-    fun defaultScalarAreStillEncoded() {
+    fun checkStringCollections() {
         assertCompatibleSerialization(
-            ktInstance = CollectionType(
-                integerList = listOf(0, 0, 0),
-                stringList = listOf("", "", ""),
-                maybeIntegerList = listOf(0, 0),
-                mapStringInt = mapOf(
-                    "" to 0,
-                ),
-                dataClassList = listOf(DataClassFromLib(0)),
-                mapStringObject = mapOf(
-                    "" to DataClassFromLib(0)
-                ),
-                integerSet = setOf(0, 0, 0), // That's a Set, only 1 '0' can exist
-                stringSet = setOf("", ""), // That's a Set, only 1 "" can exist
-                maybeIntegerSet = setOf(0),
-                dataClassSet = setOf(DataClassFromLib(0)),
+            ktInstance = StringCollections(
+                stringList = listOf("aaa", "bbb", "ccc"),
+                stringSet = setOf("zzz", "xxx", "yyy"),
+                nullableStringList = listOf("ddd", "eee"),
+                nullableStringSet = setOf("fff"),
             ),
-            protocInstance = CollectionTypeProto.CollectionType.newBuilder()
-                .addIntegerList(0)
-                .addIntegerList(0)
-                .addIntegerList(0)
+            protocInstance = StringCollectionsProto.StringCollections.newBuilder()
+                .addStringList("aaa")
+                .addStringList("bbb")
+                .addStringList("ccc")
+                .addStringSet("zzz")
+                .addStringSet("xxx")
+                .addStringSet("yyy")
+                .addNullableStringList("ddd")
+                .addNullableStringList("eee")
+                .setIsNullableStringListNull(NOT_NULL)
+                .addNullableStringSet("fff")
+                .setIsNullableStringSetNull(NOT_NULL)
+                .build()
+        )
+    }
+
+    @Test
+    fun checkStringCollections_defaults() {
+        assertCompatibleSerialization(
+            ktInstance = StringCollections(
+                stringList = listOf("", "", ""),
+                stringSet = setOf(""),
+                nullableStringList = listOf("", ""),
+                nullableStringSet = setOf(""),
+            ),
+            protocInstance = StringCollectionsProto.StringCollections.newBuilder()
                 .addStringList("")
                 .addStringList("")
                 .addStringList("")
-                .addMaybeIntegerList(0)
-                .addMaybeIntegerList(0)
-                .setIsMaybeIntegerListNull(NOT_NULL)
-                .putMapStringInt("", 0)
-                .addDataClassList(
-                    dataClassFromLib {
-                        myInt = 0
-                    }
-                )
-                .putMapStringObject("", dataClassFromLib { myInt = 0 })
-                .addIntegerSet(0)
                 .addStringSet("")
-                .addMaybeIntegerSet(0)
-                .setIsMaybeIntegerSetNull(NOT_NULL)
+                .addNullableStringList("")
+                .addNullableStringList("")
+                .setIsNullableStringListNull(NOT_NULL)
+                .addNullableStringSet("")
+                .setIsNullableStringSetNull(NOT_NULL)
+                .build()
+        )
+    }
+
+    @Test
+    fun checkDataClassCollections() {
+        assertCompatibleSerialization(
+            ktInstance = DataClassCollections(
+                dataClassList = listOf(DataClassFromLib(33), DataClassFromLib(34)),
+                dataClassSet = setOf(DataClassFromLib(37), DataClassFromLib(36)),
+                mapStringInt = mapOf("a" to 2, "b" to 4),
+                mapStringObject = mapOf("d" to DataClassFromLib(68)),
+            ),
+            protocInstance = DataClassCollectionsProto.DataClassCollections.newBuilder()
+                .addDataClassList(dataClassFromLib { myInt = 33 })
+                .addDataClassList(dataClassFromLib { myInt = 34 })
+                .addDataClassSet(dataClassFromLib { myInt = 37 })
+                .addDataClassSet(dataClassFromLib { myInt = 36 })
+                .putMapStringInt("a", 2)
+                .putMapStringInt("b", 4)
+                .putMapStringObject("d", dataClassFromLib { myInt = 68 })
+                .build()
+        )
+    }
+
+    @Test
+    fun checkDataClassCollections_defaults() {
+        assertCompatibleSerialization(
+            ktInstance = DataClassCollections(
+                dataClassList = listOf(DataClassFromLib(0)),
+                dataClassSet = setOf(DataClassFromLib(0)),
+                mapStringInt = mapOf("" to 0),
+                mapStringObject = mapOf("" to DataClassFromLib(0)),
+            ),
+            protocInstance = DataClassCollectionsProto.DataClassCollections.newBuilder()
+                .addDataClassList(dataClassFromLib { myInt = 0 })
                 .addDataClassSet(dataClassFromLib { myInt = 0 })
+                .putMapStringInt("", 0)
+                .putMapStringObject("", dataClassFromLib { myInt = 0 })
                 .build()
         )
     }

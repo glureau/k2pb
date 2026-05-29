@@ -79,7 +79,7 @@ data class ScalarFieldType(
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.code)") },
             readMethod = { CodeBlock.of("readInt(%T).toChar()", ProtoIntegerTypeDefault) },
-            readMethodNoTag = { CodeBlock.of("readIntNoTag().toChar()") },
+            readMethodNoTag = { CodeBlock.of("readInt32NoTag().toChar()") },
         )
         val CharNullable = Char.copy(isNullable = true)
         val Short = ScalarFieldType(
@@ -92,7 +92,7 @@ data class ScalarFieldType(
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.toInt())") },
             readMethod = { CodeBlock.of("readInt(%T).toShort()", ProtoIntegerTypeDefault) },
-            readMethodNoTag = { CodeBlock.of("readIntNoTag().toShort()") },
+            readMethodNoTag = { CodeBlock.of("readInt32NoTag().toShort()") },
         )
         val ShortNullable = Short.copy(isNullable = true)
         val Byte = ScalarFieldType(
@@ -105,7 +105,7 @@ data class ScalarFieldType(
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt($f.toInt())") },
             readMethod = { CodeBlock.of("readInt(%T).toByte()", ProtoIntegerTypeDefault) },
-            readMethodNoTag = { CodeBlock.of("readIntNoTag().toByte()") },
+            readMethodNoTag = { CodeBlock.of("readInt32NoTag().toByte()") },
         )
         val ByteNullable = Byte.copy(isNullable = true)
         val Long = ScalarFieldType(
@@ -156,7 +156,7 @@ data class ScalarFieldType(
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
             // '\n' are used because '·' is still wrapped even if it shouldn't...
             readMethod = { CodeBlock.of("\nreadInt(%T)·==·1", ProtoIntegerTypeDefault) },
-            readMethodNoTag = { CodeBlock.of("\nreadIntNoTag()·==·1") },
+            readMethodNoTag = { CodeBlock.of("\nreadInt32NoTag()·==·1") },
         )
         val BooleanNullable = Boolean.copy(isNullable = true)
         val ByteArray = ScalarFieldType(

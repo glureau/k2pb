@@ -4,7 +4,7 @@ import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.decodeFromByteArray
 import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.sample.BarEvent
-import com.glureau.sample.CollectionType
+import com.glureau.sample.DataClassCollections
 import com.glureau.sample.CommonClass
 import com.glureau.sample.FooEvent
 import com.glureau.sample.NullableNativeTypeEvent
@@ -49,22 +49,16 @@ class K2PBSerializationTest {
 
     @Test
     fun `test collection types serialization`() {
-        val collectionType = CollectionType(
-            integerList = listOf(1, 2, 3),
-            stringList = listOf("a", "b", "c"),
-            maybeIntegerList = listOf(4, 5, 6),
-            mapStringInt = mapOf("one" to 1, "two" to 2),
+        val collections = DataClassCollections(
             dataClassList = listOf(DataClassFromLib(7)),
-            mapStringObject = mapOf("height" to DataClassFromLib(8)),
-            integerSet = setOf(9, 10, 11),
-            stringSet = setOf("d", "e", "f"),
-            maybeIntegerSet = setOf(12, 13, 14),
             dataClassSet = setOf(DataClassFromLib(15)),
+            mapStringInt = mapOf("one" to 1, "two" to 2),
+            mapStringObject = mapOf("height" to DataClassFromLib(8)),
         )
-        val serialized = serializer.encodeToByteArray<CollectionType>(collectionType)
+        val serialized = serializer.encodeToByteArray<DataClassCollections>(collections)
         println("serialized: ${serialized.joinToString(" ") { it.toHexString() }}")
-        val deserialized = serializer.decodeFromByteArray<CollectionType>(serialized)
-        assertEquals(collectionType, deserialized)
+        val deserialized = serializer.decodeFromByteArray<DataClassCollections>(serialized)
+        assertEquals(collections, deserialized)
     }
 
     @Test

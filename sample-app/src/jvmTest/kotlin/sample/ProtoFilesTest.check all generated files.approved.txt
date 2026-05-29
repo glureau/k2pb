@@ -124,29 +124,58 @@ message BigDecimalValueClassHolder {
   string bdValue = 1;
 }
 
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CollectionType.proto
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/BooleanCollections.proto
 syntax = "proto3";
 
 package com.glureau.k2pb_sample;
 
-option java_outer_classname = "CollectionTypeProto";
+option java_outer_classname = "BooleanCollectionsProto";
 
 import "com/glureau/k2pb/ExplicitNullability.proto";
-import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 
-message CollectionType {
-  repeated int32 integerList = 1;
-  repeated string stringList = 2;
-  repeated int32 maybeIntegerList = 3;
-  com.glureau.k2pb.ExplicitNullability isMaybeIntegerListNull = 4;
-  map<string, int32> mapStringInt = 5;
-  repeated DataClassFromLib dataClassList = 6;
-  map<string, DataClassFromLib> mapStringObject = 7;
-  repeated int32 integerSet = 8;
-  repeated string stringSet = 9;
-  repeated int32 maybeIntegerSet = 10;
-  com.glureau.k2pb.ExplicitNullability isMaybeIntegerSetNull = 11;
-  repeated DataClassFromLib dataClassSet = 12;
+message BooleanCollections {
+  repeated bool booleanList = 1;
+  repeated bool booleanSet = 2;
+  repeated bool nullableBooleanList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableBooleanListNull = 4;
+  repeated bool nullableBooleanSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableBooleanSetNull = 6;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ByteCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "ByteCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message ByteCollections {
+  repeated int32 byteList = 1;
+  repeated int32 byteSet = 2;
+  repeated int32 nullableByteList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableByteListNull = 4;
+  repeated int32 nullableByteSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableByteSetNull = 6;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CharCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "CharCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message CharCollections {
+  repeated int32 charList = 1;
+  repeated int32 charSet = 2;
+  repeated int32 nullableCharList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableCharListNull = 4;
+  repeated int32 nullableCharSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableCharSetNull = 6;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/CommentedClass.proto
@@ -184,6 +213,22 @@ message CustomNameKtxClasses {
   string instant = 1;
 }
 
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DataClassCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "DataClassCollectionsProto";
+
+import "com/glureau/k2pb_sample/DataClassFromLib.proto";
+
+message DataClassCollections {
+  repeated DataClassFromLib dataClassList = 1;
+  repeated DataClassFromLib dataClassSet = 2;
+  map<string, int32> mapStringInt = 3;
+  map<string, DataClassFromLib> mapStringObject = 4;
+}
+
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DataClassFromLib.proto
 syntax = "proto3";
 
@@ -194,6 +239,24 @@ option java_outer_classname = "DataClassFromLibProto";
 
 message DataClassFromLib {
   int32 myInt = 1;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DoubleCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "DoubleCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message DoubleCollections {
+  repeated double doubleList = 1;
+  repeated double doubleSet = 2;
+  repeated double nullableDoubleList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableDoubleListNull = 4;
+  repeated double nullableDoubleSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableDoubleSetNull = 6;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumClass.proto
@@ -221,6 +284,24 @@ import "com/glureau/k2pb_sample/AnEnum.proto";
 
 message EnumHolder {
   AnEnum value = 1;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/FloatCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "FloatCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message FloatCollections {
+  repeated float floatList = 1;
+  repeated float floatSet = 2;
+  repeated float nullableFloatList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableFloatListNull = 4;
+  repeated float nullableFloatSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableFloatSetNull = 6;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/FooEvent.proto
@@ -256,6 +337,24 @@ message InlinedCollection {
   repeated string valueClassOfNullableStringSet = 8;
 }
 
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/IntCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "IntCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message IntCollections {
+  repeated int32 integerList = 1;
+  repeated int32 integerSet = 2;
+  repeated int32 nullableIntegerList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableIntegerListNull = 4;
+  repeated int32 nullableIntegerSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableIntegerSetNull = 6;
+}
+
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/KtxClassesHolder.proto
 syntax = "proto3";
 
@@ -267,6 +366,24 @@ import "com/glureau/k2pb_sample/CustomNameKtxClasses.proto";
 
 message KtxClassesHolder {
   CustomNameKtxClasses delegated = 1;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/LongCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "LongCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message LongCollections {
+  repeated int64 longList = 1;
+  repeated int64 longSet = 2;
+  repeated int64 nullableLongList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableLongListNull = 4;
+  repeated int64 nullableLongSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableLongSetNull = 6;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
@@ -763,6 +880,24 @@ message RequiredToOptionalStart {
   string b = 2;
 }
 
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/ShortCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "ShortCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message ShortCollections {
+  repeated int32 shortList = 1;
+  repeated int32 shortSet = 2;
+  repeated int32 nullableShortList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableShortListNull = 4;
+  repeated int32 nullableShortSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableShortSetNull = 6;
+}
+
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/StandardClass.proto
 syntax = "proto3";
 
@@ -773,6 +908,24 @@ option java_outer_classname = "StandardClassProto";
 message StandardClass {
   string eventUUID = 1;
   bytes bytes = 2;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/StringCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "StringCollectionsProto";
+
+import "com/glureau/k2pb/ExplicitNullability.proto";
+
+message StringCollections {
+  repeated string stringList = 1;
+  repeated string stringSet = 2;
+  repeated string nullableStringList = 3;
+  com.glureau.k2pb.ExplicitNullability isNullableStringListNull = 4;
+  repeated string nullableStringSet = 5;
+  com.glureau.k2pb.ExplicitNullability isNullableStringSetNull = 6;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/TransientField.proto
