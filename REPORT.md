@@ -25,10 +25,6 @@ These issues were independently identified by both analyses and are still presen
 **File:** `k2pb-compiler/.../struct/MapType.kt:64-85`
 **Priority:** P1 — Protobuf spec does not guarantee field order within a message.
 
-### 9. `checkLength` has no upper bound validation
-**File:** `k2pb-runtime/.../ktx/ProtobufReaderImpl.kt:168-172`
-**Priority:** P1 — Corrupted length of `Int.MAX_VALUE` causes OOM.
-
 ### 10. Varint slow path doesn't detect EOF
 **File:** `k2pb-runtime/.../ktx/ByteArrayInput.kt:104-130`
 **Priority:** P1 — EOF (-1) interpreted as continuation byte 0x7F/0xFF.
@@ -40,10 +36,6 @@ These issues were independently identified by both analyses and are still presen
 ### 12. No proto field number range validation
 **File:** `k2pb-compiler/.../struct/NumberManager.kt`
 **Priority:** P1 — No check for max (536870911), reserved range (19000-19999), or minimum (1).
-
-### 13. `Thread.sleep(3000)` left in compiler code
-**File:** `k2pb-compiler/.../mapping/Mapping.kt:116`
-**Priority:** P2 — Debug artifact blocking KSP compiler thread.
 
 ### 14. Static mutable state leaks across Gradle daemon builds
 **Files:** `K2PBCompiler.kt:30` (`sharedLogger`), `TypeResolver.kt:8` (mutable map)

@@ -112,9 +112,9 @@ private fun KSClassDeclaration.abstractToMessageNode(): MessageNode {
 private fun KSClassDeclaration.dataClassToMessageNode(): MessageNode {
     val primaryCtor = primaryConstructor
     if (primaryCtor == null) {
-        Logger.error("${this.simpleName.asString()} should have a primary constructor", this)
-        Thread.sleep(3000)
-        error("Primary constructor is required")
+        val message = "${this.simpleName.asString()} should have a primary constructor"
+        Logger.error(message, this)
+        error(message) // throw to stop the flow
     }
     val deprecatedFields = deprecatedFields.map { it.mapToDeprecatedField() } +
             deprecatedNullabilityFields.map { it.mapToDeprecatedNullabilityField() }

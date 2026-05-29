@@ -1,5 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
+import com.glureau.k2pb.compiler.Logger
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.FunSpec
@@ -57,7 +58,7 @@ fun FunSpec.Builder.encodeSetType(
         }
 
         else -> {
-            addStatement("/* ${setType.repeatedType} */")
+            Logger.error("Nested collection detected in Set encode ($fieldName): ${setType.repeatedType} is not supported and data would be silently lost.")
         }
     }
 
@@ -109,8 +110,7 @@ fun FunSpec.Builder.decodeSetType(fieldName: String, setType: SetType) {
         }
 
         else -> {
-            addStatement("/* ${setType.repeatedType} */")
-            //TODO("Not supported yet")
+            Logger.error("Nested collection detected in Set decode ($fieldName): ${setType.repeatedType} is not supported and data would be silently lost.")
         }
     }
 }
