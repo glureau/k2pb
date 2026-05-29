@@ -517,13 +517,27 @@ import com.glureau.k2pb.ProtobufWriter
 internal class EnumClassCodec : ProtoCodec<EnumClass> {
   override fun ProtobufWriter.encode(instance: EnumClass?, protoCodec: DelegateProtoCodec) {
     if (instance == null) return
-    if (instance.ordinal != 0) {
-      writeInt(instance.ordinal)
+    val protoNumber = when (instance) {
+      EnumClass.A -> 0
+      EnumClass.B -> 1
+      EnumClass.C -> 2
+      else -> return
+    }
+    if (protoNumber != 0) {
+      writeInt(protoNumber)
     }
     // else: default value should not be encoded
   }
 
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): EnumClass? = EnumClass.entries.getOrNull(readInt32NoTag())
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): EnumClass? {
+    val protoNumber = readInt32NoTag()
+    return when (protoNumber) {
+      0 -> EnumClass.A
+      1 -> EnumClass.B
+      2 -> EnumClass.C
+      else -> null
+    }
+  }
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/FooEventCodec.kt
@@ -831,7 +845,7 @@ internal class NativeTypeEventCodec : ProtoCodec<NativeTypeEvent> {
 
     // Encode boolean
     if (instance.boolean != false) {
-      writeInt(1, 8, ProtoIntegerType.DEFAULT)
+      writeInt(if (instance.boolean) 1 else 0, 8, ProtoIntegerType.DEFAULT)
     }
     // else: default value should not be encoded
 
@@ -994,7 +1008,7 @@ internal class NativeTypeEventUnspecifiedDefaultCodec : ProtoCodec<NativeTypeEve
 
     // Encode boolean
     if (instance.boolean != false) {
-      writeInt(1, 8, ProtoIntegerType.DEFAULT)
+      writeInt(if (instance.boolean) 1 else 0, 8, ProtoIntegerType.DEFAULT)
     }
     // else: default value should not be encoded
 
@@ -1077,6 +1091,92 @@ internal class NativeTypeEventUnspecifiedDefaultCodec : ProtoCodec<NativeTypeEve
       boolean = boolean == true,
       byte = byte ?: 0,
       byteArray = byteArray ?: byteArrayOf(),
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/NonContiguousEnumCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/EnumClass.kt
+package com.glureau.sample
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+
+internal class NonContiguousEnumCodec : ProtoCodec<NonContiguousEnum> {
+  override fun ProtobufWriter.encode(instance: NonContiguousEnum?, protoCodec: DelegateProtoCodec) {
+    if (instance == null) return
+    val protoNumber = when (instance) {
+      NonContiguousEnum.UNKNOWN -> 0
+      NonContiguousEnum.ACTIVE -> 5
+      NonContiguousEnum.INACTIVE -> 10
+      else -> return
+    }
+    if (protoNumber != 0) {
+      writeInt(protoNumber)
+    }
+    // else: default value should not be encoded
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NonContiguousEnum? {
+    val protoNumber = readInt32NoTag()
+    return when (protoNumber) {
+      0 -> NonContiguousEnum.UNKNOWN
+      5 -> NonContiguousEnum.ACTIVE
+      10 -> NonContiguousEnum.INACTIVE
+      else -> null
+    }
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/NonContiguousEnumHolderCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/EnumClass.kt
+package com.glureau.sample
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.ktx.ProtoWireType
+
+internal class NonContiguousEnumHolderCodec : ProtoCodec<NonContiguousEnumHolder> {
+  override fun ProtobufWriter.encode(instance: NonContiguousEnumHolder?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode status
+    // Enum should not be encoded if it's the default value
+    if (instance.status != com.glureau.sample.NonContiguousEnum.UNKNOWN) {
+      writeInt(ProtoWireType.VARINT.wireIntWithTag(1))
+      with(protoCodec) {
+        encode(instance.status, NonContiguousEnum::class)
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NonContiguousEnumHolder? {
+    var status: NonContiguousEnum? = null
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          with(protoCodec) {
+            decode(NonContiguousEnum::class)
+          }
+          ?.let {
+            status = it
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NonContiguousEnumHolder::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NonContiguousEnumHolder(
+      status = status ?: com.glureau.sample.NonContiguousEnum.UNKNOWN,
     )
   }
 }
@@ -1575,7 +1675,7 @@ internal class NullableNativeTypeEventCodec : ProtoCodec<NullableNativeTypeEvent
     // Encode boolean
     if (instance.boolean != null) {
       if (instance.boolean != false) {
-        writeInt(1, 15, ProtoIntegerType.DEFAULT)
+        writeInt(if (instance.boolean) 1 else 0, 15, ProtoIntegerType.DEFAULT)
       }
       // else: default value should not be encoded
     }
@@ -1899,7 +1999,7 @@ internal class NullableNativeTypeEventUnspecifiedDefaultCodec : ProtoCodec<Nulla
     // Encode boolean
     if (instance.boolean != null) {
       if (instance.boolean != false) {
-        writeInt(1, 15, ProtoIntegerType.DEFAULT)
+        writeInt(if (instance.boolean) 1 else 0, 15, ProtoIntegerType.DEFAULT)
       }
       // else: default value should not be encoded
     }
@@ -2223,7 +2323,7 @@ internal class NullableNativeTypeEventUnspecifiedNullCodec : ProtoCodec<Nullable
     // Encode boolean
     if (instance.boolean != null) {
       if (instance.boolean != false) {
-        writeInt(1, 15, ProtoIntegerType.DEFAULT)
+        writeInt(if (instance.boolean) 1 else 0, 15, ProtoIntegerType.DEFAULT)
       }
       // else: default value should not be encoded
     }
@@ -3990,6 +4090,20 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "EnumClass",
   )
   registerCodec(
+      targetType = NonContiguousEnum::class,
+      codec = NonContiguousEnumCodec(),
+      protoMessageName = "NonContiguousEnum",
+  )
+  registerCodec(
+      targetType = NonContiguousEnumHolder::class,
+      codec = NonContiguousEnumHolderCodec(),
+      protoMessageName = "NonContiguousEnumHolder",
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NonContiguousEnumHolder::class,
+  )
+  registerCodec(
       targetType = BigDecimalHolder::class,
       codec = BigDecimalHolderCodec(),
       protoMessageName = "BigDecimalHolder",
@@ -5410,13 +5524,27 @@ import com.glureau.k2pb.ProtobufWriter
 internal class WithNestClassB_NestedClass_NestedEnumCodec : ProtoCodec<WithNestClassB.NestedClass.NestedEnum> {
   override fun ProtobufWriter.encode(instance: WithNestClassB.NestedClass.NestedEnum?, protoCodec: DelegateProtoCodec) {
     if (instance == null) return
-    if (instance.ordinal != 0) {
-      writeInt(instance.ordinal)
+    val protoNumber = when (instance) {
+      WithNestClassB.NestedClass.NestedEnum.A -> 0
+      WithNestClassB.NestedClass.NestedEnum.B -> 1
+      WithNestClassB.NestedClass.NestedEnum.C -> 2
+      else -> return
+    }
+    if (protoNumber != 0) {
+      writeInt(protoNumber)
     }
     // else: default value should not be encoded
   }
 
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestClassB.NestedClass.NestedEnum? = WithNestClassB.NestedClass.NestedEnum.entries.getOrNull(readInt32NoTag())
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestClassB.NestedClass.NestedEnum? {
+    val protoNumber = readInt32NoTag()
+    return when (protoNumber) {
+      0 -> WithNestClassB.NestedClass.NestedEnum.A
+      1 -> WithNestClassB.NestedClass.NestedEnum.B
+      2 -> WithNestClassB.NestedClass.NestedEnum.C
+      else -> null
+    }
+  }
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/WithNestedEnumCodec.kt
@@ -5482,13 +5610,27 @@ import com.glureau.k2pb.ProtobufWriter
 internal class WithNestedEnum_NestedEnumCodec : ProtoCodec<WithNestedEnum.NestedEnum> {
   override fun ProtobufWriter.encode(instance: WithNestedEnum.NestedEnum?, protoCodec: DelegateProtoCodec) {
     if (instance == null) return
-    if (instance.ordinal != 0) {
-      writeInt(instance.ordinal)
+    val protoNumber = when (instance) {
+      WithNestedEnum.NestedEnum.A -> 0
+      WithNestedEnum.NestedEnum.B -> 1
+      WithNestedEnum.NestedEnum.C -> 2
+      else -> return
+    }
+    if (protoNumber != 0) {
+      writeInt(protoNumber)
     }
     // else: default value should not be encoded
   }
 
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestedEnum.NestedEnum? = WithNestedEnum.NestedEnum.entries.getOrNull(readInt32NoTag())
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestedEnum.NestedEnum? {
+    val protoNumber = readInt32NoTag()
+    return when (protoNumber) {
+      0 -> WithNestedEnum.NestedEnum.A
+      1 -> WithNestedEnum.NestedEnum.B
+      2 -> WithNestedEnum.NestedEnum.C
+      else -> null
+    }
+  }
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/BooleanCollectionsCodec.kt
@@ -6287,11 +6429,20 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
         writeMessage(2) { with(protoCodec) { encode(it.value, DataClassFromLib::class) } }
       }
     }
+
+    // Encode mapStringBoolean
+    instance.mapStringBoolean.forEach {
+      writeMessage(3) {
+        writeString(it.key, 1)
+        writeInt(if (it.value) 1 else 0, 2, ProtoIntegerType.DEFAULT)
+      }
+    }
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): MapCollections? {
     val mapStringInt: MutableMap<kotlin.String, kotlin.Int> = mutableMapOf()
     val mapStringObject: MutableMap<kotlin.String, com.glureau.sample.lib.DataClassFromLib> = mutableMapOf()
+    val mapStringBoolean: MutableMap<kotlin.String, kotlin.Boolean> = mutableMapOf()
 
     while (!eof) {
       when (val tag = readTag()) {
@@ -6313,6 +6464,16 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
             mapStringObject[key] = value
           }
         }
+        3 -> {
+          readMessage() {
+            readTag()
+            val key = readStringNoTag()
+            readTag()
+            val value = 
+            readInt32NoTag() == 1
+            mapStringBoolean[key] = value
+          }
+        }
         else -> {
           // Ignore unknown tag, basic forward compatibility
           protoCodec.onUnknownProtoNumber(MapCollections::class, tag)
@@ -6323,6 +6484,7 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
     return MapCollections(
       mapStringInt = mapStringInt,
       mapStringObject = mapStringObject,
+      mapStringBoolean = mapStringBoolean,
     )
   }
 }

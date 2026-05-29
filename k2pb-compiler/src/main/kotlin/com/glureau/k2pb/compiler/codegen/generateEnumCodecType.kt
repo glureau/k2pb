@@ -5,18 +5,29 @@ import com.glureau.k2pb.compiler.struct.ScalarFieldType
 import com.glureau.k2pb.compiler.struct.asClassName
 import com.squareup.kotlinpoet.FileSpec
 
-// TODO: WARNING, this is not checking for ProtoNumber annotations yet, using ordinal does limit to contiguous values
 fun FileSpec.Builder.generateEnumCodecType(enumNode: EnumNode) = generateCodecType(
     node = enumNode,
     encodeContent = { instanceName: String, protoCodecName: String ->
         addStatement("if ($instanceName == null) return")
-        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("$instanceName.ordinal", false))
+        val className = enumNode.asClassName()
+        beginControlFlow("val protoNumber = when ($instanceName)")
+        for (entry in enumNode.entries) {
+            addStatement("%T.${entry.kotlinName} -> ${entry.number}", className)
+        }
+        addStatement("else -> return")
+        endControlFlow()
+        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("protoNumber", false))
     },
     decodeContent = { instanceName: String, protoCodecName: String ->
-        addStatement(
-            "return %T.entries.getOrNull(%L)",
-            enumNode.asClassName(),
-            ScalarFieldType.Int.readMethodNoTag()
-        )
+        val className = enumNode.asClassName()
+        addCode("val protoNumber = ")
+        addCode(ScalarFieldType.Int.readMethodNoTag())
+        addStatement("")
+        beginControlFlow("return when (protoNumber)")
+        for (entry in enumNode.entries) {
+            addStatement("${entry.number} -> %T.${entry.kotlinName}", className)
+        }
+        addStatement("else -> null")
+        endControlFlow()
     }
 )

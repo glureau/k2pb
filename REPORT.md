@@ -13,21 +13,13 @@ Legend:
 
 These issues were independently identified by both analyses and are still present.
 
-### 1. Enum codec uses ordinal instead of proto field numbers
-**File:** `k2pb-compiler/.../codegen/generateEnumCodecType.kt:13`
-**Priority:** P0 — Data corruption when enums have non-contiguous proto numbers.
-
 ### 2. `readString` missing bounds check
 **File:** `k2pb-runtime/.../ktx/ByteArrayInput.kt:42-45`
 **Priority:** P0 — Can read past logical buffer boundary into adjacent data.
 
 ### 3. Boolean writeMethod hardcodes `writeInt(1, ...)`
 **File:** `k2pb-compiler/.../struct/ScalarFieldType.kt:154`
-**Priority:** P0 — `false` values in maps are encoded as `true`. ANALYSIS.md focused on maps, REPORT.md also flagged lists/sets; verified that lists/sets use `writeMethodNoTag` (correct), so the bug is **map-values only**.
-
-### 4. `readIntLittleEndian` / `readLongLittleEndian` don't check for EOF
-**File:** `k2pb-runtime/.../ktx/ProtobufReaderImpl.kt:126-144`
-**Priority:** P0 — Truncated streams silently produce corrupt fixed32/fixed64/float/double values.
+**Priority:** P0 — `false` values in maps are encoded as `true`. (the bug is **map-values only**)
 
 ### 5. Nested collections silently drop data
 **Files:** `k2pb-compiler/.../struct/ListType.kt:57-59`, `SetType.kt:57-59`
@@ -40,10 +32,6 @@ These issues were independently identified by both analyses and are still presen
 ### 7. Map decoding assumes key-before-value ordering
 **File:** `k2pb-compiler/.../struct/MapType.kt:64-85`
 **Priority:** P1 — Protobuf spec does not guarantee field order within a message.
-
-### 8. Map key enum uses ordinal instead of proto number
-**File:** `k2pb-compiler/.../struct/MapType.kt:28-29`
-**Priority:** P1 — Same ordinal issue as #1 but for map keys.
 
 ### 9. `checkLength` has no upper bound validation
 **File:** `k2pb-runtime/.../ktx/ProtobufReaderImpl.kt:168-172`
@@ -80,14 +68,6 @@ These issues were independently identified by both analyses and are still presen
 ### 17. Force-unwrap on class resolution
 **File:** `k2pb-compiler/.../K2PBCompiler.kt:146`
 **Priority:** P2 — Crashes with NPE instead of helpful error.
-
-### 18. `readMessage` allocates unnecessary copy
-**File:** `k2pb-runtime/.../runtime/protobufWriter.kt:23`
-**Priority:** P2 — Could use `slice()` instead of `readByteArray()`.
-
-### 19. `writeMessage` double-copies message body
-**File:** `k2pb-runtime/.../runtime/protobufWriter.kt:17-19`
-**Priority:** P2 — Two copies of every nested message.
 
 ### 20. Inconsistent `ProtoWireType` naming
 **File:** `k2pb-runtime/.../ktx/ProtoWireType.kt`
@@ -134,39 +114,3 @@ These issues were flagged by only one analysis but verified still present.
 
 ### 30. Excessive `TODO()` calls that throw at runtime (both, but different framing)
 **Priority:** P2 — 30+ `TODO()` on reachable code paths throw `NotImplementedError`.
-
----
-
-## FIXED — No Longer Relevant
-
-These issues were reported but have been fixed in the current codebase:
-
-| # | Issue | Status |
-|---|-------|--------|
-| F1 | Double `return` keyword in `nameOrDefault.kt` | **FIXED** — single return now |
-| F2 | Swallowed `FileAlreadyExistsException` in `KspExt.kt` | **FIXED** — now logged via `Logger.warn` |
-| F3 | `println` for logging in `K2PB.kt` | **FIXED** — removed |
-| F4 | Inconsistent `Locale` in `ClassNameToOneOfField.kt` | **FIXED** — both use `Locale.US` now |
-| F5 | `SerializationException` extends `IllegalArgumentException` | **FIXED** — now extends `RuntimeException` |
-| F6 | Non-thread-safe `indentsCache` | **FIXED** — uses `ConcurrentHashMap` |
-| F7 | Dead code (`OneOfRecorder`, `OptionManager`, `registerConverter`) | **FIXED** — all removed |
-| F8 | Computed value discarded in `appendFields.kt` | **FIXED** — value now used via `appendComment` |
-
----
-
-## Summary
-
-| Category | Count |
-|----------|-------|
-| **Confirmed (2x)** — both analyses, still present | 23 |
-| **Confirmed (1x)** — one analysis, verified present | 7 |
-| **Fixed** — no longer relevant | 8 |
-
-### By Priority (active issues only)
-
-| Priority | Count | Examples |
-|----------|-------|---------|
-| **P0 — Critical** | 6 | Buffer overrun, enum ordinal, boolean maps, EOF handling, nested collections, readString bounds |
-| **P1 — High** | 7 | Package prefix, map ordering, nullable maps, field number validation, enum zero-value |
-| **P2 — Medium** | 8 | Thread.sleep, static state, recursion limit, allow_alias, TODO() calls |
-| **P3 — Low** | 9 | Wire type naming, duplicated files, oot variable, mutable interface, varint sentinel |

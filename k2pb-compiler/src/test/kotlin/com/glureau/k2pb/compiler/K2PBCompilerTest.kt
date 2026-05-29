@@ -1,19 +1,21 @@
 package com.glureau.k2pb.compiler
 
+import com.glureau.k2pb.compiler.codegen.generateEnumCodecType
+import com.glureau.k2pb.compiler.struct.EnumEntry
+import com.glureau.k2pb.compiler.struct.EnumNode
+import com.glureau.k2pb.compiler.struct.codecClassName
 import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspWithCompilation
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import com.squareup.kotlinpoet.FileSpec
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/**
- * Basic KSP compilation tests for the K2PB compiler plugin.
- * Uses kotlin-compile-testing-ksp to verify the processor runs and generates code.
- */
 @OptIn(ExperimentalCompilerApi::class)
 class K2PBCompilerTest {
 
@@ -161,9 +163,6 @@ class K2PBCompilerTest {
             """.trimIndent()
         )
         val result = compile(source)
-        // The compiler may succeed (KSP skips unannotated-style classes) or fail
-        // depending on how the processor handles missing primary constructors.
-        // Either outcome is acceptable as long as it doesn't crash.
         assertTrue(
             "Should compile OK or report error gracefully",
             result.exitCode == KotlinCompilation.ExitCode.OK ||
@@ -189,7 +188,6 @@ class K2PBCompilerTest {
         )
         val result = compile(source)
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
-        // Verify generated codec-related files exist in the compiled output
         val codecFiles = result.compiledClassAndResourceFiles.filter { it.name.contains("Codec") }
         println("Codec files found: ${codecFiles.map { it.name }}")
         assertTrue("At least one Codec class file should be generated", codecFiles.isNotEmpty())
@@ -210,5 +208,119 @@ class K2PBCompilerTest {
         )
         val result = compile(source)
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
+    // --- Enum codec code generation tests ---
+
+    private fun buildEnumCodecSource(enumNode: EnumNode): String {
+        val fileSpec = FileSpec.builder(enumNode.codecClassName())
+        fileSpec.generateEnumCodecType(enumNode)
+        val sb = StringBuilder()
+        fileSpec.build().writeTo(sb)
+        return sb.toString()
+    }
+
+    @Test
+    fun enumCodec_usesProtoNumbers_notOrdinals() {
+        val enumNode = EnumNode(
+            packageName = "test",
+            qualifiedName = "test.Status",
+            name = "Status",
+            protoName = "Status",
+            comment = null,
+            entries = listOf(
+                EnumEntry("UNKNOWN", null, 0),
+                EnumEntry("ACTIVE", null, 5),
+                EnumEntry("INACTIVE", null, 10),
+            ),
+            originalFile = null,
+        )
+        val codecContent = buildEnumCodecSource(enumNode)
+
+        assertTrue(
+            "Encode should map ACTIVE -> 5 (proto number), not ordinal",
+            codecContent.contains("Status.ACTIVE -> 5")
+        )
+        assertTrue(
+            "Encode should map INACTIVE -> 10 (proto number), not ordinal",
+            codecContent.contains("Status.INACTIVE -> 10")
+        )
+        assertTrue(
+            "Decode should map 5 -> ACTIVE",
+            codecContent.contains("5 -> Status.ACTIVE")
+        )
+        assertTrue(
+            "Decode should map 10 -> INACTIVE",
+            codecContent.contains("10 -> Status.INACTIVE")
+        )
+        assertFalse(
+            "Should not use .ordinal for encoding",
+            codecContent.contains(".ordinal")
+        )
+        assertFalse(
+            "Should not use entries.getOrNull for decoding",
+            codecContent.contains("entries.getOrNull")
+        )
+        assertFalse(
+            "Should not use entries[ for decoding",
+            codecContent.contains("entries[")
+        )
+    }
+
+    @Test
+    fun enumCodec_defaultNumbersAreContiguous() {
+        val enumNode = EnumNode(
+            packageName = "test",
+            qualifiedName = "test.Direction",
+            name = "Direction",
+            protoName = "Direction",
+            comment = null,
+            entries = listOf(
+                EnumEntry("NORTH", null, 0),
+                EnumEntry("SOUTH", null, 1),
+                EnumEntry("EAST", null, 2),
+                EnumEntry("WEST", null, 3),
+            ),
+            originalFile = null,
+        )
+        val codecContent = buildEnumCodecSource(enumNode)
+
+        assertTrue("Encode should map NORTH -> 0", codecContent.contains("Direction.NORTH -> 0"))
+        assertTrue("Encode should map SOUTH -> 1", codecContent.contains("Direction.SOUTH -> 1"))
+        assertTrue("Encode should map EAST -> 2", codecContent.contains("Direction.EAST -> 2"))
+        assertTrue("Encode should map WEST -> 3", codecContent.contains("Direction.WEST -> 3"))
+        assertTrue("Decode should map 0 -> NORTH", codecContent.contains("0 -> Direction.NORTH"))
+        assertTrue("Decode should map 3 -> WEST", codecContent.contains("3 -> Direction.WEST"))
+    }
+
+    @Test
+    fun enumCodec_mixedAnnotatedAndAutoNumbers() {
+        val enumNode = EnumNode(
+            packageName = "test",
+            qualifiedName = "test.Priority",
+            name = "Priority",
+            protoName = "Priority",
+            comment = null,
+            entries = listOf(
+                EnumEntry("UNSET", null, 0),
+                EnumEntry("HIGH", null, 10),
+                EnumEntry("MEDIUM", null, 1),
+                EnumEntry("LOW", null, 2),
+            ),
+            originalFile = null,
+        )
+        val codecContent = buildEnumCodecSource(enumNode)
+
+        assertTrue("Encode should map UNSET -> 0", codecContent.contains("Priority.UNSET -> 0"))
+        assertTrue(
+            "Encode should map HIGH -> 10 (annotated)",
+            codecContent.contains("Priority.HIGH -> 10")
+        )
+        assertTrue(
+            "Encode should map MEDIUM -> 1 (auto-assigned)",
+            codecContent.contains("Priority.MEDIUM -> 1")
+        )
+        assertTrue("Decode should map 10 -> HIGH", codecContent.contains("10 -> Priority.HIGH"))
+        assertTrue("Decode should map 1 -> MEDIUM", codecContent.contains("1 -> Priority.MEDIUM"))
     }
 }

@@ -46,4 +46,30 @@ class MapCollectionTest : BaseEncodingTest() {
                 .build()
         )
     }
+
+    @Test
+    fun mapCollections_booleanValues() {
+        assertCompatibleSerialization(
+            ktInstance = MapCollections(
+                mapStringBoolean = mapOf("enabled" to true, "disabled" to false),
+            ),
+            protocInstance = MapCollectionsProto.MapCollections.newBuilder()
+                .putMapStringBoolean("enabled", true)
+                .putMapStringBoolean("disabled", false)
+                .build()
+        )
+    }
+
+    @Test
+    fun mapCollections_booleanAllFalse() {
+        assertCompatibleSerialization(
+            ktInstance = MapCollections(
+                mapStringBoolean = mapOf("a" to false, "b" to false),
+            ),
+            protocInstance = MapCollectionsProto.MapCollections.newBuilder()
+                .putMapStringBoolean("a", false)
+                .putMapStringBoolean("b", false)
+                .build()
+        )
+    }
 }

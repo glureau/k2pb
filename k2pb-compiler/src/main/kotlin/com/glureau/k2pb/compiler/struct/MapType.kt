@@ -1,6 +1,6 @@
 package com.glureau.k2pb.compiler.struct
 
-import com.glureau.k2pb.compiler.poet.ProtoIntegerTypeDefault
+import com.glureau.k2pb.compiler.poet.ProtoWireTypeClassName
 import com.glureau.k2pb.compiler.poet.readMessageExt
 import com.glureau.k2pb.compiler.poet.writeMessageExt
 import com.squareup.kotlinpoet.CodeBlock
@@ -22,34 +22,33 @@ fun StringBuilder.appendKotlinMapDefinition(type: MapType) = apply {
 fun FunSpec.Builder.encodeMapType(instanceName: String, fieldName: String, type: MapType, tag: Int) {
     beginControlFlow("$instanceName.${fieldName}.forEach")
     beginControlFlow("%M($tag)", writeMessageExt)
-    if (type.keyType.useEnumAsKey()) {
-        addCode(
-            CodeBlock.of(
-                "writeInt(it.key.ordinal, 1, %T)\n",
-                ProtoIntegerTypeDefault
-            )
-        )
-    } else {
-        addCode(type.keyType.write("it.key", 1))
-    }
+    addCode(type.keyType.write("it.key", 1))
     addCode(type.valueType.write("it.value", 2))
     endControlFlow() // writeMessage of the item
     endControlFlow() // forEach
 }
 
-// Enum not supported for keys, what we can do is use the enum ordinal in a best-effort approach,
-// also it doesn't offer the same guarantees...
 internal fun FieldType.useEnumAsKey(): Boolean = this is ReferenceType && this.isEnum
 
 private fun FieldType.write(name: String, tag: Int): CodeBlock =
     when (this) {
         is ScalarFieldType -> safeWriteMethod(name, tag, true)
-        is ReferenceType -> CodeBlock.of(
-            "writeMessage(%L) { with(protoCodec) { encode(%L, %T::class) } }\n",
-            tag,
-            name,
-            className
-        )
+        is ReferenceType -> if (isEnum) {
+            CodeBlock.of(
+                "writeInt(%T.VARINT.wireIntWithTag(%L))\nwith(protoCodec) { encode(%L, %T::class) }\n",
+                ProtoWireTypeClassName,
+                tag,
+                name,
+                className
+            )
+        } else {
+            CodeBlock.of(
+                "writeMessage(%L) { with(protoCodec) { encode(%L, %T::class) } }\n",
+                tag,
+                name,
+                className
+            )
+        }
 
         else -> CodeBlock.of("Map key or value cannot be a reference type name=$name, tag=$tag")
     }
@@ -64,17 +63,7 @@ fun FunSpec.Builder.decodeMapType(fieldName: String, type: MapType) {
     /// TODO: We may write it differently so that we can swap the key and value... (warning on perf tho)
     addStatement("readTag()") // Should be 1
     addCode("val key = ")
-    if (type.keyType.useEnumAsKey()) {
-        addCode(
-            CodeBlock.of(
-                "%T.entries[readInt(%T)]",
-                (type.keyType as ReferenceType).className,
-                ProtoIntegerTypeDefault
-            )
-        )
-    } else {
-        addCode(type.keyType.readNoTag(fieldName, "key"))
-    }
+    addCode(type.keyType.readNoTag(fieldName, "key"))
     addStatement("")
 
     addStatement("readTag()") // Should be 2
@@ -88,13 +77,19 @@ fun FunSpec.Builder.decodeMapType(fieldName: String, type: MapType) {
 private fun FieldType.readNoTag(fieldName: String, string: String): CodeBlock =
     when (this) {
         is ScalarFieldType -> readMethodNoTag()
-        // TODO: improve this very basic implementation that uses requireNotNul...
-        //   (only not-null maps are supported for now)
-        is ReferenceType -> CodeBlock.of(
-            "readMessage { with(protoCodec) { requireNotNull(decode(%T::class)) " +
-                    "{ \"Map·'${fieldName}'·contains·a·$string·which·is·declared·as·not·nullable·but·is·null\" } " +
-                    "} }", className
-        )
+        is ReferenceType -> if (isEnum) {
+            CodeBlock.of(
+                "with(protoCodec) { requireNotNull(decode(%T::class)) " +
+                        "{ \"Map·'${fieldName}'·contains·a·$string·which·is·declared·as·not·nullable·but·is·null\" } " +
+                        "}", className
+            )
+        } else {
+            CodeBlock.of(
+                "readMessage { with(protoCodec) { requireNotNull(decode(%T::class)) " +
+                        "{ \"Map·'${fieldName}'·contains·a·$string·which·is·declared·as·not·nullable·but·is·null\" } " +
+                        "} }", className
+            )
+        }
 
         else -> TODO("Doesn't support readNoTag on $this")
     }

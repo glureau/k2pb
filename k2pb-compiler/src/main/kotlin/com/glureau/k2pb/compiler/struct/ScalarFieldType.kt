@@ -149,9 +149,8 @@ data class ScalarFieldType(
             defaultValue = "false",
             protoType = ScalarType.bool,
             writeMethod = { f, t ->
-                // As 'false' should not be encoded (default value), we will always call this method for "true"
-                //CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T)", ProtoIntegerTypeDefault)
-                CodeBlock.of("writeInt(1, $t, %T)", ProtoIntegerTypeDefault)
+                // We cannot assume only true is encoded, because collections could need to serialize false
+                CodeBlock.of("writeInt(if ($f) 1 else 0, $t, %T)", ProtoIntegerTypeDefault)
             },
             writeMethodNoTag = { f -> CodeBlock.of("writeInt(if ($f) 1 else 0)") },
             // '\n' are used because '·' is still wrapped even if it shouldn't...

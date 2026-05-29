@@ -354,6 +354,7 @@ import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 message MapCollections {
   map<string, int32> mapStringInt = 1;
   map<string, DataClassFromLib> mapStringObject = 2;
+  map<string, bool> mapStringBoolean = 3;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto
@@ -422,6 +423,32 @@ message NativeTypeEventUnspecifiedDefault {
   bool boolean = 8;
   int32 byte = 9;
   bytes byteArray = 10;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NonContiguousEnum.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NonContiguousEnumProto";
+
+enum NonContiguousEnum {
+  UNKNOWN = 0;
+  ACTIVE = 5;
+  INACTIVE = 10;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NonContiguousEnumHolder.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "NonContiguousEnumHolderProto";
+
+import "com/glureau/k2pb_sample/NonContiguousEnum.proto";
+
+message NonContiguousEnumHolder {
+  NonContiguousEnum status = 1;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/NullableBigDecimalHolder.proto

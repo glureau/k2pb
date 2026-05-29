@@ -10,3 +10,17 @@ enum class EnumClass {
     @ProtoField("Colibri")
     C,
 }
+
+@ProtoMessage
+enum class NonContiguousEnum {
+    UNKNOWN,
+    @ProtoField(number = 5)
+    ACTIVE,
+    @ProtoField(number = 10)
+    INACTIVE,
+}
+
+@ProtoMessage
+data class NonContiguousEnumHolder(
+    val status: NonContiguousEnum = NonContiguousEnum.UNKNOWN,
+)

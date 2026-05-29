@@ -8,4 +8,5 @@ import com.glureau.sample.lib.DataClassFromLib
 data class MapCollections(
     val mapStringInt: Map<String, Int> = emptyMap(),
     val mapStringObject: Map<String, DataClassFromLib> = emptyMap(),
+    val mapStringBoolean: Map<String, Boolean> = emptyMap(),
 ) : EventInterface

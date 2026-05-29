@@ -18,6 +18,7 @@ fun KSClassDeclaration.mapEnumNode(): EnumNode {
                 name = name,
                 comment = entry.docString,
                 number = numberManager.resolve(name, entry.protoNumber), // proto3: enum starts at 0
+                kotlinName = entry.simpleName.asString(),
             )
         }
     return EnumNode(
