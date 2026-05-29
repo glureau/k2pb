@@ -461,439 +461,6 @@ internal class BigDecimalValueClassHolderCodec : ProtoCodec<BigDecimalValueClass
   }
 }
 
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/BooleanCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class BooleanCollectionsCodec : ProtoCodec<BooleanCollections> {
-  override fun ProtobufWriter.encode(instance: BooleanCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode booleanList
-    if (instance.booleanList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.booleanList.forEach {
-          writeInt(if (it) 1 else 0)
-
-        }
-      }
-    }
-
-    // Encode booleanSet
-    if (instance.booleanSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.booleanSet.forEach {
-          writeInt(if (it) 1 else 0)
-
-        }
-      }
-    }
-
-    // Encode nullableBooleanList
-    if (instance.nullableBooleanList != null) {
-      if (instance.nullableBooleanList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableBooleanList.forEach {
-            writeInt(if (it) 1 else 0)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableBooleanList
-    if (instance.nullableBooleanList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableBooleanSet
-    if (instance.nullableBooleanSet != null) {
-      if (instance.nullableBooleanSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableBooleanSet.forEach {
-            writeInt(if (it) 1 else 0)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableBooleanSet
-    if (instance.nullableBooleanSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): BooleanCollections? {
-    val booleanList: MutableList<kotlin.Boolean> = mutableListOf()
-    val booleanSet: MutableSet<kotlin.Boolean> = mutableSetOf()
-    val nullableBooleanList: MutableList<kotlin.Boolean> = mutableListOf()
-    var isNullableBooleanListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableBooleanSet: MutableSet<kotlin.Boolean> = mutableSetOf()
-    var isNullableBooleanSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              booleanList += 
-              readInt32NoTag() == 1
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              booleanSet += 
-              readInt32NoTag() == 1
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableBooleanList += 
-              readInt32NoTag() == 1
-            }
-          }
-        }
-        4 -> {
-          isNullableBooleanListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableBooleanSet += 
-              readInt32NoTag() == 1
-            }
-          }
-        }
-        6 -> {
-          isNullableBooleanSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(BooleanCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return BooleanCollections(
-      booleanList = booleanList,
-      booleanSet = booleanSet,
-      nullableBooleanList = when (isNullableBooleanListNull) {
-          ExplicitNullability.UNKNOWN -> nullableBooleanList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableBooleanList
-        },
-      nullableBooleanSet = when (isNullableBooleanSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableBooleanSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableBooleanSet
-        },
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/ByteCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class ByteCollectionsCodec : ProtoCodec<ByteCollections> {
-  override fun ProtobufWriter.encode(instance: ByteCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode byteList
-    if (instance.byteList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.byteList.forEach {
-          writeInt(it.toInt())
-
-        }
-      }
-    }
-
-    // Encode byteSet
-    if (instance.byteSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.byteSet.forEach {
-          writeInt(it.toInt())
-
-        }
-      }
-    }
-
-    // Encode nullableByteList
-    if (instance.nullableByteList != null) {
-      if (instance.nullableByteList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableByteList.forEach {
-            writeInt(it.toInt())
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableByteList
-    if (instance.nullableByteList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableByteSet
-    if (instance.nullableByteSet != null) {
-      if (instance.nullableByteSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableByteSet.forEach {
-            writeInt(it.toInt())
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableByteSet
-    if (instance.nullableByteSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): ByteCollections? {
-    val byteList: MutableList<kotlin.Byte> = mutableListOf()
-    val byteSet: MutableSet<kotlin.Byte> = mutableSetOf()
-    val nullableByteList: MutableList<kotlin.Byte> = mutableListOf()
-    var isNullableByteListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableByteSet: MutableSet<kotlin.Byte> = mutableSetOf()
-    var isNullableByteSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              byteList += readInt32NoTag().toByte()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              byteSet += readInt32NoTag().toByte()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableByteList += readInt32NoTag().toByte()
-            }
-          }
-        }
-        4 -> {
-          isNullableByteListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableByteSet += readInt32NoTag().toByte()
-            }
-          }
-        }
-        6 -> {
-          isNullableByteSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(ByteCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return ByteCollections(
-      byteList = byteList,
-      byteSet = byteSet,
-      nullableByteList = when (isNullableByteListNull) {
-          ExplicitNullability.UNKNOWN -> nullableByteList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableByteList
-        },
-      nullableByteSet = when (isNullableByteSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableByteSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableByteSet
-        },
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/CharCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class CharCollectionsCodec : ProtoCodec<CharCollections> {
-  override fun ProtobufWriter.encode(instance: CharCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode charList
-    if (instance.charList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.charList.forEach {
-          writeInt(it.code)
-
-        }
-      }
-    }
-
-    // Encode charSet
-    if (instance.charSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.charSet.forEach {
-          writeInt(it.code)
-
-        }
-      }
-    }
-
-    // Encode nullableCharList
-    if (instance.nullableCharList != null) {
-      if (instance.nullableCharList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableCharList.forEach {
-            writeInt(it.code)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableCharList
-    if (instance.nullableCharList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableCharSet
-    if (instance.nullableCharSet != null) {
-      if (instance.nullableCharSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableCharSet.forEach {
-            writeInt(it.code)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableCharSet
-    if (instance.nullableCharSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): CharCollections? {
-    val charList: MutableList<kotlin.Char> = mutableListOf()
-    val charSet: MutableSet<kotlin.Char> = mutableSetOf()
-    val nullableCharList: MutableList<kotlin.Char> = mutableListOf()
-    var isNullableCharListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableCharSet: MutableSet<kotlin.Char> = mutableSetOf()
-    var isNullableCharSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              charList += readInt32NoTag().toChar()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              charSet += readInt32NoTag().toChar()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableCharList += readInt32NoTag().toChar()
-            }
-          }
-        }
-        4 -> {
-          isNullableCharListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableCharSet += readInt32NoTag().toChar()
-            }
-          }
-        }
-        6 -> {
-          isNullableCharSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(CharCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return CharCollections(
-      charList = charList,
-      charSet = charSet,
-      nullableCharList = when (isNullableCharListNull) {
-          ExplicitNullability.UNKNOWN -> nullableCharList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableCharList
-        },
-      nullableCharSet = when (isNullableCharSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableCharSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableCharSet
-        },
-    )
-  }
-}
-
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/CommonClassCodec.kt
 // Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/DataClass.kt
 package com.glureau.sample
@@ -938,264 +505,6 @@ internal class CommonClassCodec : ProtoCodec<CommonClass> {
   }
 }
 
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/DataClassCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-import com.glureau.sample.lib.DataClassFromLib
-
-internal class DataClassCollectionsCodec : ProtoCodec<DataClassCollections> {
-  override fun ProtobufWriter.encode(instance: DataClassCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode dataClassList
-    instance.dataClassList.forEach {
-      writeMessage(1) {
-        with(protoCodec) {
-          encode(it, DataClassFromLib::class)
-        }
-      }
-    }
-
-    // Encode dataClassSet
-    instance.dataClassSet.forEach {
-      writeMessage(2) {
-        with(protoCodec) {
-          encode(it, DataClassFromLib::class)
-        }
-      }
-    }
-
-    // Encode mapStringInt
-    instance.mapStringInt.forEach {
-      writeMessage(3) {
-        writeString(it.key, 1)
-        writeInt(it.value, 2, ProtoIntegerType.DEFAULT)
-      }
-    }
-
-    // Encode mapStringObject
-    instance.mapStringObject.forEach {
-      writeMessage(4) {
-        writeString(it.key, 1)
-        writeMessage(2) { with(protoCodec) { encode(it.value, DataClassFromLib::class) } }
-      }
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): DataClassCollections? {
-    val dataClassList: MutableList<com.glureau.sample.lib.DataClassFromLib> = mutableListOf()
-    val dataClassSet: MutableSet<com.glureau.sample.lib.DataClassFromLib> = mutableSetOf()
-    val mapStringInt: MutableMap<kotlin.String, kotlin.Int> = mutableMapOf()
-    val mapStringObject: MutableMap<kotlin.String, com.glureau.sample.lib.DataClassFromLib> = mutableMapOf()
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage {
-            with(protoCodec) {
-              decode(DataClassFromLib::class)
-            }
-          }
-          ?.let {
-            dataClassList += it
-          }
-        }
-        2 -> {
-          readMessage {
-            with(protoCodec) {
-              decode(DataClassFromLib::class)
-            }
-          }
-          ?.let {
-            dataClassSet += it
-          }
-        }
-        3 -> {
-          readMessage() {
-            readTag()
-            val key = readStringNoTag()
-            readTag()
-            val value = readInt32NoTag()
-            mapStringInt[key] = value
-          }
-        }
-        4 -> {
-          readMessage() {
-            readTag()
-            val key = readStringNoTag()
-            readTag()
-            val value = readMessage { with(protoCodec) { requireNotNull(decode(DataClassFromLib::class)) { "Map 'mapStringObject' contains a value which is declared as not nullable but is null" } } }
-            mapStringObject[key] = value
-          }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(DataClassCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return DataClassCollections(
-      dataClassList = dataClassList,
-      dataClassSet = dataClassSet,
-      mapStringInt = mapStringInt,
-      mapStringObject = mapStringObject,
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/DoubleCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class DoubleCollectionsCodec : ProtoCodec<DoubleCollections> {
-  override fun ProtobufWriter.encode(instance: DoubleCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode doubleList
-    if (instance.doubleList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.doubleList.forEach {
-          writeDouble(it)
-
-        }
-      }
-    }
-
-    // Encode doubleSet
-    if (instance.doubleSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.doubleSet.forEach {
-          writeDouble(it)
-
-        }
-      }
-    }
-
-    // Encode nullableDoubleList
-    if (instance.nullableDoubleList != null) {
-      if (instance.nullableDoubleList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableDoubleList.forEach {
-            writeDouble(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableDoubleList
-    if (instance.nullableDoubleList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableDoubleSet
-    if (instance.nullableDoubleSet != null) {
-      if (instance.nullableDoubleSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableDoubleSet.forEach {
-            writeDouble(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableDoubleSet
-    if (instance.nullableDoubleSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): DoubleCollections? {
-    val doubleList: MutableList<kotlin.Double> = mutableListOf()
-    val doubleSet: MutableSet<kotlin.Double> = mutableSetOf()
-    val nullableDoubleList: MutableList<kotlin.Double> = mutableListOf()
-    var isNullableDoubleListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableDoubleSet: MutableSet<kotlin.Double> = mutableSetOf()
-    var isNullableDoubleSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              doubleList += readDoubleNoTag()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              doubleSet += readDoubleNoTag()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableDoubleList += readDoubleNoTag()
-            }
-          }
-        }
-        4 -> {
-          isNullableDoubleListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableDoubleSet += readDoubleNoTag()
-            }
-          }
-        }
-        6 -> {
-          isNullableDoubleSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(DoubleCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return DoubleCollections(
-      doubleList = doubleList,
-      doubleSet = doubleSet,
-      nullableDoubleList = when (isNullableDoubleListNull) {
-          ExplicitNullability.UNKNOWN -> nullableDoubleList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableDoubleList
-        },
-      nullableDoubleSet = when (isNullableDoubleSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableDoubleSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableDoubleSet
-        },
-    )
-  }
-}
-
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/EnumClassCodec.kt
 // Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/EnumClass.kt
 package com.glureau.sample
@@ -1215,149 +524,6 @@ internal class EnumClassCodec : ProtoCodec<EnumClass> {
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): EnumClass? = EnumClass.entries.getOrNull(readInt32NoTag())
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/FloatCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class FloatCollectionsCodec : ProtoCodec<FloatCollections> {
-  override fun ProtobufWriter.encode(instance: FloatCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode floatList
-    if (instance.floatList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.floatList.forEach {
-          writeFloat(it)
-
-        }
-      }
-    }
-
-    // Encode floatSet
-    if (instance.floatSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.floatSet.forEach {
-          writeFloat(it)
-
-        }
-      }
-    }
-
-    // Encode nullableFloatList
-    if (instance.nullableFloatList != null) {
-      if (instance.nullableFloatList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableFloatList.forEach {
-            writeFloat(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableFloatList
-    if (instance.nullableFloatList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableFloatSet
-    if (instance.nullableFloatSet != null) {
-      if (instance.nullableFloatSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableFloatSet.forEach {
-            writeFloat(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableFloatSet
-    if (instance.nullableFloatSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): FloatCollections? {
-    val floatList: MutableList<kotlin.Float> = mutableListOf()
-    val floatSet: MutableSet<kotlin.Float> = mutableSetOf()
-    val nullableFloatList: MutableList<kotlin.Float> = mutableListOf()
-    var isNullableFloatListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableFloatSet: MutableSet<kotlin.Float> = mutableSetOf()
-    var isNullableFloatSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              floatList += readFloatNoTag()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              floatSet += readFloatNoTag()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableFloatList += readFloatNoTag()
-            }
-          }
-        }
-        4 -> {
-          isNullableFloatListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableFloatSet += readFloatNoTag()
-            }
-          }
-        }
-        6 -> {
-          isNullableFloatSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(FloatCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return FloatCollections(
-      floatList = floatList,
-      floatSet = floatSet,
-      nullableFloatList = when (isNullableFloatListNull) {
-          ExplicitNullability.UNKNOWN -> nullableFloatList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableFloatList
-        },
-      nullableFloatSet = when (isNullableFloatSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableFloatSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableFloatSet
-        },
-    )
-  }
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/FooEventCodec.kt
@@ -1408,337 +574,6 @@ internal class FooEventCodec : ProtoCodec<FooEvent> {
     }
     return FooEvent(
       common = requireNotNull(common) { "Field 'common' is declared as not nullable but is null" },
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/InlinedCollectionCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.ktx.ProtoWireType
-import com.glureau.sample.lib.NullableValueClassFromLib
-import com.glureau.sample.lib.ValueClassFromLib
-import com.glureau.sample.lib.ValueClassOfEnum
-import com.glureau.sample.lib.ValueClassOfNullableEnum
-
-internal class InlinedCollectionCodec : ProtoCodec<InlinedCollection> {
-  override fun ProtobufWriter.encode(instance: InlinedCollection?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode valueClassList
-    instance.valueClassList.forEach {
-      writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(1))
-      with(protoCodec) {
-        encode(it, ValueClassFromLib::class)
-      }
-    }
-
-    // Encode valueClassOfEnumList
-    instance.valueClassOfEnumList.forEach {
-      writeInt(ProtoWireType.VARINT.wireIntWithTag(2))
-      with(protoCodec) {
-        encode(it, ValueClassOfEnum::class)
-      }
-    }
-
-    // Encode valueClassOfNullableEnumList
-    instance.valueClassOfNullableEnumList.forEach {
-      if (it != null) {
-        writeInt(ProtoWireType.VARINT.wireIntWithTag(3))
-        with(protoCodec) {
-          encode(it, ValueClassOfNullableEnum::class)
-        }
-      }
-    }
-
-    // Encode valueClassOfNullableStringList
-    instance.valueClassOfNullableStringList.forEach {
-      if (it != null) {
-        writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(4))
-        with(protoCodec) {
-          encode(it, NullableValueClassFromLib::class)
-        }
-      }
-    }
-
-    // Encode valueClassSet
-    instance.valueClassSet.forEach {
-      writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(5))
-      with(protoCodec) {
-        encode(it, ValueClassFromLib::class)
-      }
-    }
-
-    // Encode valueClassOfEnumSet
-    instance.valueClassOfEnumSet.forEach {
-      writeInt(ProtoWireType.VARINT.wireIntWithTag(6))
-      with(protoCodec) {
-        encode(it, ValueClassOfEnum::class)
-      }
-    }
-
-    // Encode valueClassOfNullableEnumSet
-    instance.valueClassOfNullableEnumSet.forEach {
-      if (it != null) {
-        writeInt(ProtoWireType.VARINT.wireIntWithTag(7))
-        with(protoCodec) {
-          encode(it, ValueClassOfNullableEnum::class)
-        }
-      }
-    }
-
-    // Encode valueClassOfNullableStringSet
-    instance.valueClassOfNullableStringSet.forEach {
-      if (it != null) {
-        writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(8))
-        with(protoCodec) {
-          encode(it, NullableValueClassFromLib::class)
-        }
-      }
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): InlinedCollection? {
-    val valueClassList: MutableList<com.glureau.sample.lib.ValueClassFromLib> = mutableListOf()
-    val valueClassOfEnumList: MutableList<com.glureau.sample.lib.ValueClassOfEnum> = mutableListOf()
-    val valueClassOfNullableEnumList: MutableList<com.glureau.sample.lib.ValueClassOfNullableEnum> = mutableListOf()
-    val valueClassOfNullableStringList: MutableList<com.glureau.sample.lib.NullableValueClassFromLib> = mutableListOf()
-    val valueClassSet: MutableSet<com.glureau.sample.lib.ValueClassFromLib> = mutableSetOf()
-    val valueClassOfEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfEnum> = mutableSetOf()
-    val valueClassOfNullableEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfNullableEnum> = mutableSetOf()
-    val valueClassOfNullableStringSet: MutableSet<com.glureau.sample.lib.NullableValueClassFromLib> = mutableSetOf()
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          with(protoCodec) {
-            decode(ValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassList += it
-          }
-        }
-        2 -> {
-          with(protoCodec) {
-            decode(ValueClassOfEnum::class)
-          }
-          ?.let {
-            valueClassOfEnumList += it
-          }
-        }
-        3 -> {
-          with(protoCodec) {
-            decode(ValueClassOfNullableEnum::class)
-          }
-          ?.let {
-            valueClassOfNullableEnumList += it
-          }
-        }
-        4 -> {
-          with(protoCodec) {
-            decode(NullableValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassOfNullableStringList += it
-          }
-        }
-        5 -> {
-          with(protoCodec) {
-            decode(ValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassSet += it
-          }
-        }
-        6 -> {
-          with(protoCodec) {
-            decode(ValueClassOfEnum::class)
-          }
-          ?.let {
-            valueClassOfEnumSet += it
-          }
-        }
-        7 -> {
-          with(protoCodec) {
-            decode(ValueClassOfNullableEnum::class)
-          }
-          ?.let {
-            valueClassOfNullableEnumSet += it
-          }
-        }
-        8 -> {
-          with(protoCodec) {
-            decode(NullableValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassOfNullableStringSet += it
-          }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(InlinedCollection::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return InlinedCollection(
-      valueClassList = valueClassList,
-      valueClassOfEnumList = valueClassOfEnumList,
-      valueClassOfNullableEnumList = valueClassOfNullableEnumList,
-      valueClassOfNullableStringList = valueClassOfNullableStringList,
-      valueClassSet = valueClassSet,
-      valueClassOfEnumSet = valueClassOfEnumSet,
-      valueClassOfNullableEnumSet = valueClassOfNullableEnumSet,
-      valueClassOfNullableStringSet = valueClassOfNullableStringSet,
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/IntCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class IntCollectionsCodec : ProtoCodec<IntCollections> {
-  override fun ProtobufWriter.encode(instance: IntCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode integerList
-    if (instance.integerList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.integerList.forEach {
-          writeInt(it)
-
-        }
-      }
-    }
-
-    // Encode integerSet
-    if (instance.integerSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.integerSet.forEach {
-          writeInt(it)
-
-        }
-      }
-    }
-
-    // Encode nullableIntegerList
-    if (instance.nullableIntegerList != null) {
-      if (instance.nullableIntegerList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableIntegerList.forEach {
-            writeInt(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableIntegerList
-    if (instance.nullableIntegerList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableIntegerSet
-    if (instance.nullableIntegerSet != null) {
-      if (instance.nullableIntegerSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableIntegerSet.forEach {
-            writeInt(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableIntegerSet
-    if (instance.nullableIntegerSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): IntCollections? {
-    val integerList: MutableList<kotlin.Int> = mutableListOf()
-    val integerSet: MutableSet<kotlin.Int> = mutableSetOf()
-    val nullableIntegerList: MutableList<kotlin.Int> = mutableListOf()
-    var isNullableIntegerListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableIntegerSet: MutableSet<kotlin.Int> = mutableSetOf()
-    var isNullableIntegerSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              integerList += readInt32NoTag()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              integerSet += readInt32NoTag()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableIntegerList += readInt32NoTag()
-            }
-          }
-        }
-        4 -> {
-          isNullableIntegerListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableIntegerSet += readInt32NoTag()
-            }
-          }
-        }
-        6 -> {
-          isNullableIntegerSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(IntCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return IntCollections(
-      integerList = integerList,
-      integerSet = integerSet,
-      nullableIntegerList = when (isNullableIntegerListNull) {
-          ExplicitNullability.UNKNOWN -> nullableIntegerList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableIntegerList
-        },
-      nullableIntegerSet = when (isNullableIntegerSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableIntegerSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableIntegerSet
-        },
     )
   }
 }
@@ -1843,149 +678,6 @@ internal class KtxClassesHolderCodec : ProtoCodec<KtxClassesHolder> {
     }
     return KtxClassesHolder(
       delegated = requireNotNull(delegated) { "Field 'delegated' is declared as not nullable but is null" },
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/LongCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class LongCollectionsCodec : ProtoCodec<LongCollections> {
-  override fun ProtobufWriter.encode(instance: LongCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode longList
-    if (instance.longList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.longList.forEach {
-          writeLong(it)
-
-        }
-      }
-    }
-
-    // Encode longSet
-    if (instance.longSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.longSet.forEach {
-          writeLong(it)
-
-        }
-      }
-    }
-
-    // Encode nullableLongList
-    if (instance.nullableLongList != null) {
-      if (instance.nullableLongList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableLongList.forEach {
-            writeLong(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableLongList
-    if (instance.nullableLongList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableLongSet
-    if (instance.nullableLongSet != null) {
-      if (instance.nullableLongSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableLongSet.forEach {
-            writeLong(it)
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableLongSet
-    if (instance.nullableLongSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): LongCollections? {
-    val longList: MutableList<kotlin.Long> = mutableListOf()
-    val longSet: MutableSet<kotlin.Long> = mutableSetOf()
-    val nullableLongList: MutableList<kotlin.Long> = mutableListOf()
-    var isNullableLongListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableLongSet: MutableSet<kotlin.Long> = mutableSetOf()
-    var isNullableLongSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              longList += readLongNoTag()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              longSet += readLongNoTag()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableLongList += readLongNoTag()
-            }
-          }
-        }
-        4 -> {
-          isNullableLongListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableLongSet += readLongNoTag()
-            }
-          }
-        }
-        6 -> {
-          isNullableLongSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(LongCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return LongCollections(
-      longList = longList,
-      longSet = longSet,
-      nullableLongList = when (isNullableLongListNull) {
-          ExplicitNullability.UNKNOWN -> nullableLongList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableLongList
-        },
-      nullableLongSet = when (isNullableLongSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableLongSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableLongSet
-        },
     )
   }
 }
@@ -2554,59 +1246,6 @@ internal class NullableBigDecimalValueClassHolderCodec : ProtoCodec<NullableBigD
   }
 }
 
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/NullableCollectionCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-import com.glureau.sample.lib.DataClassFromLib
-
-internal class NullableCollectionCodec : ProtoCodec<NullableCollection> {
-  override fun ProtobufWriter.encode(instance: NullableCollection?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode mapStringObject
-    instance.mapStringObject.forEach {
-      writeMessage(1) {
-        writeString(it.key, 1)
-        writeMessage(2) { with(protoCodec) { encode(it.value, DataClassFromLib::class) } }
-      }
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableCollection? {
-    val mapStringObject: MutableMap<kotlin.String, com.glureau.sample.lib.DataClassFromLib> = mutableMapOf()
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            readTag()
-            val key = readStringNoTag()
-            readTag()
-            val value = readMessage { with(protoCodec) { requireNotNull(decode(DataClassFromLib::class)) { "Map 'mapStringObject' contains a value which is declared as not nullable but is null" } } }
-            mapStringObject[key] = value
-          }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(NullableCollection::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return NullableCollection(
-      mapStringObject = mapStringObject,
-    )
-  }
-}
-
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/NullableDataClassHolderCodec.kt
 // Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/NullableDataClassHolder.kt
 package com.glureau.sample
@@ -2797,332 +1436,6 @@ internal class NullableEnumHolderUnspecifiedNullCodec : ProtoCodec<NullableEnumH
           ExplicitNullability.UNKNOWN -> null
           ExplicitNullability.NULL -> null
           ExplicitNullability.NOT_NULL -> enum ?: com.glureau.sample.lib.AnEnum.AnEnum_A
-        },
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/NullableInlinedCollectionCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.ktx.ProtoWireType
-import com.glureau.sample.lib.NullableValueClassFromLib
-import com.glureau.sample.lib.ValueClassFromLib
-import com.glureau.sample.lib.ValueClassOfEnum
-import com.glureau.sample.lib.ValueClassOfNullableEnum
-
-internal class NullableInlinedCollectionCodec : ProtoCodec<NullableInlinedCollection> {
-  override fun ProtobufWriter.encode(instance: NullableInlinedCollection?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode valueClassList
-    if (instance.valueClassList != null) {
-      instance.valueClassList.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(1))
-          with(protoCodec) {
-            encode(it, ValueClassFromLib::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassList
-    if (instance.valueClassList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassOfEnumList
-    if (instance.valueClassOfEnumList != null) {
-      instance.valueClassOfEnumList.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.VARINT.wireIntWithTag(3))
-          with(protoCodec) {
-            encode(it, ValueClassOfEnum::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassOfEnumList
-    if (instance.valueClassOfEnumList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassOfNullableEnumList
-    if (instance.valueClassOfNullableEnumList != null) {
-      instance.valueClassOfNullableEnumList.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.VARINT.wireIntWithTag(5))
-          with(protoCodec) {
-            encode(it, ValueClassOfNullableEnum::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassOfNullableEnumList
-    if (instance.valueClassOfNullableEnumList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassOfNullableStringList
-    if (instance.valueClassOfNullableStringList != null) {
-      instance.valueClassOfNullableStringList.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(7))
-          with(protoCodec) {
-            encode(it, NullableValueClassFromLib::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassOfNullableStringList
-    if (instance.valueClassOfNullableStringList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 8, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 8, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassSet
-    if (instance.valueClassSet != null) {
-      instance.valueClassSet.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(9))
-          with(protoCodec) {
-            encode(it, ValueClassFromLib::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassSet
-    if (instance.valueClassSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 10, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 10, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassOfEnumSet
-    if (instance.valueClassOfEnumSet != null) {
-      instance.valueClassOfEnumSet.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.VARINT.wireIntWithTag(11))
-          with(protoCodec) {
-            encode(it, ValueClassOfEnum::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassOfEnumSet
-    if (instance.valueClassOfEnumSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 12, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 12, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassOfNullableEnumSet
-    if (instance.valueClassOfNullableEnumSet != null) {
-      instance.valueClassOfNullableEnumSet.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.VARINT.wireIntWithTag(13))
-          with(protoCodec) {
-            encode(it, ValueClassOfNullableEnum::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassOfNullableEnumSet
-    if (instance.valueClassOfNullableEnumSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 14, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 14, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode valueClassOfNullableStringSet
-    if (instance.valueClassOfNullableStringSet != null) {
-      instance.valueClassOfNullableStringSet.forEach {
-        if (it != null) {
-          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(15))
-          with(protoCodec) {
-            encode(it, NullableValueClassFromLib::class)
-          }
-        }
-      }
-    }
-    // Encode nullability for valueClassOfNullableStringSet
-    if (instance.valueClassOfNullableStringSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 16, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 16, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableInlinedCollection? {
-    val valueClassList: MutableList<com.glureau.sample.lib.ValueClassFromLib?> = mutableListOf()
-    var isValueClassListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassOfEnumList: MutableList<com.glureau.sample.lib.ValueClassOfEnum?> = mutableListOf()
-    var isValueClassOfEnumListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassOfNullableEnumList: MutableList<com.glureau.sample.lib.ValueClassOfNullableEnum?> = mutableListOf()
-    var isValueClassOfNullableEnumListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassOfNullableStringList: MutableList<com.glureau.sample.lib.NullableValueClassFromLib?> = mutableListOf()
-    var isValueClassOfNullableStringListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassSet: MutableSet<com.glureau.sample.lib.ValueClassFromLib?> = mutableSetOf()
-    var isValueClassSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassOfEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfEnum?> = mutableSetOf()
-    var isValueClassOfEnumSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassOfNullableEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfNullableEnum?> = mutableSetOf()
-    var isValueClassOfNullableEnumSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val valueClassOfNullableStringSet: MutableSet<com.glureau.sample.lib.NullableValueClassFromLib?> = mutableSetOf()
-    var isValueClassOfNullableStringSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          with(protoCodec) {
-            decode(ValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassList += it
-          }
-        }
-        2 -> {
-          isValueClassListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        3 -> {
-          with(protoCodec) {
-            decode(ValueClassOfEnum::class)
-          }
-          ?.let {
-            valueClassOfEnumList += it
-          }
-        }
-        4 -> {
-          isValueClassOfEnumListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          with(protoCodec) {
-            decode(ValueClassOfNullableEnum::class)
-          }
-          ?.let {
-            valueClassOfNullableEnumList += it
-          }
-        }
-        6 -> {
-          isValueClassOfNullableEnumListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        7 -> {
-          with(protoCodec) {
-            decode(NullableValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassOfNullableStringList += it
-          }
-        }
-        8 -> {
-          isValueClassOfNullableStringListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        9 -> {
-          with(protoCodec) {
-            decode(ValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassSet += it
-          }
-        }
-        10 -> {
-          isValueClassSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        11 -> {
-          with(protoCodec) {
-            decode(ValueClassOfEnum::class)
-          }
-          ?.let {
-            valueClassOfEnumSet += it
-          }
-        }
-        12 -> {
-          isValueClassOfEnumSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        13 -> {
-          with(protoCodec) {
-            decode(ValueClassOfNullableEnum::class)
-          }
-          ?.let {
-            valueClassOfNullableEnumSet += it
-          }
-        }
-        14 -> {
-          isValueClassOfNullableEnumSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        15 -> {
-          with(protoCodec) {
-            decode(NullableValueClassFromLib::class)
-          }
-          ?.let {
-            valueClassOfNullableStringSet += it
-          }
-        }
-        16 -> {
-          isValueClassOfNullableStringSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(NullableInlinedCollection::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return NullableInlinedCollection(
-      valueClassList = when (isValueClassListNull) {
-          ExplicitNullability.UNKNOWN -> valueClassList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassList
-        },
-      valueClassOfEnumList = when (isValueClassOfEnumListNull) {
-          ExplicitNullability.UNKNOWN -> valueClassOfEnumList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassOfEnumList
-        },
-      valueClassOfNullableEnumList = when (isValueClassOfNullableEnumListNull) {
-          ExplicitNullability.UNKNOWN -> valueClassOfNullableEnumList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassOfNullableEnumList
-        },
-      valueClassOfNullableStringList = when (isValueClassOfNullableStringListNull) {
-          ExplicitNullability.UNKNOWN -> valueClassOfNullableStringList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassOfNullableStringList
-        },
-      valueClassSet = when (isValueClassSetNull) {
-          ExplicitNullability.UNKNOWN -> valueClassSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassSet
-        },
-      valueClassOfEnumSet = when (isValueClassOfEnumSetNull) {
-          ExplicitNullability.UNKNOWN -> valueClassOfEnumSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassOfEnumSet
-        },
-      valueClassOfNullableEnumSet = when (isValueClassOfNullableEnumSetNull) {
-          ExplicitNullability.UNKNOWN -> valueClassOfNullableEnumSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassOfNullableEnumSet
-        },
-      valueClassOfNullableStringSet = when (isValueClassOfNullableStringSetNull) {
-          ExplicitNullability.UNKNOWN -> valueClassOfNullableStringSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> valueClassOfNullableStringSet
         },
     )
   }
@@ -5248,11 +3561,356 @@ File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotli
 package com.glureau.sample
 
 import com.glureau.k2pb.runtime.K2PBConfig
+import com.glureau.sample.collection.BooleanCollections
+import com.glureau.sample.collection.BooleanCollectionsCodec
+import com.glureau.sample.collection.ByteCollections
+import com.glureau.sample.collection.ByteCollectionsCodec
+import com.glureau.sample.collection.CharCollections
+import com.glureau.sample.collection.CharCollectionsCodec
+import com.glureau.sample.collection.DataClassCollections
+import com.glureau.sample.collection.DataClassCollectionsCodec
+import com.glureau.sample.collection.DoubleCollections
+import com.glureau.sample.collection.DoubleCollectionsCodec
+import com.glureau.sample.collection.FloatCollections
+import com.glureau.sample.collection.FloatCollectionsCodec
+import com.glureau.sample.collection.InlinedCollection
+import com.glureau.sample.collection.InlinedCollectionCodec
+import com.glureau.sample.collection.IntCollections
+import com.glureau.sample.collection.IntCollectionsCodec
+import com.glureau.sample.collection.LongCollections
+import com.glureau.sample.collection.LongCollectionsCodec
+import com.glureau.sample.collection.MapCollections
+import com.glureau.sample.collection.MapCollectionsCodec
+import com.glureau.sample.collection.NullableBooleanCollections
+import com.glureau.sample.collection.NullableBooleanCollectionsCodec
+import com.glureau.sample.collection.NullableByteCollections
+import com.glureau.sample.collection.NullableByteCollectionsCodec
+import com.glureau.sample.collection.NullableCharCollections
+import com.glureau.sample.collection.NullableCharCollectionsCodec
+import com.glureau.sample.collection.NullableDataClassCollections
+import com.glureau.sample.collection.NullableDataClassCollectionsCodec
+import com.glureau.sample.collection.NullableDoubleCollections
+import com.glureau.sample.collection.NullableDoubleCollectionsCodec
+import com.glureau.sample.collection.NullableFloatCollections
+import com.glureau.sample.collection.NullableFloatCollectionsCodec
+import com.glureau.sample.collection.NullableInlinedCollection
+import com.glureau.sample.collection.NullableInlinedCollectionCodec
+import com.glureau.sample.collection.NullableIntCollections
+import com.glureau.sample.collection.NullableIntCollectionsCodec
+import com.glureau.sample.collection.NullableLongCollections
+import com.glureau.sample.collection.NullableLongCollectionsCodec
+import com.glureau.sample.collection.NullableShortCollections
+import com.glureau.sample.collection.NullableShortCollectionsCodec
+import com.glureau.sample.collection.NullableStringCollections
+import com.glureau.sample.collection.NullableStringCollectionsCodec
+import com.glureau.sample.collection.ShortCollections
+import com.glureau.sample.collection.ShortCollectionsCodec
+import com.glureau.sample.collection.StringCollections
+import com.glureau.sample.collection.StringCollectionsCodec
 import com.glureau.sample.proto.CommentedClass
 import com.glureau.sample.proto.CommentedClassCodec
 import kotlin.Any
 
 public fun K2PBConfig.registerSampleAppCodecs() {
+  registerCodec(
+      targetType = IntCollections::class,
+      codec = IntCollectionsCodec(),
+      protoMessageName = "IntCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = IntCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = IntCollections::class,
+  )
+  registerCodec(
+      targetType = NullableIntCollections::class,
+      codec = NullableIntCollectionsCodec(),
+      protoMessageName = "NullableIntCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableIntCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableIntCollections::class,
+  )
+  registerCodec(
+      targetType = DoubleCollections::class,
+      codec = DoubleCollectionsCodec(),
+      protoMessageName = "DoubleCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = DoubleCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = DoubleCollections::class,
+  )
+  registerCodec(
+      targetType = NullableDoubleCollections::class,
+      codec = NullableDoubleCollectionsCodec(),
+      protoMessageName = "NullableDoubleCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableDoubleCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableDoubleCollections::class,
+  )
+  registerCodec(
+      targetType = ByteCollections::class,
+      codec = ByteCollectionsCodec(),
+      protoMessageName = "ByteCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = ByteCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = ByteCollections::class,
+  )
+  registerCodec(
+      targetType = NullableByteCollections::class,
+      codec = NullableByteCollectionsCodec(),
+      protoMessageName = "NullableByteCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableByteCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableByteCollections::class,
+  )
+  registerCodec(
+      targetType = InlinedCollection::class,
+      codec = InlinedCollectionCodec(),
+      protoMessageName = "InlinedCollection",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = InlinedCollection::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = InlinedCollection::class,
+  )
+  registerCodec(
+      targetType = NullableInlinedCollection::class,
+      codec = NullableInlinedCollectionCodec(),
+      protoMessageName = "NullableInlinedCollection",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableInlinedCollection::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableInlinedCollection::class,
+  )
+  registerCodec(
+      targetType = CharCollections::class,
+      codec = CharCollectionsCodec(),
+      protoMessageName = "CharCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = CharCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = CharCollections::class,
+  )
+  registerCodec(
+      targetType = NullableCharCollections::class,
+      codec = NullableCharCollectionsCodec(),
+      protoMessageName = "NullableCharCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableCharCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableCharCollections::class,
+  )
+  registerCodec(
+      targetType = LongCollections::class,
+      codec = LongCollectionsCodec(),
+      protoMessageName = "LongCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = LongCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = LongCollections::class,
+  )
+  registerCodec(
+      targetType = NullableLongCollections::class,
+      codec = NullableLongCollectionsCodec(),
+      protoMessageName = "NullableLongCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableLongCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableLongCollections::class,
+  )
+  registerCodec(
+      targetType = MapCollections::class,
+      codec = MapCollectionsCodec(),
+      protoMessageName = "MapCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = MapCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = MapCollections::class,
+  )
+  registerCodec(
+      targetType = ShortCollections::class,
+      codec = ShortCollectionsCodec(),
+      protoMessageName = "ShortCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = ShortCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = ShortCollections::class,
+  )
+  registerCodec(
+      targetType = NullableShortCollections::class,
+      codec = NullableShortCollectionsCodec(),
+      protoMessageName = "NullableShortCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableShortCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableShortCollections::class,
+  )
+  registerCodec(
+      targetType = BooleanCollections::class,
+      codec = BooleanCollectionsCodec(),
+      protoMessageName = "BooleanCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = BooleanCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = BooleanCollections::class,
+  )
+  registerCodec(
+      targetType = NullableBooleanCollections::class,
+      codec = NullableBooleanCollectionsCodec(),
+      protoMessageName = "NullableBooleanCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableBooleanCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableBooleanCollections::class,
+  )
+  registerCodec(
+      targetType = StringCollections::class,
+      codec = StringCollectionsCodec(),
+      protoMessageName = "StringCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = StringCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = StringCollections::class,
+  )
+  registerCodec(
+      targetType = NullableStringCollections::class,
+      codec = NullableStringCollectionsCodec(),
+      protoMessageName = "NullableStringCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableStringCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableStringCollections::class,
+  )
+  registerCodec(
+      targetType = DataClassCollections::class,
+      codec = DataClassCollectionsCodec(),
+      protoMessageName = "DataClassCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = DataClassCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = DataClassCollections::class,
+  )
+  registerCodec(
+      targetType = NullableDataClassCollections::class,
+      codec = NullableDataClassCollectionsCodec(),
+      protoMessageName = "NullableDataClassCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableDataClassCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableDataClassCollections::class,
+  )
+  registerCodec(
+      targetType = FloatCollections::class,
+      codec = FloatCollectionsCodec(),
+      protoMessageName = "FloatCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = FloatCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = FloatCollections::class,
+  )
+  registerCodec(
+      targetType = NullableFloatCollections::class,
+      codec = NullableFloatCollectionsCodec(),
+      protoMessageName = "NullableFloatCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class, 
+      child = NullableFloatCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class, 
+      child = NullableFloatCollections::class,
+  )
   registerCodec(
       targetType = WithNestClassA::class,
       codec = WithNestClassACodec(),
@@ -5330,175 +3988,6 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       targetType = EnumClass::class,
       codec = EnumClassCodec(),
       protoMessageName = "EnumClass",
-  )
-  registerCodec(
-      targetType = IntCollections::class,
-      codec = IntCollectionsCodec(),
-      protoMessageName = "IntCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = IntCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = IntCollections::class,
-  )
-  registerCodec(
-      targetType = StringCollections::class,
-      codec = StringCollectionsCodec(),
-      protoMessageName = "StringCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = StringCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = StringCollections::class,
-  )
-  registerCodec(
-      targetType = DataClassCollections::class,
-      codec = DataClassCollectionsCodec(),
-      protoMessageName = "DataClassCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = DataClassCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = DataClassCollections::class,
-  )
-  registerCodec(
-      targetType = InlinedCollection::class,
-      codec = InlinedCollectionCodec(),
-      protoMessageName = "InlinedCollection",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = InlinedCollection::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = InlinedCollection::class,
-  )
-  registerCodec(
-      targetType = NullableInlinedCollection::class,
-      codec = NullableInlinedCollectionCodec(),
-      protoMessageName = "NullableInlinedCollection",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = NullableInlinedCollection::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = NullableInlinedCollection::class,
-  )
-  registerCodec(
-      targetType = NullableCollection::class,
-      codec = NullableCollectionCodec(),
-      protoMessageName = "NullableCollection",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = NullableCollection::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = NullableCollection::class,
-  )
-  registerCodec(
-      targetType = BooleanCollections::class,
-      codec = BooleanCollectionsCodec(),
-      protoMessageName = "BooleanCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = BooleanCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = BooleanCollections::class,
-  )
-  registerCodec(
-      targetType = LongCollections::class,
-      codec = LongCollectionsCodec(),
-      protoMessageName = "LongCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = LongCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = LongCollections::class,
-  )
-  registerCodec(
-      targetType = FloatCollections::class,
-      codec = FloatCollectionsCodec(),
-      protoMessageName = "FloatCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = FloatCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = FloatCollections::class,
-  )
-  registerCodec(
-      targetType = DoubleCollections::class,
-      codec = DoubleCollectionsCodec(),
-      protoMessageName = "DoubleCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = DoubleCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = DoubleCollections::class,
-  )
-  registerCodec(
-      targetType = CharCollections::class,
-      codec = CharCollectionsCodec(),
-      protoMessageName = "CharCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = CharCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = CharCollections::class,
-  )
-  registerCodec(
-      targetType = ShortCollections::class,
-      codec = ShortCollectionsCodec(),
-      protoMessageName = "ShortCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = ShortCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = ShortCollections::class,
-  )
-  registerCodec(
-      targetType = ByteCollections::class,
-      codec = ByteCollectionsCodec(),
-      protoMessageName = "ByteCollections",
-  )
-  registerPolymorphicChild(
-      parent = EventInterface::class, 
-      child = ByteCollections::class,
-  )
-  registerPolymorphicChild(
-      parent = Any::class, 
-      child = ByteCollections::class,
   )
   registerCodec(
       targetType = BigDecimalHolder::class,
@@ -6037,149 +4526,6 @@ public fun K2PBConfig.registerSampleAppCodecs() {
   )
 }
 
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/ShortCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-import com.glureau.k2pb.runtime.readMessage
-import com.glureau.k2pb.runtime.writeMessage
-
-internal class ShortCollectionsCodec : ProtoCodec<ShortCollections> {
-  override fun ProtobufWriter.encode(instance: ShortCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode shortList
-    if (instance.shortList.isNotEmpty()) {
-      writeMessage(1) {
-        instance.shortList.forEach {
-          writeInt(it.toInt())
-
-        }
-      }
-    }
-
-    // Encode shortSet
-    if (instance.shortSet.isNotEmpty()) {
-      writeMessage(2) {
-        instance.shortSet.forEach {
-          writeInt(it.toInt())
-
-        }
-      }
-    }
-
-    // Encode nullableShortList
-    if (instance.nullableShortList != null) {
-      if (instance.nullableShortList.isNotEmpty()) {
-        writeMessage(3) {
-          instance.nullableShortList.forEach {
-            writeInt(it.toInt())
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableShortList
-    if (instance.nullableShortList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableShortSet
-    if (instance.nullableShortSet != null) {
-      if (instance.nullableShortSet.isNotEmpty()) {
-        writeMessage(5) {
-          instance.nullableShortSet.forEach {
-            writeInt(it.toInt())
-
-          }
-        }
-      }
-    }
-    // Encode nullability for nullableShortSet
-    if (instance.nullableShortSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): ShortCollections? {
-    val shortList: MutableList<kotlin.Short> = mutableListOf()
-    val shortSet: MutableSet<kotlin.Short> = mutableSetOf()
-    val nullableShortList: MutableList<kotlin.Short> = mutableListOf()
-    var isNullableShortListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableShortSet: MutableSet<kotlin.Short> = mutableSetOf()
-    var isNullableShortSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          readMessage() {
-            while (!eof) {
-              shortList += readInt32NoTag().toShort()
-            }
-          }
-        }
-        2 -> {
-          readMessage() {
-            while (!eof) {
-              shortSet += readInt32NoTag().toShort()
-            }
-          }
-        }
-        3 -> {
-          readMessage() {
-            while (!eof) {
-              nullableShortList += readInt32NoTag().toShort()
-            }
-          }
-        }
-        4 -> {
-          isNullableShortListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          readMessage() {
-            while (!eof) {
-              nullableShortSet += readInt32NoTag().toShort()
-            }
-          }
-        }
-        6 -> {
-          isNullableShortSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(ShortCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return ShortCollections(
-      shortList = shortList,
-      shortSet = shortSet,
-      nullableShortList = when (isNullableShortListNull) {
-          ExplicitNullability.UNKNOWN -> nullableShortList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableShortList
-        },
-      nullableShortSet = when (isNullableShortSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableShortSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableShortSet
-        },
-    )
-  }
-}
-
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/StandardClassCodec.kt
 // Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/StandardClass.kt
 package com.glureau.sample
@@ -6233,115 +4579,6 @@ internal class StandardClassCodec : ProtoCodec<StandardClass> {
     return StandardClass(
       eventUUID = eventUUID ?: "",
       bytes = bytes ?: byteArrayOf(),
-    )
-  }
-}
-
-File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/StringCollectionsCodec.kt
-// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/Collections.kt
-package com.glureau.sample
-
-import com.glureau.k2pb.DelegateProtoCodec
-import com.glureau.k2pb.ExplicitNullability
-import com.glureau.k2pb.ProtoCodec
-import com.glureau.k2pb.ProtoIntegerType
-import com.glureau.k2pb.ProtobufReader
-import com.glureau.k2pb.ProtobufWriter
-
-internal class StringCollectionsCodec : ProtoCodec<StringCollections> {
-  override fun ProtobufWriter.encode(instance: StringCollections?, protoCodec: DelegateProtoCodec) {
-    // If instance is null, nothing to encode
-    if (instance == null) return
-
-    // Encode stringList
-    instance.stringList.forEach {
-      writeString(it, 1)
-
-    }
-
-    // Encode stringSet
-    instance.stringSet.forEach {
-      writeString(it, 2)
-
-    }
-
-    // Encode nullableStringList
-    if (instance.nullableStringList != null) {
-      instance.nullableStringList.forEach {
-        writeString(it, 3)
-
-      }
-    }
-    // Encode nullability for nullableStringList
-    if (instance.nullableStringList != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
-    }
-
-    // Encode nullableStringSet
-    if (instance.nullableStringSet != null) {
-      instance.nullableStringSet.forEach {
-        writeString(it, 5)
-
-      }
-    }
-    // Encode nullability for nullableStringSet
-    if (instance.nullableStringSet != null) {
-      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    } else {
-      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
-    }
-  }
-
-  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): StringCollections? {
-    val stringList: MutableList<kotlin.String> = mutableListOf()
-    val stringSet: MutableSet<kotlin.String> = mutableSetOf()
-    val nullableStringList: MutableList<kotlin.String> = mutableListOf()
-    var isNullableStringListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-    val nullableStringSet: MutableSet<kotlin.String> = mutableSetOf()
-    var isNullableStringSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
-
-    while (!eof) {
-      when (val tag = readTag()) {
-        1 -> {
-          stringList += readStringNoTag()
-        }
-        2 -> {
-          stringSet += readStringNoTag()
-        }
-        3 -> {
-          nullableStringList += readStringNoTag()
-        }
-        4 -> {
-          isNullableStringListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        5 -> {
-          nullableStringSet += readStringNoTag()
-        }
-        6 -> {
-          isNullableStringSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
-        }
-        else -> {
-          // Ignore unknown tag, basic forward compatibility
-          protoCodec.onUnknownProtoNumber(StringCollections::class, tag)
-          skipElement()
-        }
-      }
-    }
-    return StringCollections(
-      stringList = stringList,
-      stringSet = stringSet,
-      nullableStringList = when (isNullableStringListNull) {
-          ExplicitNullability.UNKNOWN -> nullableStringList
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableStringList
-        },
-      nullableStringSet = when (isNullableStringSetNull) {
-          ExplicitNullability.UNKNOWN -> nullableStringSet
-          ExplicitNullability.NULL -> null
-          ExplicitNullability.NOT_NULL -> nullableStringSet
-        },
     )
   }
 }
@@ -7252,6 +5489,2331 @@ internal class WithNestedEnum_NestedEnumCodec : ProtoCodec<WithNestedEnum.Nested
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestedEnum.NestedEnum? = WithNestedEnum.NestedEnum.entries.getOrNull(readInt32NoTag())
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/BooleanCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/BooleanCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class BooleanCollectionsCodec : ProtoCodec<BooleanCollections> {
+  override fun ProtobufWriter.encode(instance: BooleanCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode booleanList
+    if (instance.booleanList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.booleanList.forEach {
+          writeInt(if (it) 1 else 0)
+
+        }
+      }
+    }
+
+    // Encode booleanSet
+    if (instance.booleanSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.booleanSet.forEach {
+          writeInt(if (it) 1 else 0)
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): BooleanCollections? {
+    val booleanList: MutableList<kotlin.Boolean> = mutableListOf()
+    val booleanSet: MutableSet<kotlin.Boolean> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              booleanList += 
+              readInt32NoTag() == 1
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              booleanSet += 
+              readInt32NoTag() == 1
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(BooleanCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return BooleanCollections(
+      booleanList = booleanList,
+      booleanSet = booleanSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/ByteCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/ByteCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class ByteCollectionsCodec : ProtoCodec<ByteCollections> {
+  override fun ProtobufWriter.encode(instance: ByteCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode byteList
+    if (instance.byteList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.byteList.forEach {
+          writeInt(it.toInt())
+
+        }
+      }
+    }
+
+    // Encode byteSet
+    if (instance.byteSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.byteSet.forEach {
+          writeInt(it.toInt())
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): ByteCollections? {
+    val byteList: MutableList<kotlin.Byte> = mutableListOf()
+    val byteSet: MutableSet<kotlin.Byte> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              byteList += readInt32NoTag().toByte()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              byteSet += readInt32NoTag().toByte()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(ByteCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return ByteCollections(
+      byteList = byteList,
+      byteSet = byteSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/CharCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/CharCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class CharCollectionsCodec : ProtoCodec<CharCollections> {
+  override fun ProtobufWriter.encode(instance: CharCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode charList
+    if (instance.charList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.charList.forEach {
+          writeInt(it.code)
+
+        }
+      }
+    }
+
+    // Encode charSet
+    if (instance.charSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.charSet.forEach {
+          writeInt(it.code)
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): CharCollections? {
+    val charList: MutableList<kotlin.Char> = mutableListOf()
+    val charSet: MutableSet<kotlin.Char> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              charList += readInt32NoTag().toChar()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              charSet += readInt32NoTag().toChar()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(CharCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return CharCollections(
+      charList = charList,
+      charSet = charSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/DataClassCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/DataClassCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+import com.glureau.sample.lib.DataClassFromLib
+
+internal class DataClassCollectionsCodec : ProtoCodec<DataClassCollections> {
+  override fun ProtobufWriter.encode(instance: DataClassCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode dataClassList
+    instance.dataClassList.forEach {
+      writeMessage(1) {
+        with(protoCodec) {
+          encode(it, DataClassFromLib::class)
+        }
+      }
+    }
+
+    // Encode dataClassSet
+    instance.dataClassSet.forEach {
+      writeMessage(2) {
+        with(protoCodec) {
+          encode(it, DataClassFromLib::class)
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): DataClassCollections? {
+    val dataClassList: MutableList<com.glureau.sample.lib.DataClassFromLib> = mutableListOf()
+    val dataClassSet: MutableSet<com.glureau.sample.lib.DataClassFromLib> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage {
+            with(protoCodec) {
+              decode(DataClassFromLib::class)
+            }
+          }
+          ?.let {
+            dataClassList += it
+          }
+        }
+        2 -> {
+          readMessage {
+            with(protoCodec) {
+              decode(DataClassFromLib::class)
+            }
+          }
+          ?.let {
+            dataClassSet += it
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(DataClassCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return DataClassCollections(
+      dataClassList = dataClassList,
+      dataClassSet = dataClassSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/DoubleCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/DoubleCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class DoubleCollectionsCodec : ProtoCodec<DoubleCollections> {
+  override fun ProtobufWriter.encode(instance: DoubleCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode doubleList
+    if (instance.doubleList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.doubleList.forEach {
+          writeDouble(it)
+
+        }
+      }
+    }
+
+    // Encode doubleSet
+    if (instance.doubleSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.doubleSet.forEach {
+          writeDouble(it)
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): DoubleCollections? {
+    val doubleList: MutableList<kotlin.Double> = mutableListOf()
+    val doubleSet: MutableSet<kotlin.Double> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              doubleList += readDoubleNoTag()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              doubleSet += readDoubleNoTag()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(DoubleCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return DoubleCollections(
+      doubleList = doubleList,
+      doubleSet = doubleSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/FloatCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/FloatCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class FloatCollectionsCodec : ProtoCodec<FloatCollections> {
+  override fun ProtobufWriter.encode(instance: FloatCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode floatList
+    if (instance.floatList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.floatList.forEach {
+          writeFloat(it)
+
+        }
+      }
+    }
+
+    // Encode floatSet
+    if (instance.floatSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.floatSet.forEach {
+          writeFloat(it)
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): FloatCollections? {
+    val floatList: MutableList<kotlin.Float> = mutableListOf()
+    val floatSet: MutableSet<kotlin.Float> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              floatList += readFloatNoTag()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              floatSet += readFloatNoTag()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(FloatCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return FloatCollections(
+      floatList = floatList,
+      floatSet = floatSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/InlinedCollectionCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/InlinedCollection.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.ktx.ProtoWireType
+import com.glureau.sample.lib.NullableValueClassFromLib
+import com.glureau.sample.lib.ValueClassFromLib
+import com.glureau.sample.lib.ValueClassOfEnum
+import com.glureau.sample.lib.ValueClassOfNullableEnum
+
+internal class InlinedCollectionCodec : ProtoCodec<InlinedCollection> {
+  override fun ProtobufWriter.encode(instance: InlinedCollection?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode valueClassList
+    instance.valueClassList.forEach {
+      writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(1))
+      with(protoCodec) {
+        encode(it, ValueClassFromLib::class)
+      }
+    }
+
+    // Encode valueClassOfEnumList
+    instance.valueClassOfEnumList.forEach {
+      writeInt(ProtoWireType.VARINT.wireIntWithTag(2))
+      with(protoCodec) {
+        encode(it, ValueClassOfEnum::class)
+      }
+    }
+
+    // Encode valueClassOfNullableEnumList
+    instance.valueClassOfNullableEnumList.forEach {
+      if (it != null) {
+        writeInt(ProtoWireType.VARINT.wireIntWithTag(3))
+        with(protoCodec) {
+          encode(it, ValueClassOfNullableEnum::class)
+        }
+      }
+    }
+
+    // Encode valueClassOfNullableStringList
+    instance.valueClassOfNullableStringList.forEach {
+      if (it != null) {
+        writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(4))
+        with(protoCodec) {
+          encode(it, NullableValueClassFromLib::class)
+        }
+      }
+    }
+
+    // Encode valueClassSet
+    instance.valueClassSet.forEach {
+      writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(5))
+      with(protoCodec) {
+        encode(it, ValueClassFromLib::class)
+      }
+    }
+
+    // Encode valueClassOfEnumSet
+    instance.valueClassOfEnumSet.forEach {
+      writeInt(ProtoWireType.VARINT.wireIntWithTag(6))
+      with(protoCodec) {
+        encode(it, ValueClassOfEnum::class)
+      }
+    }
+
+    // Encode valueClassOfNullableEnumSet
+    instance.valueClassOfNullableEnumSet.forEach {
+      if (it != null) {
+        writeInt(ProtoWireType.VARINT.wireIntWithTag(7))
+        with(protoCodec) {
+          encode(it, ValueClassOfNullableEnum::class)
+        }
+      }
+    }
+
+    // Encode valueClassOfNullableStringSet
+    instance.valueClassOfNullableStringSet.forEach {
+      if (it != null) {
+        writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(8))
+        with(protoCodec) {
+          encode(it, NullableValueClassFromLib::class)
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): InlinedCollection? {
+    val valueClassList: MutableList<com.glureau.sample.lib.ValueClassFromLib> = mutableListOf()
+    val valueClassOfEnumList: MutableList<com.glureau.sample.lib.ValueClassOfEnum> = mutableListOf()
+    val valueClassOfNullableEnumList: MutableList<com.glureau.sample.lib.ValueClassOfNullableEnum> = mutableListOf()
+    val valueClassOfNullableStringList: MutableList<com.glureau.sample.lib.NullableValueClassFromLib> = mutableListOf()
+    val valueClassSet: MutableSet<com.glureau.sample.lib.ValueClassFromLib> = mutableSetOf()
+    val valueClassOfEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfEnum> = mutableSetOf()
+    val valueClassOfNullableEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfNullableEnum> = mutableSetOf()
+    val valueClassOfNullableStringSet: MutableSet<com.glureau.sample.lib.NullableValueClassFromLib> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          with(protoCodec) {
+            decode(ValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassList += it
+          }
+        }
+        2 -> {
+          with(protoCodec) {
+            decode(ValueClassOfEnum::class)
+          }
+          ?.let {
+            valueClassOfEnumList += it
+          }
+        }
+        3 -> {
+          with(protoCodec) {
+            decode(ValueClassOfNullableEnum::class)
+          }
+          ?.let {
+            valueClassOfNullableEnumList += it
+          }
+        }
+        4 -> {
+          with(protoCodec) {
+            decode(NullableValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassOfNullableStringList += it
+          }
+        }
+        5 -> {
+          with(protoCodec) {
+            decode(ValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassSet += it
+          }
+        }
+        6 -> {
+          with(protoCodec) {
+            decode(ValueClassOfEnum::class)
+          }
+          ?.let {
+            valueClassOfEnumSet += it
+          }
+        }
+        7 -> {
+          with(protoCodec) {
+            decode(ValueClassOfNullableEnum::class)
+          }
+          ?.let {
+            valueClassOfNullableEnumSet += it
+          }
+        }
+        8 -> {
+          with(protoCodec) {
+            decode(NullableValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassOfNullableStringSet += it
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(InlinedCollection::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return InlinedCollection(
+      valueClassList = valueClassList,
+      valueClassOfEnumList = valueClassOfEnumList,
+      valueClassOfNullableEnumList = valueClassOfNullableEnumList,
+      valueClassOfNullableStringList = valueClassOfNullableStringList,
+      valueClassSet = valueClassSet,
+      valueClassOfEnumSet = valueClassOfEnumSet,
+      valueClassOfNullableEnumSet = valueClassOfNullableEnumSet,
+      valueClassOfNullableStringSet = valueClassOfNullableStringSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/IntCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/IntCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class IntCollectionsCodec : ProtoCodec<IntCollections> {
+  override fun ProtobufWriter.encode(instance: IntCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode integerList
+    if (instance.integerList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.integerList.forEach {
+          writeInt(it)
+
+        }
+      }
+    }
+
+    // Encode integerSet
+    if (instance.integerSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.integerSet.forEach {
+          writeInt(it)
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): IntCollections? {
+    val integerList: MutableList<kotlin.Int> = mutableListOf()
+    val integerSet: MutableSet<kotlin.Int> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              integerList += readInt32NoTag()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              integerSet += readInt32NoTag()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(IntCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return IntCollections(
+      integerList = integerList,
+      integerSet = integerSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/LongCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/LongCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class LongCollectionsCodec : ProtoCodec<LongCollections> {
+  override fun ProtobufWriter.encode(instance: LongCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode longList
+    if (instance.longList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.longList.forEach {
+          writeLong(it)
+
+        }
+      }
+    }
+
+    // Encode longSet
+    if (instance.longSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.longSet.forEach {
+          writeLong(it)
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): LongCollections? {
+    val longList: MutableList<kotlin.Long> = mutableListOf()
+    val longSet: MutableSet<kotlin.Long> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              longList += readLongNoTag()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              longSet += readLongNoTag()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(LongCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return LongCollections(
+      longList = longList,
+      longSet = longSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/MapCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/MapCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+import com.glureau.sample.lib.DataClassFromLib
+
+internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
+  override fun ProtobufWriter.encode(instance: MapCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode mapStringInt
+    instance.mapStringInt.forEach {
+      writeMessage(1) {
+        writeString(it.key, 1)
+        writeInt(it.value, 2, ProtoIntegerType.DEFAULT)
+      }
+    }
+
+    // Encode mapStringObject
+    instance.mapStringObject.forEach {
+      writeMessage(2) {
+        writeString(it.key, 1)
+        writeMessage(2) { with(protoCodec) { encode(it.value, DataClassFromLib::class) } }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): MapCollections? {
+    val mapStringInt: MutableMap<kotlin.String, kotlin.Int> = mutableMapOf()
+    val mapStringObject: MutableMap<kotlin.String, com.glureau.sample.lib.DataClassFromLib> = mutableMapOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            readTag()
+            val key = readStringNoTag()
+            readTag()
+            val value = readInt32NoTag()
+            mapStringInt[key] = value
+          }
+        }
+        2 -> {
+          readMessage() {
+            readTag()
+            val key = readStringNoTag()
+            readTag()
+            val value = readMessage { with(protoCodec) { requireNotNull(decode(DataClassFromLib::class)) { "Map 'mapStringObject' contains a value which is declared as not nullable but is null" } } }
+            mapStringObject[key] = value
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(MapCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return MapCollections(
+      mapStringInt = mapStringInt,
+      mapStringObject = mapStringObject,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableBooleanCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/BooleanCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableBooleanCollectionsCodec : ProtoCodec<NullableBooleanCollections> {
+  override fun ProtobufWriter.encode(instance: NullableBooleanCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableBooleanList
+    if (instance.nullableBooleanList != null) {
+      if (instance.nullableBooleanList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableBooleanList.forEach {
+            writeInt(if (it) 1 else 0)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableBooleanList
+    if (instance.nullableBooleanList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableBooleanSet
+    if (instance.nullableBooleanSet != null) {
+      if (instance.nullableBooleanSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableBooleanSet.forEach {
+            writeInt(if (it) 1 else 0)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableBooleanSet
+    if (instance.nullableBooleanSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableBooleanCollections? {
+    val nullableBooleanList: MutableList<kotlin.Boolean> = mutableListOf()
+    var isNullableBooleanListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableBooleanSet: MutableSet<kotlin.Boolean> = mutableSetOf()
+    var isNullableBooleanSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableBooleanList += 
+              readInt32NoTag() == 1
+            }
+          }
+        }
+        2 -> {
+          isNullableBooleanListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableBooleanSet += 
+              readInt32NoTag() == 1
+            }
+          }
+        }
+        4 -> {
+          isNullableBooleanSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableBooleanCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableBooleanCollections(
+      nullableBooleanList = when (isNullableBooleanListNull) {
+          ExplicitNullability.UNKNOWN -> nullableBooleanList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableBooleanList
+        },
+      nullableBooleanSet = when (isNullableBooleanSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableBooleanSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableBooleanSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableByteCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/ByteCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableByteCollectionsCodec : ProtoCodec<NullableByteCollections> {
+  override fun ProtobufWriter.encode(instance: NullableByteCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableByteList
+    if (instance.nullableByteList != null) {
+      if (instance.nullableByteList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableByteList.forEach {
+            writeInt(it.toInt())
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableByteList
+    if (instance.nullableByteList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableByteSet
+    if (instance.nullableByteSet != null) {
+      if (instance.nullableByteSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableByteSet.forEach {
+            writeInt(it.toInt())
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableByteSet
+    if (instance.nullableByteSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableByteCollections? {
+    val nullableByteList: MutableList<kotlin.Byte> = mutableListOf()
+    var isNullableByteListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableByteSet: MutableSet<kotlin.Byte> = mutableSetOf()
+    var isNullableByteSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableByteList += readInt32NoTag().toByte()
+            }
+          }
+        }
+        2 -> {
+          isNullableByteListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableByteSet += readInt32NoTag().toByte()
+            }
+          }
+        }
+        4 -> {
+          isNullableByteSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableByteCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableByteCollections(
+      nullableByteList = when (isNullableByteListNull) {
+          ExplicitNullability.UNKNOWN -> nullableByteList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableByteList
+        },
+      nullableByteSet = when (isNullableByteSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableByteSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableByteSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableCharCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/CharCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableCharCollectionsCodec : ProtoCodec<NullableCharCollections> {
+  override fun ProtobufWriter.encode(instance: NullableCharCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableCharList
+    if (instance.nullableCharList != null) {
+      if (instance.nullableCharList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableCharList.forEach {
+            writeInt(it.code)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableCharList
+    if (instance.nullableCharList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableCharSet
+    if (instance.nullableCharSet != null) {
+      if (instance.nullableCharSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableCharSet.forEach {
+            writeInt(it.code)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableCharSet
+    if (instance.nullableCharSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableCharCollections? {
+    val nullableCharList: MutableList<kotlin.Char> = mutableListOf()
+    var isNullableCharListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableCharSet: MutableSet<kotlin.Char> = mutableSetOf()
+    var isNullableCharSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableCharList += readInt32NoTag().toChar()
+            }
+          }
+        }
+        2 -> {
+          isNullableCharListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableCharSet += readInt32NoTag().toChar()
+            }
+          }
+        }
+        4 -> {
+          isNullableCharSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableCharCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableCharCollections(
+      nullableCharList = when (isNullableCharListNull) {
+          ExplicitNullability.UNKNOWN -> nullableCharList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableCharList
+        },
+      nullableCharSet = when (isNullableCharSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableCharSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableCharSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableDataClassCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/DataClassCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+import com.glureau.sample.lib.DataClassFromLib
+
+internal class NullableDataClassCollectionsCodec : ProtoCodec<NullableDataClassCollections> {
+  override fun ProtobufWriter.encode(instance: NullableDataClassCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableDataClassList
+    if (instance.nullableDataClassList != null) {
+      instance.nullableDataClassList.forEach {
+        writeMessage(1) {
+          with(protoCodec) {
+            encode(it, DataClassFromLib::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableDataClassList
+    if (instance.nullableDataClassList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableDataClassSet
+    if (instance.nullableDataClassSet != null) {
+      instance.nullableDataClassSet.forEach {
+        writeMessage(3) {
+          with(protoCodec) {
+            encode(it, DataClassFromLib::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableDataClassSet
+    if (instance.nullableDataClassSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableDataClassCollections? {
+    val nullableDataClassList: MutableList<com.glureau.sample.lib.DataClassFromLib> = mutableListOf()
+    var isNullableDataClassListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableDataClassSet: MutableSet<com.glureau.sample.lib.DataClassFromLib> = mutableSetOf()
+    var isNullableDataClassSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage {
+            with(protoCodec) {
+              decode(DataClassFromLib::class)
+            }
+          }
+          ?.let {
+            nullableDataClassList += it
+          }
+        }
+        2 -> {
+          isNullableDataClassListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage {
+            with(protoCodec) {
+              decode(DataClassFromLib::class)
+            }
+          }
+          ?.let {
+            nullableDataClassSet += it
+          }
+        }
+        4 -> {
+          isNullableDataClassSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableDataClassCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableDataClassCollections(
+      nullableDataClassList = when (isNullableDataClassListNull) {
+          ExplicitNullability.UNKNOWN -> nullableDataClassList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableDataClassList
+        },
+      nullableDataClassSet = when (isNullableDataClassSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableDataClassSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableDataClassSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableDoubleCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/DoubleCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableDoubleCollectionsCodec : ProtoCodec<NullableDoubleCollections> {
+  override fun ProtobufWriter.encode(instance: NullableDoubleCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableDoubleList
+    if (instance.nullableDoubleList != null) {
+      if (instance.nullableDoubleList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableDoubleList.forEach {
+            writeDouble(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableDoubleList
+    if (instance.nullableDoubleList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableDoubleSet
+    if (instance.nullableDoubleSet != null) {
+      if (instance.nullableDoubleSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableDoubleSet.forEach {
+            writeDouble(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableDoubleSet
+    if (instance.nullableDoubleSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableDoubleCollections? {
+    val nullableDoubleList: MutableList<kotlin.Double> = mutableListOf()
+    var isNullableDoubleListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableDoubleSet: MutableSet<kotlin.Double> = mutableSetOf()
+    var isNullableDoubleSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableDoubleList += readDoubleNoTag()
+            }
+          }
+        }
+        2 -> {
+          isNullableDoubleListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableDoubleSet += readDoubleNoTag()
+            }
+          }
+        }
+        4 -> {
+          isNullableDoubleSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableDoubleCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableDoubleCollections(
+      nullableDoubleList = when (isNullableDoubleListNull) {
+          ExplicitNullability.UNKNOWN -> nullableDoubleList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableDoubleList
+        },
+      nullableDoubleSet = when (isNullableDoubleSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableDoubleSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableDoubleSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableFloatCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/FloatCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableFloatCollectionsCodec : ProtoCodec<NullableFloatCollections> {
+  override fun ProtobufWriter.encode(instance: NullableFloatCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableFloatList
+    if (instance.nullableFloatList != null) {
+      if (instance.nullableFloatList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableFloatList.forEach {
+            writeFloat(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableFloatList
+    if (instance.nullableFloatList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableFloatSet
+    if (instance.nullableFloatSet != null) {
+      if (instance.nullableFloatSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableFloatSet.forEach {
+            writeFloat(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableFloatSet
+    if (instance.nullableFloatSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableFloatCollections? {
+    val nullableFloatList: MutableList<kotlin.Float> = mutableListOf()
+    var isNullableFloatListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableFloatSet: MutableSet<kotlin.Float> = mutableSetOf()
+    var isNullableFloatSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableFloatList += readFloatNoTag()
+            }
+          }
+        }
+        2 -> {
+          isNullableFloatListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableFloatSet += readFloatNoTag()
+            }
+          }
+        }
+        4 -> {
+          isNullableFloatSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableFloatCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableFloatCollections(
+      nullableFloatList = when (isNullableFloatListNull) {
+          ExplicitNullability.UNKNOWN -> nullableFloatList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableFloatList
+        },
+      nullableFloatSet = when (isNullableFloatSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableFloatSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableFloatSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableInlinedCollectionCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/InlinedCollection.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.ktx.ProtoWireType
+import com.glureau.sample.lib.NullableValueClassFromLib
+import com.glureau.sample.lib.ValueClassFromLib
+import com.glureau.sample.lib.ValueClassOfEnum
+import com.glureau.sample.lib.ValueClassOfNullableEnum
+
+internal class NullableInlinedCollectionCodec : ProtoCodec<NullableInlinedCollection> {
+  override fun ProtobufWriter.encode(instance: NullableInlinedCollection?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode valueClassList
+    if (instance.valueClassList != null) {
+      instance.valueClassList.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(1))
+          with(protoCodec) {
+            encode(it, ValueClassFromLib::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassList
+    if (instance.valueClassList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassOfEnumList
+    if (instance.valueClassOfEnumList != null) {
+      instance.valueClassOfEnumList.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.VARINT.wireIntWithTag(3))
+          with(protoCodec) {
+            encode(it, ValueClassOfEnum::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassOfEnumList
+    if (instance.valueClassOfEnumList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassOfNullableEnumList
+    if (instance.valueClassOfNullableEnumList != null) {
+      instance.valueClassOfNullableEnumList.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.VARINT.wireIntWithTag(5))
+          with(protoCodec) {
+            encode(it, ValueClassOfNullableEnum::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassOfNullableEnumList
+    if (instance.valueClassOfNullableEnumList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 6, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassOfNullableStringList
+    if (instance.valueClassOfNullableStringList != null) {
+      instance.valueClassOfNullableStringList.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(7))
+          with(protoCodec) {
+            encode(it, NullableValueClassFromLib::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassOfNullableStringList
+    if (instance.valueClassOfNullableStringList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 8, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 8, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassSet
+    if (instance.valueClassSet != null) {
+      instance.valueClassSet.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(9))
+          with(protoCodec) {
+            encode(it, ValueClassFromLib::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassSet
+    if (instance.valueClassSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 10, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 10, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassOfEnumSet
+    if (instance.valueClassOfEnumSet != null) {
+      instance.valueClassOfEnumSet.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.VARINT.wireIntWithTag(11))
+          with(protoCodec) {
+            encode(it, ValueClassOfEnum::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassOfEnumSet
+    if (instance.valueClassOfEnumSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 12, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 12, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassOfNullableEnumSet
+    if (instance.valueClassOfNullableEnumSet != null) {
+      instance.valueClassOfNullableEnumSet.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.VARINT.wireIntWithTag(13))
+          with(protoCodec) {
+            encode(it, ValueClassOfNullableEnum::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassOfNullableEnumSet
+    if (instance.valueClassOfNullableEnumSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 14, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 14, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode valueClassOfNullableStringSet
+    if (instance.valueClassOfNullableStringSet != null) {
+      instance.valueClassOfNullableStringSet.forEach {
+        if (it != null) {
+          writeInt(ProtoWireType.SIZE_DELIMITED.wireIntWithTag(15))
+          with(protoCodec) {
+            encode(it, NullableValueClassFromLib::class)
+          }
+        }
+      }
+    }
+    // Encode nullability for valueClassOfNullableStringSet
+    if (instance.valueClassOfNullableStringSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 16, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 16, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableInlinedCollection? {
+    val valueClassList: MutableList<com.glureau.sample.lib.ValueClassFromLib?> = mutableListOf()
+    var isValueClassListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassOfEnumList: MutableList<com.glureau.sample.lib.ValueClassOfEnum?> = mutableListOf()
+    var isValueClassOfEnumListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassOfNullableEnumList: MutableList<com.glureau.sample.lib.ValueClassOfNullableEnum?> = mutableListOf()
+    var isValueClassOfNullableEnumListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassOfNullableStringList: MutableList<com.glureau.sample.lib.NullableValueClassFromLib?> = mutableListOf()
+    var isValueClassOfNullableStringListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassSet: MutableSet<com.glureau.sample.lib.ValueClassFromLib?> = mutableSetOf()
+    var isValueClassSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassOfEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfEnum?> = mutableSetOf()
+    var isValueClassOfEnumSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassOfNullableEnumSet: MutableSet<com.glureau.sample.lib.ValueClassOfNullableEnum?> = mutableSetOf()
+    var isValueClassOfNullableEnumSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val valueClassOfNullableStringSet: MutableSet<com.glureau.sample.lib.NullableValueClassFromLib?> = mutableSetOf()
+    var isValueClassOfNullableStringSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          with(protoCodec) {
+            decode(ValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassList += it
+          }
+        }
+        2 -> {
+          isValueClassListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          with(protoCodec) {
+            decode(ValueClassOfEnum::class)
+          }
+          ?.let {
+            valueClassOfEnumList += it
+          }
+        }
+        4 -> {
+          isValueClassOfEnumListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        5 -> {
+          with(protoCodec) {
+            decode(ValueClassOfNullableEnum::class)
+          }
+          ?.let {
+            valueClassOfNullableEnumList += it
+          }
+        }
+        6 -> {
+          isValueClassOfNullableEnumListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        7 -> {
+          with(protoCodec) {
+            decode(NullableValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassOfNullableStringList += it
+          }
+        }
+        8 -> {
+          isValueClassOfNullableStringListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        9 -> {
+          with(protoCodec) {
+            decode(ValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassSet += it
+          }
+        }
+        10 -> {
+          isValueClassSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        11 -> {
+          with(protoCodec) {
+            decode(ValueClassOfEnum::class)
+          }
+          ?.let {
+            valueClassOfEnumSet += it
+          }
+        }
+        12 -> {
+          isValueClassOfEnumSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        13 -> {
+          with(protoCodec) {
+            decode(ValueClassOfNullableEnum::class)
+          }
+          ?.let {
+            valueClassOfNullableEnumSet += it
+          }
+        }
+        14 -> {
+          isValueClassOfNullableEnumSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        15 -> {
+          with(protoCodec) {
+            decode(NullableValueClassFromLib::class)
+          }
+          ?.let {
+            valueClassOfNullableStringSet += it
+          }
+        }
+        16 -> {
+          isValueClassOfNullableStringSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableInlinedCollection::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableInlinedCollection(
+      valueClassList = when (isValueClassListNull) {
+          ExplicitNullability.UNKNOWN -> valueClassList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassList
+        },
+      valueClassOfEnumList = when (isValueClassOfEnumListNull) {
+          ExplicitNullability.UNKNOWN -> valueClassOfEnumList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassOfEnumList
+        },
+      valueClassOfNullableEnumList = when (isValueClassOfNullableEnumListNull) {
+          ExplicitNullability.UNKNOWN -> valueClassOfNullableEnumList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassOfNullableEnumList
+        },
+      valueClassOfNullableStringList = when (isValueClassOfNullableStringListNull) {
+          ExplicitNullability.UNKNOWN -> valueClassOfNullableStringList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassOfNullableStringList
+        },
+      valueClassSet = when (isValueClassSetNull) {
+          ExplicitNullability.UNKNOWN -> valueClassSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassSet
+        },
+      valueClassOfEnumSet = when (isValueClassOfEnumSetNull) {
+          ExplicitNullability.UNKNOWN -> valueClassOfEnumSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassOfEnumSet
+        },
+      valueClassOfNullableEnumSet = when (isValueClassOfNullableEnumSetNull) {
+          ExplicitNullability.UNKNOWN -> valueClassOfNullableEnumSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassOfNullableEnumSet
+        },
+      valueClassOfNullableStringSet = when (isValueClassOfNullableStringSetNull) {
+          ExplicitNullability.UNKNOWN -> valueClassOfNullableStringSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> valueClassOfNullableStringSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableIntCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/IntCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableIntCollectionsCodec : ProtoCodec<NullableIntCollections> {
+  override fun ProtobufWriter.encode(instance: NullableIntCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableIntegerList
+    if (instance.nullableIntegerList != null) {
+      if (instance.nullableIntegerList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableIntegerList.forEach {
+            writeInt(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableIntegerList
+    if (instance.nullableIntegerList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableIntegerSet
+    if (instance.nullableIntegerSet != null) {
+      if (instance.nullableIntegerSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableIntegerSet.forEach {
+            writeInt(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableIntegerSet
+    if (instance.nullableIntegerSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableIntCollections? {
+    val nullableIntegerList: MutableList<kotlin.Int> = mutableListOf()
+    var isNullableIntegerListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableIntegerSet: MutableSet<kotlin.Int> = mutableSetOf()
+    var isNullableIntegerSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableIntegerList += readInt32NoTag()
+            }
+          }
+        }
+        2 -> {
+          isNullableIntegerListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableIntegerSet += readInt32NoTag()
+            }
+          }
+        }
+        4 -> {
+          isNullableIntegerSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableIntCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableIntCollections(
+      nullableIntegerList = when (isNullableIntegerListNull) {
+          ExplicitNullability.UNKNOWN -> nullableIntegerList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableIntegerList
+        },
+      nullableIntegerSet = when (isNullableIntegerSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableIntegerSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableIntegerSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableLongCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/LongCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableLongCollectionsCodec : ProtoCodec<NullableLongCollections> {
+  override fun ProtobufWriter.encode(instance: NullableLongCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableLongList
+    if (instance.nullableLongList != null) {
+      if (instance.nullableLongList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableLongList.forEach {
+            writeLong(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableLongList
+    if (instance.nullableLongList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableLongSet
+    if (instance.nullableLongSet != null) {
+      if (instance.nullableLongSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableLongSet.forEach {
+            writeLong(it)
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableLongSet
+    if (instance.nullableLongSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableLongCollections? {
+    val nullableLongList: MutableList<kotlin.Long> = mutableListOf()
+    var isNullableLongListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableLongSet: MutableSet<kotlin.Long> = mutableSetOf()
+    var isNullableLongSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableLongList += readLongNoTag()
+            }
+          }
+        }
+        2 -> {
+          isNullableLongListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableLongSet += readLongNoTag()
+            }
+          }
+        }
+        4 -> {
+          isNullableLongSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableLongCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableLongCollections(
+      nullableLongList = when (isNullableLongListNull) {
+          ExplicitNullability.UNKNOWN -> nullableLongList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableLongList
+        },
+      nullableLongSet = when (isNullableLongSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableLongSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableLongSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableShortCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/ShortCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class NullableShortCollectionsCodec : ProtoCodec<NullableShortCollections> {
+  override fun ProtobufWriter.encode(instance: NullableShortCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableShortList
+    if (instance.nullableShortList != null) {
+      if (instance.nullableShortList.isNotEmpty()) {
+        writeMessage(1) {
+          instance.nullableShortList.forEach {
+            writeInt(it.toInt())
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableShortList
+    if (instance.nullableShortList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableShortSet
+    if (instance.nullableShortSet != null) {
+      if (instance.nullableShortSet.isNotEmpty()) {
+        writeMessage(3) {
+          instance.nullableShortSet.forEach {
+            writeInt(it.toInt())
+
+          }
+        }
+      }
+    }
+    // Encode nullability for nullableShortSet
+    if (instance.nullableShortSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableShortCollections? {
+    val nullableShortList: MutableList<kotlin.Short> = mutableListOf()
+    var isNullableShortListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableShortSet: MutableSet<kotlin.Short> = mutableSetOf()
+    var isNullableShortSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              nullableShortList += readInt32NoTag().toShort()
+            }
+          }
+        }
+        2 -> {
+          isNullableShortListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          readMessage() {
+            while (!eof) {
+              nullableShortSet += readInt32NoTag().toShort()
+            }
+          }
+        }
+        4 -> {
+          isNullableShortSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableShortCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableShortCollections(
+      nullableShortList = when (isNullableShortListNull) {
+          ExplicitNullability.UNKNOWN -> nullableShortList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableShortList
+        },
+      nullableShortSet = when (isNullableShortSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableShortSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableShortSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/NullableStringCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/StringCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ExplicitNullability
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtoIntegerType
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+
+internal class NullableStringCollectionsCodec : ProtoCodec<NullableStringCollections> {
+  override fun ProtobufWriter.encode(instance: NullableStringCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode nullableStringList
+    if (instance.nullableStringList != null) {
+      instance.nullableStringList.forEach {
+        writeString(it, 1)
+
+      }
+    }
+    // Encode nullability for nullableStringList
+    if (instance.nullableStringList != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 2, format = ProtoIntegerType.DEFAULT)
+    }
+
+    // Encode nullableStringSet
+    if (instance.nullableStringSet != null) {
+      instance.nullableStringSet.forEach {
+        writeString(it, 3)
+
+      }
+    }
+    // Encode nullability for nullableStringSet
+    if (instance.nullableStringSet != null) {
+      writeInt(value = ExplicitNullability.NOT_NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    } else {
+      writeInt(value = ExplicitNullability.NULL.ordinal, tag = 4, format = ProtoIntegerType.DEFAULT)
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NullableStringCollections? {
+    val nullableStringList: MutableList<kotlin.String> = mutableListOf()
+    var isNullableStringListNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+    val nullableStringSet: MutableSet<kotlin.String> = mutableSetOf()
+    var isNullableStringSetNull: ExplicitNullability = ExplicitNullability.UNKNOWN
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          nullableStringList += readStringNoTag()
+        }
+        2 -> {
+          isNullableStringListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        3 -> {
+          nullableStringSet += readStringNoTag()
+        }
+        4 -> {
+          isNullableStringSetNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(NullableStringCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return NullableStringCollections(
+      nullableStringList = when (isNullableStringListNull) {
+          ExplicitNullability.UNKNOWN -> nullableStringList
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableStringList
+        },
+      nullableStringSet = when (isNullableStringSetNull) {
+          ExplicitNullability.UNKNOWN -> nullableStringSet
+          ExplicitNullability.NULL -> null
+          ExplicitNullability.NOT_NULL -> nullableStringSet
+        },
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/ShortCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/ShortCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+
+internal class ShortCollectionsCodec : ProtoCodec<ShortCollections> {
+  override fun ProtobufWriter.encode(instance: ShortCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode shortList
+    if (instance.shortList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.shortList.forEach {
+          writeInt(it.toInt())
+
+        }
+      }
+    }
+
+    // Encode shortSet
+    if (instance.shortSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.shortSet.forEach {
+          writeInt(it.toInt())
+
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): ShortCollections? {
+    val shortList: MutableList<kotlin.Short> = mutableListOf()
+    val shortSet: MutableSet<kotlin.Short> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage() {
+            while (!eof) {
+              shortList += readInt32NoTag().toShort()
+            }
+          }
+        }
+        2 -> {
+          readMessage() {
+            while (!eof) {
+              shortSet += readInt32NoTag().toShort()
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(ShortCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return ShortCollections(
+      shortList = shortList,
+      shortSet = shortSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/StringCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/StringCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+
+internal class StringCollectionsCodec : ProtoCodec<StringCollections> {
+  override fun ProtobufWriter.encode(instance: StringCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode stringList
+    instance.stringList.forEach {
+      writeString(it, 1)
+
+    }
+
+    // Encode stringSet
+    instance.stringSet.forEach {
+      writeString(it, 2)
+
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): StringCollections? {
+    val stringList: MutableList<kotlin.String> = mutableListOf()
+    val stringSet: MutableSet<kotlin.String> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          stringList += readStringNoTag()
+        }
+        2 -> {
+          stringSet += readStringNoTag()
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(StringCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return StringCollections(
+      stringList = stringList,
+      stringSet = stringSet,
+    )
+  }
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/proto/CommentedClassCodec.kt

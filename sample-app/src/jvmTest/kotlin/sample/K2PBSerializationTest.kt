@@ -4,7 +4,7 @@ import com.glureau.k2pb.runtime.K2PB
 import com.glureau.k2pb.runtime.decodeFromByteArray
 import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.sample.BarEvent
-import com.glureau.sample.DataClassCollections
+import com.glureau.sample.collection.DataClassCollections
 import com.glureau.sample.CommonClass
 import com.glureau.sample.FooEvent
 import com.glureau.sample.NullableNativeTypeEvent
@@ -52,8 +52,6 @@ class K2PBSerializationTest {
         val collections = DataClassCollections(
             dataClassList = listOf(DataClassFromLib(7)),
             dataClassSet = setOf(DataClassFromLib(15)),
-            mapStringInt = mapOf("one" to 1, "two" to 2),
-            mapStringObject = mapOf("height" to DataClassFromLib(8)),
         )
         val serialized = serializer.encodeToByteArray<DataClassCollections>(collections)
         println("serialized: ${serialized.joinToString(" ") { it.toHexString() }}")

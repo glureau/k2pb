@@ -36,8 +36,21 @@ abstract class BaseEncodingTest {
         Assert.assertEquals(ktInstance, decodedViaK2PB)
         // Asserting that data encoded from ktx serialization and decoded via protoc generated files are equals.
         Assert.assertEquals(protocInstance, decodedViaProtocGeneratedCode)
+
+        // Better safe than sorry
+        assertRoundTrip(ktInstance)
     }
 
+
+    @OptIn(ExperimentalStdlibApi::class)
+    inline fun <reified Kt : Any> assertRoundTrip(ktInstance: Kt) {
+        val encoded = serializer.encodeToByteArray<Kt>(ktInstance)
+        println("encoded\t ${encoded.joinToString(" ") { it.toHexString() }}")
+        val decoded = serializer.decodeFromByteArray<Kt>(encoded)
+        println("Original: $ktInstance")
+        println("Decoded:  $decoded")
+        Assert.assertEquals(ktInstance, decoded)
+    }
 
     @OptIn(ExperimentalStdlibApi::class)
     inline fun <reified Before : Any, reified After : Any> assertMigration(
