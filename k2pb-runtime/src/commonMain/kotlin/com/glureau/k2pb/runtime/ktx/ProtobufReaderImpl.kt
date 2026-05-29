@@ -89,15 +89,11 @@ internal class ProtobufReaderImpl(private val input: ByteArrayInput) : ProtobufR
         return input.readExactNBytes(length)
     }
 
-    fun objectInput(): ByteArrayInput {
+    override fun readSubReader(): ProtobufReaderImpl {
         assertWireType(ProtoWireType.SIZE_DELIMITED)
-        return objectTaglessInput()
-    }
-
-    fun objectTaglessInput(): ByteArrayInput {
         val length = decode32()
         checkLength(length)
-        return input.slice(length)
+        return ProtobufReaderImpl(input.slice(length))
     }
 
     override fun readInt(format: ProtoIntegerType): Int {

@@ -13,8 +13,7 @@ public interface ProtobufReader {
     public fun readByteArray(): ByteArray
     public fun skipSizeDelimited()
     public fun readByteArrayNoTag(): ByteArray
-    //fun objectInput(): ByteArrayInput
-    //fun objectTaglessInput(): ByteArrayInput
+    public fun readSubReader(): ProtobufReader
     public fun readInt(format: ProtoIntegerType): Int
     public fun readInt32NoTag(): Int
     public fun readLong(format: ProtoIntegerType): Long
