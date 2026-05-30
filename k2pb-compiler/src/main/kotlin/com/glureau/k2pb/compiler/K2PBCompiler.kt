@@ -167,10 +167,10 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
                     if (!reference.hasAnnotation(ProtoMessage::class.qualifiedName!!) &&
                         reference.qualifiedName?.asString() != K2PBNullabilityClassName.canonicalName) {
                         Logger.warn("$it is referenced but not annotated with @ProtoMessage")
-                        // TODO: Should be an error?
                     }
 
                     TypeResolver.record(reference)
+                    protobufAggregator.markResolved(it)
 
                     done = false
                 }

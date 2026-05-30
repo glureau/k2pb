@@ -19,6 +19,10 @@ class ProtobufAggregator {
         TypeResolver.recordNode(node)
     }
 
+    fun markResolved(qualifiedName: String) {
+        qualifiedNameSet += qualifiedName
+    }
+
     fun unknownReferences(): Set<String> {
         val references: Set<String> = nodes
             .filterIsInstance<MessageNode>()
