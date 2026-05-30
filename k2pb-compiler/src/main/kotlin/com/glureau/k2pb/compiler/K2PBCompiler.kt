@@ -12,6 +12,7 @@ import com.glureau.k2pb.compiler.struct.emitNullabilityProto
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.common.impl.KSNameImpl
 import com.google.devtools.ksp.containingFile
+import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -48,12 +49,18 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
     private val protobufAggregator = ProtobufAggregator()
     private val generatedFiles = mutableSetOf<String>()
+    private var roundNumber = 0
 
     @OptIn(KspExperimental::class)
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        roundNumber++
         compileOptions = CompileOptions(environment.options)
         val symbols = resolver.getSymbolsWithAnnotation(ProtoMessage::class.qualifiedName!!)
-        if (!symbols.iterator().hasNext()) return emptyList()
+            .toList()
+
+        Logger.info("K2PB round $roundNumber: ${symbols.size} @ProtoMessage symbol(s) found")
+
+        if (symbols.isEmpty()) return emptyList()
 
         symbols.forEach {
             if (it is KSClassDeclaration) {
@@ -65,8 +72,17 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
         resolveDependencies(resolver)
 
+        Logger.info("K2PB round $roundNumber: generating code for ${protobufAggregator.nodes.size} total node(s)")
+
         val moduleName = resolver.getModuleName().asString()
             .removeSuffix("_commonMain")
+
+        // Collect ALL source files that contributed to any node so that KSP
+        // re-delivers all symbols when any annotated file changes.
+        val allSourceFiles = protobufAggregator.nodes
+            .mapNotNull { it.originalFile }
+            .distinct()
+
         ProtobufFileProducer(protobufAggregator).buildFiles(moduleName)
             .filter { generatedFiles.add(it.path) }
             .forEach { protobufFile ->
@@ -79,8 +95,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             }
 
         if (compileOptions.emitNullability) {
-            // Nullability proto file is global, generate only once
-            if (generatedFiles.add("k2pb_nullability.proto")) { // Assuming filename, but let's be careful.
+            if (generatedFiles.add("k2pb_nullability.proto")) {
                 emitNullabilityProto(environment)
             }
         }
@@ -89,7 +104,12 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
             .filter {
                 generatedFiles.add("kotlin/${it.fileSpec.packageName.replace(".", "/")}/${it.fileSpec.name}.kt") }
             .forEach {
-                it.fileSpec.writeTo(environment.codeGenerator, false)
+                val deps = if (it.aggregating) {
+                    Dependencies(true, *allSourceFiles.toTypedArray())
+                } else {
+                    Dependencies(false)
+                }
+                it.fileSpec.writeTo(environment.codeGenerator, deps)
             }
         return emptyList()
     }

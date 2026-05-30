@@ -210,6 +210,68 @@ class K2PBCompilerTest {
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
     }
 
+    @Test
+    fun multipleFiles_crossReferencing_compiles() {
+        val innerSource = SourceFile.kotlin(
+            "Inner.kt",
+            """
+            package test
+
+            import com.glureau.k2pb.annotation.ProtoMessage
+
+            @ProtoMessage
+            data class Inner(val value: String = "")
+            """.trimIndent()
+        )
+        val middleSource = SourceFile.kotlin(
+            "Middle.kt",
+            """
+            package test
+
+            import com.glureau.k2pb.annotation.ProtoMessage
+
+            @ProtoMessage
+            data class Middle(val inner: Inner = Inner(), val label: String = "")
+            """.trimIndent()
+        )
+        val outerSource = SourceFile.kotlin(
+            "Outer.kt",
+            """
+            package test
+
+            import com.glureau.k2pb.annotation.ProtoMessage
+
+            @ProtoMessage
+            data class Outer(val middle: Middle = Middle(), val count: Int = 0)
+            """.trimIndent()
+        )
+        val extraSource = SourceFile.kotlin(
+            "Extra.kt",
+            """
+            package test
+
+            import com.glureau.k2pb.annotation.ProtoMessage
+
+            @ProtoMessage
+            data class Extra(val outer: Outer = Outer(), val inner: Inner = Inner())
+            """.trimIndent()
+        )
+        val standaloneSource = SourceFile.kotlin(
+            "Standalone.kt",
+            """
+            package test
+
+            import com.glureau.k2pb.annotation.ProtoMessage
+
+            @ProtoMessage
+            data class Standalone(val x: Int = 0)
+            """.trimIndent()
+        )
+
+        val result = compile(innerSource, middleSource, outerSource, extraSource, standaloneSource)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
     // --- Enum codec code generation tests ---
 
     private fun buildEnumCodecSource(enumNode: EnumNode): String {

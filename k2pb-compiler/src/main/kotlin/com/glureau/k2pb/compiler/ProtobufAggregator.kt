@@ -11,11 +11,11 @@ class ProtobufAggregator {
     private val qualifiedNameSet = mutableSetOf<String>()
 
     fun recordNode(node: Node) {
+        if (!qualifiedNameSet.add(node.qualifiedName)) {
+            Logger.info("Skipping already-recorded node: ${node.qualifiedName}")
+            return
+        }
         nodes += node
-        require(
-            qualifiedNameSet.contains(node.qualifiedName).not()
-        ) { "Duplicated qualified name: ${node.qualifiedName}" }
-        qualifiedNameSet += node.qualifiedName
         TypeResolver.recordNode(node)
     }
 
