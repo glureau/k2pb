@@ -116,7 +116,7 @@ class K2PBCompiler(private val environment: SymbolProcessorEnvironment) : Symbol
 
     private fun resolvePolymorphism(resolver: Resolver) {
         resolver.getSymbolsWithAnnotation(ProtoPolymorphism::class.qualifiedName!!).forEach { symbol ->
-            symbol.protoPolymorphismAnnotation()?.let { annotation ->
+            symbol.protoPolymorphismAnnotation().forEach { annotation ->
                 val parentKClass = annotation.getArg<KSType>(ProtoPolymorphism::parent)
                 val parent = parentKClass.toClassName()
                 val oneOfAnnotations = annotation.getArg<List<KSAnnotation>>(ProtoPolymorphism::oneOf)

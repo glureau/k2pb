@@ -7,8 +7,8 @@ import com.glureau.k2pb.compiler.struct.codecClassName
 import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspWithCompilation
-import com.tschuchort.compiletesting.symbolProcessorProviders
+import com.tschuchort.compiletesting.configureKsp
+import com.tschuchort.compiletesting.kspSourcesDir
 import com.squareup.kotlinpoet.FileSpec
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Assert.assertEquals
@@ -20,16 +20,22 @@ import org.junit.Test
 class K2PBCompilerTest {
 
     private fun compile(vararg sources: SourceFile): JvmCompilationResult {
+        return compileWithCompilation(*sources).second
+    }
+
+    private fun compileWithCompilation(vararg sources: SourceFile): Pair<KotlinCompilation, JvmCompilationResult> {
         val compilation = KotlinCompilation().apply {
             this.sources = sources.toList()
-            symbolProcessorProviders = mutableListOf(K2PBCompilerProvider())
-            kspWithCompilation = true
+            configureKsp(useKsp2 = true) {
+                symbolProcessorProviders += K2PBCompilerProvider()
+                withCompilation = true
+            }
             inheritClassPath = true
         }
         val result = compilation.compile()
         println("Exit code: ${result.exitCode}")
         println("Messages: ${result.messages}")
-        return result
+        return compilation to result
     }
 
     @Test
@@ -270,6 +276,57 @@ class K2PBCompilerTest {
 
         val result = compile(innerSource, middleSource, outerSource, extraSource, standaloneSource)
         assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
+    @Test
+    fun multipleProtoPolymorphismAnnotations_onSameTarget_compiles() {
+        val source = SourceFile.kotlin(
+            "TestMultiPolymorphism.kt",
+            """
+            package test
+
+            import com.glureau.k2pb.annotation.ProtoMessage
+            import com.glureau.k2pb.annotation.ProtoPolymorphism
+            import com.glureau.k2pb.annotation.ProtoPolymorphism.Child
+
+            abstract class Animal
+            @ProtoMessage
+            data class Cat(val name: String = "") : Animal()
+            @ProtoMessage
+            data class Dog(val name: String = "") : Animal()
+
+            abstract class Vehicle
+            @ProtoMessage
+            data class Car(val brand: String = "") : Vehicle()
+            @ProtoMessage
+            data class Bike(val gears: Int = 0) : Vehicle()
+
+            @ProtoPolymorphism(
+                Animal::class,
+                name = "Animal",
+                oneOf = [Child(Cat::class, 1), Child(Dog::class, 2)]
+            )
+            @ProtoPolymorphism(
+                Vehicle::class,
+                name = "Vehicle",
+                oneOf = [Child(Car::class, 1), Child(Bike::class, 2)]
+            )
+            private object PolymorphismConfig
+            """.trimIndent()
+        )
+        val (compilation, result) = compileWithCompilation(source)
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+
+        val kspSourcesDir = compilation.kspSourcesDir
+        val allGenerated = kspSourcesDir.walkTopDown().filter { it.isFile }.toList()
+        assertTrue(
+            "Should generate output for Animal polymorphism, but generated: ${allGenerated.map { it.name }}",
+            allGenerated.any { it.nameWithoutExtension.contains("Animal") }
+        )
+        assertTrue(
+            "Should generate output for Vehicle polymorphism, but generated: ${allGenerated.map { it.name }}",
+            allGenerated.any { it.nameWithoutExtension.contains("Vehicle") }
+        )
     }
 
     // --- Enum codec code generation tests ---

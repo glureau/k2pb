@@ -22,8 +22,8 @@ import com.glureau.k2pb.annotation.DeprecatedNullabilityField as AnnotationDepre
 fun KSAnnotated.protoMessageAnnotation(): KSAnnotation? =
     annotations.firstOrNull { it.shortName.asString() == ProtoMessage::class.simpleName }
 
-fun KSAnnotated.protoPolymorphismAnnotation(): KSAnnotation? =
-    annotations.firstOrNull { it.shortName.asString() == ProtoPolymorphism::class.simpleName }
+fun KSAnnotated.protoPolymorphismAnnotation(): Sequence<KSAnnotation> =
+    annotations.filter { it.shortName.asString() == ProtoPolymorphism::class.simpleName }
 
 fun KSAnnotated.protoFieldAnnotation(): KSAnnotation? =
     annotations.firstOrNull { it.shortName.asString() == ProtoField::class.simpleName }
