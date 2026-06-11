@@ -246,6 +246,20 @@ enum EnumClass {
   Colibri = 2;
 }
 
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumCollections.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "EnumCollectionsProto";
+
+import "com/glureau/k2pb_sample/AnEnum.proto";
+
+message EnumCollections {
+  repeated AnEnum enumList = 1;
+  repeated AnEnum enumSet = 2;
+}
+
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/EnumHolder.proto
 syntax = "proto3";
 
@@ -349,12 +363,16 @@ package com.glureau.k2pb_sample;
 
 option java_outer_classname = "MapCollectionsProto";
 
+import "com/glureau/k2pb_sample/AnEnum.proto";
 import "com/glureau/k2pb_sample/DataClassFromLib.proto";
 
 message MapCollections {
   map<string, int32> mapStringInt = 1;
   map<string, DataClassFromLib> mapStringObject = 2;
   map<string, bool> mapStringBoolean = 3;
+  map<string, AnEnum> mapStringEnum = 4;
+  // Protobuf does not support enum as map key, using int32 instead.
+  map<int32, string> mapEnumString = 5;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/MultiModule.proto

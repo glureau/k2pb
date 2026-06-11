@@ -46,15 +46,28 @@ fun FunSpec.Builder.encodeListType(
         }
 
         is ReferenceType -> {
-            beginControlFlow("$instanceName.$fieldName.forEach")
-            encodeReferenceType(
-                fieldName = "it",
-                type = listType.repeatedType,
-                tag = tag,
-                annotatedCodec = null,
-                forceEncodeDefault = true,
-            )
-            endControlFlow()
+            if (listType.repeatedType.isEnum) {
+                // Enums use packed encoding like scalars in proto3
+                beginControlFlow("if ($instanceName.$fieldName.isNotEmpty())")
+                beginControlFlow("%M($tag)", writeMessageExt)
+                beginControlFlow("$instanceName.$fieldName.forEach")
+                beginControlFlow("with(protoCodec)")
+                addStatement("encode(it, %T::class)", listType.repeatedType.className.copy(nullable = false))
+                endControlFlow() // with
+                endControlFlow() // forEach
+                endControlFlow() // writeMessage {}
+                endControlFlow() // isNotEmpty
+            } else {
+                beginControlFlow("$instanceName.$fieldName.forEach")
+                encodeReferenceType(
+                    fieldName = "it",
+                    type = listType.repeatedType,
+                    tag = tag,
+                    annotatedCodec = null,
+                    forceEncodeDefault = true,
+                )
+                endControlFlow()
+            }
         }
 
         else -> {
@@ -91,7 +104,7 @@ fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {
                 }
 
                 else -> {
-                    beginControlFlow("%M()", readMessageExt)
+                    beginControlFlow("%M", readMessageExt)
                     beginControlFlow("while (!eof)")
                     addCode("$fieldName += ")
                     addCode(listType.repeatedType.readMethodNoTag())
@@ -103,10 +116,21 @@ fun FunSpec.Builder.decodeListType(fieldName: String, listType: ListType) {
         }
 
         is ReferenceType -> {
-            decodeReferenceType(fieldName, listType.repeatedType, null)
-            beginControlFlow("?.let")
-            addStatement("$fieldName += it")
-            endControlFlow()
+            if (listType.repeatedType.isEnum) {
+                // Enums use packed encoding like scalars in proto3
+                beginControlFlow("%M", readMessageExt)
+                beginControlFlow("while (!eof)")
+                beginControlFlow("with(protoCodec)")
+                addStatement("decode(%T::class)?.let { $fieldName += it }", listType.repeatedType.className.copy(nullable = false))
+                endControlFlow() // with
+                endControlFlow() // while (!eof)
+                endControlFlow() // readMessage {}
+            } else {
+                decodeReferenceType(fieldName, listType.repeatedType, null)
+                beginControlFlow("?.let")
+                addStatement("$fieldName += it")
+                endControlFlow()
+            }
         }
 
         else -> {

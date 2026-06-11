@@ -15,7 +15,7 @@ fun FileSpec.Builder.generateEnumCodecType(enumNode: EnumNode) = generateCodecTy
             addStatement("%T.${entry.kotlinName} -> ${entry.number}", className)
         }
         endControlFlow()
-        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("protoNumber", false))
+        addCode(ScalarFieldType.Int.safeWriteMethodNoTag("protoNumber", true))
     },
     decodeContent = { instanceName: String, protoCodecName: String ->
         val className = enumNode.asClassName()

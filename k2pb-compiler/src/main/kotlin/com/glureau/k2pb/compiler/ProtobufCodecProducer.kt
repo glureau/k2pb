@@ -63,7 +63,7 @@ class ProtobufCodecProducer(private val protobufAggregator: ProtobufAggregator) 
                                         it.superTypes.forEach { superType ->
                                             addStatement(
                                                 """|registerPolymorphicChild(
-                                                   |parent = %T::class, 
+                                                   |parent = %T::class,
                                                    |child = %T::class,""".trimMargin(),
                                                 (superType as? ParameterizedTypeName)?.rawType ?: superType,
                                                 className,

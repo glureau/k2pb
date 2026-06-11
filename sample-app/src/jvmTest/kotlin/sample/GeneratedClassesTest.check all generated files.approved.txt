@@ -522,10 +522,7 @@ internal class EnumClassCodec : ProtoCodec<EnumClass> {
       EnumClass.B -> 1
       EnumClass.C -> 2
     }
-    if (protoNumber != 0) {
-      writeInt(protoNumber)
-    }
-    // else: default value should not be encoded
+    writeInt(protoNumber)
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): EnumClass? {
@@ -900,8 +897,7 @@ internal class NativeTypeEventCodec : ProtoCodec<NativeTypeEvent> {
           char = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT).toChar()
         }
         8 -> {
-          boolean = 
-              readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
+          boolean = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
         }
         9 -> {
           byte = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT).toByte()
@@ -1063,8 +1059,7 @@ internal class NativeTypeEventUnspecifiedDefaultCodec : ProtoCodec<NativeTypeEve
           char = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT).toChar()
         }
         8 -> {
-          boolean = 
-              readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
+          boolean = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
         }
         9 -> {
           byte = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT).toByte()
@@ -1111,10 +1106,7 @@ internal class NonContiguousEnumCodec : ProtoCodec<NonContiguousEnum> {
       NonContiguousEnum.ACTIVE -> 5
       NonContiguousEnum.INACTIVE -> 10
     }
-    if (protoNumber != 0) {
-      writeInt(protoNumber)
-    }
-    // else: default value should not be encoded
+    writeInt(protoNumber)
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): NonContiguousEnum? {
@@ -1783,8 +1775,7 @@ internal class NullableNativeTypeEventCodec : ProtoCodec<NullableNativeTypeEvent
           isCharNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         15 -> {
-          boolean = 
-              readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
+          boolean = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
         }
         16 -> {
           isBooleanNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
@@ -2107,8 +2098,7 @@ internal class NullableNativeTypeEventUnspecifiedDefaultCodec : ProtoCodec<Nulla
           isCharNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         15 -> {
-          boolean = 
-              readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
+          boolean = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
         }
         16 -> {
           isBooleanNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
@@ -2431,8 +2421,7 @@ internal class NullableNativeTypeEventUnspecifiedNullCodec : ProtoCodec<Nullable
           isCharNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         15 -> {
-          boolean = 
-              readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
+          boolean = readInt(com.glureau.k2pb.ProtoIntegerType.DEFAULT) == 1
         }
         16 -> {
           isBooleanNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
@@ -3669,6 +3658,8 @@ import com.glureau.sample.collection.DataClassCollections
 import com.glureau.sample.collection.DataClassCollectionsCodec
 import com.glureau.sample.collection.DoubleCollections
 import com.glureau.sample.collection.DoubleCollectionsCodec
+import com.glureau.sample.collection.EnumCollections
+import com.glureau.sample.collection.EnumCollectionsCodec
 import com.glureau.sample.collection.FloatCollections
 import com.glureau.sample.collection.FloatCollectionsCodec
 import com.glureau.sample.collection.InlinedCollection
@@ -3716,11 +3707,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "IntCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = IntCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = IntCollections::class,
   )
   registerCodec(
@@ -3729,11 +3720,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableIntCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableIntCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableIntCollections::class,
   )
   registerCodec(
@@ -3742,11 +3733,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "DoubleCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = DoubleCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = DoubleCollections::class,
   )
   registerCodec(
@@ -3755,11 +3746,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableDoubleCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableDoubleCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableDoubleCollections::class,
   )
   registerCodec(
@@ -3768,11 +3759,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "ByteCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = ByteCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = ByteCollections::class,
   )
   registerCodec(
@@ -3781,11 +3772,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableByteCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableByteCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableByteCollections::class,
   )
   registerCodec(
@@ -3794,11 +3785,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "InlinedCollection",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = InlinedCollection::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = InlinedCollection::class,
   )
   registerCodec(
@@ -3807,11 +3798,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableInlinedCollection",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableInlinedCollection::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableInlinedCollection::class,
   )
   registerCodec(
@@ -3820,11 +3811,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "CharCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = CharCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = CharCollections::class,
   )
   registerCodec(
@@ -3833,11 +3824,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableCharCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableCharCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableCharCollections::class,
   )
   registerCodec(
@@ -3846,11 +3837,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "LongCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = LongCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = LongCollections::class,
   )
   registerCodec(
@@ -3859,11 +3850,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableLongCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableLongCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableLongCollections::class,
   )
   registerCodec(
@@ -3872,11 +3863,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "MapCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = MapCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = MapCollections::class,
   )
   registerCodec(
@@ -3885,11 +3876,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "ShortCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = ShortCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = ShortCollections::class,
   )
   registerCodec(
@@ -3898,11 +3889,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableShortCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableShortCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableShortCollections::class,
   )
   registerCodec(
@@ -3911,11 +3902,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "BooleanCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = BooleanCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = BooleanCollections::class,
   )
   registerCodec(
@@ -3924,11 +3915,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableBooleanCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableBooleanCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableBooleanCollections::class,
   )
   registerCodec(
@@ -3937,11 +3928,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "StringCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = StringCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = StringCollections::class,
   )
   registerCodec(
@@ -3950,12 +3941,25 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableStringCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableStringCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableStringCollections::class,
+  )
+  registerCodec(
+      targetType = EnumCollections::class,
+      codec = EnumCollectionsCodec(),
+      protoMessageName = "EnumCollections",
+  )
+  registerPolymorphicChild(
+      parent = EventInterface::class,
+      child = EnumCollections::class,
+  )
+  registerPolymorphicChild(
+      parent = Any::class,
+      child = EnumCollections::class,
   )
   registerCodec(
       targetType = DataClassCollections::class,
@@ -3963,11 +3967,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "DataClassCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = DataClassCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = DataClassCollections::class,
   )
   registerCodec(
@@ -3976,11 +3980,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableDataClassCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableDataClassCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableDataClassCollections::class,
   )
   registerCodec(
@@ -3989,11 +3993,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "FloatCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = FloatCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = FloatCollections::class,
   )
   registerCodec(
@@ -4002,11 +4006,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableFloatCollections",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableFloatCollections::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableFloatCollections::class,
   )
   registerCodec(
@@ -4015,7 +4019,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "WithNestClassA",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = WithNestClassA::class,
   )
   registerCodec(
@@ -4024,7 +4028,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "WithNestClassA.NestedClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = WithNestClassA.NestedClass::class,
   )
   registerCodec(
@@ -4033,7 +4037,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "WithNestClassB",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = WithNestClassB::class,
   )
   registerCodec(
@@ -4042,7 +4046,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "WithNestClassB.NestedClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = WithNestClassB.NestedClass::class,
   )
   registerCodec(
@@ -4056,7 +4060,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "WithNestedEnum",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = WithNestedEnum::class,
   )
   registerCodec(
@@ -4070,7 +4074,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "CommentedClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = CommentedClass::class,
   )
   registerCodec(
@@ -4079,7 +4083,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "MyAnnotatedClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = AnnotatedClass::class,
   )
   registerCodec(
@@ -4098,7 +4102,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NonContiguousEnumHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NonContiguousEnumHolder::class,
   )
   registerCodec(
@@ -4107,7 +4111,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "BigDecimalHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = BigDecimalHolder::class,
   )
   registerCodec(
@@ -4116,7 +4120,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableBigDecimalHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableBigDecimalHolder::class,
   )
   registerCodec(
@@ -4125,7 +4129,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "BigDecimalValueClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = BigDecimalValueClass::class,
   )
   registerCodec(
@@ -4134,7 +4138,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "BigDecimalValueClassHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = BigDecimalValueClassHolder::class,
   )
   registerCodec(
@@ -4143,7 +4147,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableBigDecimalValueClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableBigDecimalValueClass::class,
   )
   registerCodec(
@@ -4152,7 +4156,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableBigDecimalValueClassHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableBigDecimalValueClassHolder::class,
   )
   registerCodec(
@@ -4161,7 +4165,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "TransientField",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = TransientField::class,
   )
   registerCodec(
@@ -4170,7 +4174,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "CustomNameKtxClasses",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = KtxClasses::class,
   )
   registerCodec(
@@ -4179,7 +4183,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "KtxClassesHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = KtxClassesHolder::class,
   )
   registerCodec(
@@ -4193,11 +4197,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NativeTypeEvent",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NativeTypeEvent::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NativeTypeEvent::class,
   )
   registerCodec(
@@ -4211,11 +4215,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "PolymorphicMigration.Two",
   )
   registerPolymorphicChild(
-      parent = PolymorphicMigration::class, 
+      parent = PolymorphicMigration::class,
       child = PolymorphicMigration.Two::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = PolymorphicMigration.Two::class,
   )
   registerCodec(
@@ -4224,11 +4228,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "PolymorphicMigration.Three",
   )
   registerPolymorphicChild(
-      parent = PolymorphicMigration::class, 
+      parent = PolymorphicMigration::class,
       child = PolymorphicMigration.DeprecatedThree::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = PolymorphicMigration.DeprecatedThree::class,
   )
   registerCodec(
@@ -4237,11 +4241,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "PolymorphicMigration.Five",
   )
   registerPolymorphicChild(
-      parent = PolymorphicMigration::class, 
+      parent = PolymorphicMigration::class,
       child = PolymorphicMigration.Five::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = PolymorphicMigration.Five::class,
   )
   registerCodec(
@@ -4250,11 +4254,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "PolymorphicMigration.Six",
   )
   registerPolymorphicChild(
-      parent = PolymorphicMigration::class, 
+      parent = PolymorphicMigration::class,
       child = PolymorphicMigration.DeprecatedSix::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = PolymorphicMigration.DeprecatedSix::class,
   )
   registerCodec(
@@ -4263,11 +4267,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "PolymorphicMigration.Seven",
   )
   registerPolymorphicChild(
-      parent = PolymorphicMigration::class, 
+      parent = PolymorphicMigration::class,
       child = PolymorphicMigration.Seven::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = PolymorphicMigration.Seven::class,
   )
   registerCodec(
@@ -4276,7 +4280,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "StandardClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = StandardClass::class,
   )
   registerCodec(
@@ -4285,7 +4289,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableEnumHolderUnspecifiedNull",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableEnumHolderUnspecifiedNull::class,
   )
   registerCodec(
@@ -4294,7 +4298,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableEnumHolderUnspecifiedDefault",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableEnumHolderUnspecifiedDefault::class,
   )
   registerCodec(
@@ -4303,11 +4307,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableNativeTypeEventUnspecifiedNull",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableNativeTypeEventUnspecifiedNull::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableNativeTypeEventUnspecifiedNull::class,
   )
   registerCodec(
@@ -4316,11 +4320,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableNativeTypeEventUnspecifiedDefault",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableNativeTypeEventUnspecifiedDefault::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableNativeTypeEventUnspecifiedDefault::class,
   )
   registerCodec(
@@ -4329,11 +4333,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NativeTypeEventUnspecifiedDefault",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NativeTypeEventUnspecifiedDefault::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NativeTypeEventUnspecifiedDefault::class,
   )
   registerCodec(
@@ -4342,7 +4346,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "OptionalToRequiredEnumStart",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = OptionalToRequiredEnumStart::class,
   )
   registerCodec(
@@ -4351,7 +4355,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "OptionalToRequiredEnumEnd",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = OptionalToRequiredEnumEnd::class,
   )
   registerCodec(
@@ -4360,7 +4364,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "OptionalToRequiredStart",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = OptionalToRequiredStart::class,
   )
   registerCodec(
@@ -4369,7 +4373,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "OptionalToRequiredEnd",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = OptionalToRequiredEnd::class,
   )
   registerCodec(
@@ -4378,7 +4382,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "RequiredToOptionalEnumStart",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = RequiredToOptionalEnumStart::class,
   )
   registerCodec(
@@ -4387,7 +4391,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "RequiredToOptionalEnumEnd",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = RequiredToOptionalEnumEnd::class,
   )
   registerCodec(
@@ -4396,7 +4400,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "RequiredToOptionalStart",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = RequiredToOptionalStart::class,
   )
   registerCodec(
@@ -4405,7 +4409,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "RequiredToOptionalEnd",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = RequiredToOptionalEnd::class,
   )
   registerCodec(
@@ -4419,11 +4423,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "Vehicle.Car",
   )
   registerPolymorphicChild(
-      parent = Vehicle::class, 
+      parent = Vehicle::class,
       child = Vehicle.Car::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = Vehicle.Car::class,
   )
   registerCodec(
@@ -4432,11 +4436,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "Vehicle.Bike",
   )
   registerPolymorphicChild(
-      parent = Vehicle::class, 
+      parent = Vehicle::class,
       child = Vehicle.Bike::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = Vehicle.Bike::class,
   )
   registerCodec(
@@ -4445,7 +4449,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "User",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = User::class,
   )
   registerCodec(
@@ -4459,11 +4463,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "Vehicle2.Car2",
   )
   registerPolymorphicChild(
-      parent = Vehicle2::class, 
+      parent = Vehicle2::class,
       child = Vehicle2.Car2::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = Vehicle2.Car2::class,
   )
   registerCodec(
@@ -4472,11 +4476,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "Vehicle2.Bike2",
   )
   registerPolymorphicChild(
-      parent = Vehicle2::class, 
+      parent = Vehicle2::class,
       child = Vehicle2.Bike2::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = Vehicle2.Bike2::class,
   )
   registerCodec(
@@ -4485,7 +4489,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "User2",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = User2::class,
   )
   registerCodec(
@@ -4494,11 +4498,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableNativeTypeEvent",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = NullableNativeTypeEvent::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableNativeTypeEvent::class,
   )
   registerCodec(
@@ -4507,7 +4511,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableValueClassHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableValueClassHolder::class,
   )
   registerCodec(
@@ -4516,7 +4520,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "UuidsHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = UuidsHolder::class,
   )
   registerCodec(
@@ -4525,7 +4529,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableUuidsHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableUuidsHolder::class,
   )
   registerCodec(
@@ -4534,7 +4538,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "UuidStringValueClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = UuidStringValueClass::class,
   )
   registerCodec(
@@ -4543,7 +4547,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "UuidBytesValueClass",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = UuidBytesValueClass::class,
   )
   registerCodec(
@@ -4552,7 +4556,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "NullableDataClassHolder",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = NullableDataClassHolder::class,
   )
   registerCodec(
@@ -4561,11 +4565,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "AbstractSubClass",
   )
   registerPolymorphicChild(
-      parent = AbstractClass::class, 
+      parent = AbstractClass::class,
       child = AbstractSubClass::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = AbstractSubClass::class,
   )
   registerCodec(
@@ -4574,7 +4578,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "BeforeAddingField",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = BeforeAddingField::class,
   )
   registerCodec(
@@ -4583,7 +4587,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "AfterAddingField",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = AfterAddingField::class,
   )
   registerCodec(
@@ -4592,7 +4596,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "FooEvent",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = FooEvent::class,
   )
   registerCodec(
@@ -4601,7 +4605,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "BarEvent",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = BarEvent::class,
   )
   registerCodec(
@@ -4610,11 +4614,11 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "CommonClass",
   )
   registerPolymorphicChild(
-      parent = EventInterface::class, 
+      parent = EventInterface::class,
       child = CommonClass::class,
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = CommonClass::class,
   )
   registerCodec(
@@ -4623,7 +4627,7 @@ public fun K2PBConfig.registerSampleAppCodecs() {
       protoMessageName = "MultiModule",
   )
   registerPolymorphicChild(
-      parent = Any::class, 
+      parent = Any::class,
       child = MultiModule::class,
   )
   registerCodec(
@@ -5527,10 +5531,7 @@ internal class WithNestClassB_NestedClass_NestedEnumCodec : ProtoCodec<WithNestC
       WithNestClassB.NestedClass.NestedEnum.B -> 1
       WithNestClassB.NestedClass.NestedEnum.C -> 2
     }
-    if (protoNumber != 0) {
-      writeInt(protoNumber)
-    }
-    // else: default value should not be encoded
+    writeInt(protoNumber)
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestClassB.NestedClass.NestedEnum? {
@@ -5612,10 +5613,7 @@ internal class WithNestedEnum_NestedEnumCodec : ProtoCodec<WithNestedEnum.Nested
       WithNestedEnum.NestedEnum.B -> 1
       WithNestedEnum.NestedEnum.C -> 2
     }
-    if (protoNumber != 0) {
-      writeInt(protoNumber)
-    }
-    // else: default value should not be encoded
+    writeInt(protoNumber)
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): WithNestedEnum.NestedEnum? {
@@ -5673,18 +5671,16 @@ internal class BooleanCollectionsCodec : ProtoCodec<BooleanCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
-              booleanList += 
-              readInt32NoTag() == 1
+              booleanList += readInt32NoTag() == 1
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
-              booleanSet += 
-              readInt32NoTag() == 1
+              booleanSet += readInt32NoTag() == 1
             }
           }
         }
@@ -5746,14 +5742,14 @@ internal class ByteCollectionsCodec : ProtoCodec<ByteCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               byteList += readInt32NoTag().toByte()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               byteSet += readInt32NoTag().toByte()
             }
@@ -5817,14 +5813,14 @@ internal class CharCollectionsCodec : ProtoCodec<CharCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               charList += readInt32NoTag().toChar()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               charSet += readInt32NoTag().toChar()
             }
@@ -5964,14 +5960,14 @@ internal class DoubleCollectionsCodec : ProtoCodec<DoubleCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               doubleList += readDoubleNoTag()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               doubleSet += readDoubleNoTag()
             }
@@ -5987,6 +5983,84 @@ internal class DoubleCollectionsCodec : ProtoCodec<DoubleCollections> {
     return DoubleCollections(
       doubleList = doubleList,
       doubleSet = doubleSet,
+    )
+  }
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/collection/EnumCollectionsCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/collection/EnumCollections.kt
+package com.glureau.sample.collection
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.readMessage
+import com.glureau.k2pb.runtime.writeMessage
+import com.glureau.sample.lib.AnEnum
+
+internal class EnumCollectionsCodec : ProtoCodec<EnumCollections> {
+  override fun ProtobufWriter.encode(instance: EnumCollections?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode enumList
+    if (instance.enumList.isNotEmpty()) {
+      writeMessage(1) {
+        instance.enumList.forEach {
+          with(protoCodec) {
+            encode(it, AnEnum::class)
+          }
+        }
+      }
+    }
+
+    // Encode enumSet
+    if (instance.enumSet.isNotEmpty()) {
+      writeMessage(2) {
+        instance.enumSet.forEach {
+          with(protoCodec) {
+            encode(it, AnEnum::class)
+          }
+        }
+      }
+    }
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): EnumCollections? {
+    val enumList: MutableList<com.glureau.sample.lib.AnEnum> = mutableListOf()
+    val enumSet: MutableSet<com.glureau.sample.lib.AnEnum> = mutableSetOf()
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          readMessage {
+            while (!eof) {
+              with(protoCodec) {
+                decode(AnEnum::class)?.let { enumList += it }
+              }
+            }
+          }
+        }
+        2 -> {
+          readMessage {
+            while (!eof) {
+              with(protoCodec) {
+                decode(AnEnum::class)?.let { enumSet += it }
+              }
+            }
+          }
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(EnumCollections::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return EnumCollections(
+      enumList = enumList,
+      enumSet = enumSet,
     )
   }
 }
@@ -6035,14 +6109,14 @@ internal class FloatCollectionsCodec : ProtoCodec<FloatCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               floatList += readFloatNoTag()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               floatSet += readFloatNoTag()
             }
@@ -6294,14 +6368,14 @@ internal class IntCollectionsCodec : ProtoCodec<IntCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               integerList += readInt32NoTag()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               integerSet += readInt32NoTag()
             }
@@ -6365,14 +6439,14 @@ internal class LongCollectionsCodec : ProtoCodec<LongCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               longList += readLongNoTag()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               longSet += readLongNoTag()
             }
@@ -6401,8 +6475,10 @@ import com.glureau.k2pb.ProtoCodec
 import com.glureau.k2pb.ProtoIntegerType
 import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
+import com.glureau.k2pb.runtime.ktx.ProtoWireType
 import com.glureau.k2pb.runtime.readMessage
 import com.glureau.k2pb.runtime.writeMessage
+import com.glureau.sample.lib.AnEnum
 import com.glureau.sample.lib.DataClassFromLib
 
 internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
@@ -6433,17 +6509,37 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
         writeInt(if (it.value) 1 else 0, 2, ProtoIntegerType.DEFAULT)
       }
     }
+
+    // Encode mapStringEnum
+    instance.mapStringEnum.forEach {
+      writeMessage(4) {
+        writeString(it.key, 1)
+        writeInt(ProtoWireType.VARINT.wireIntWithTag(2))
+        with(protoCodec) { encode(it.value, AnEnum::class) }
+      }
+    }
+
+    // Encode mapEnumString
+    instance.mapEnumString.forEach {
+      writeMessage(5) {
+        writeInt(ProtoWireType.VARINT.wireIntWithTag(1))
+        with(protoCodec) { encode(it.key, AnEnum::class) }
+        writeString(it.value, 2)
+      }
+    }
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): MapCollections? {
     val mapStringInt: MutableMap<kotlin.String, kotlin.Int> = mutableMapOf()
     val mapStringObject: MutableMap<kotlin.String, com.glureau.sample.lib.DataClassFromLib> = mutableMapOf()
     val mapStringBoolean: MutableMap<kotlin.String, kotlin.Boolean> = mutableMapOf()
+    val mapStringEnum: MutableMap<kotlin.String, com.glureau.sample.lib.AnEnum> = mutableMapOf()
+    val mapEnumString: MutableMap<com.glureau.sample.lib.AnEnum, kotlin.String> = mutableMapOf()
 
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             readTag()
             val key = readStringNoTag()
             readTag()
@@ -6452,7 +6548,7 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             readTag()
             val key = readStringNoTag()
             readTag()
@@ -6461,13 +6557,30 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
           }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             readTag()
             val key = readStringNoTag()
             readTag()
-            val value = 
-            readInt32NoTag() == 1
+            val value = readInt32NoTag() == 1
             mapStringBoolean[key] = value
+          }
+        }
+        4 -> {
+          readMessage {
+            readTag()
+            val key = readStringNoTag()
+            readTag()
+            val value = with(protoCodec) { requireNotNull(decode(AnEnum::class)) { "Map 'mapStringEnum' contains a value which is declared as not nullable but is null" } }
+            mapStringEnum[key] = value
+          }
+        }
+        5 -> {
+          readMessage {
+            readTag()
+            val key = with(protoCodec) { requireNotNull(decode(AnEnum::class)) { "Map 'mapEnumString' contains a key which is declared as not nullable but is null" } }
+            readTag()
+            val value = readStringNoTag()
+            mapEnumString[key] = value
           }
         }
         else -> {
@@ -6481,6 +6594,8 @@ internal class MapCollectionsCodec : ProtoCodec<MapCollections> {
       mapStringInt = mapStringInt,
       mapStringObject = mapStringObject,
       mapStringBoolean = mapStringBoolean,
+      mapStringEnum = mapStringEnum,
+      mapEnumString = mapEnumString,
     )
   }
 }
@@ -6549,10 +6664,9 @@ internal class NullableBooleanCollectionsCodec : ProtoCodec<NullableBooleanColle
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
-              nullableBooleanList += 
-              readInt32NoTag() == 1
+              nullableBooleanList += readInt32NoTag() == 1
             }
           }
         }
@@ -6560,10 +6674,9 @@ internal class NullableBooleanCollectionsCodec : ProtoCodec<NullableBooleanColle
           isNullableBooleanListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
-              nullableBooleanSet += 
-              readInt32NoTag() == 1
+              nullableBooleanSet += readInt32NoTag() == 1
             }
           }
         }
@@ -6656,7 +6769,7 @@ internal class NullableByteCollectionsCodec : ProtoCodec<NullableByteCollections
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableByteList += readInt32NoTag().toByte()
             }
@@ -6666,7 +6779,7 @@ internal class NullableByteCollectionsCodec : ProtoCodec<NullableByteCollections
           isNullableByteListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableByteSet += readInt32NoTag().toByte()
             }
@@ -6761,7 +6874,7 @@ internal class NullableCharCollectionsCodec : ProtoCodec<NullableCharCollections
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableCharList += readInt32NoTag().toChar()
             }
@@ -6771,7 +6884,7 @@ internal class NullableCharCollectionsCodec : ProtoCodec<NullableCharCollections
           isNullableCharListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableCharSet += readInt32NoTag().toChar()
             }
@@ -6976,7 +7089,7 @@ internal class NullableDoubleCollectionsCodec : ProtoCodec<NullableDoubleCollect
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableDoubleList += readDoubleNoTag()
             }
@@ -6986,7 +7099,7 @@ internal class NullableDoubleCollectionsCodec : ProtoCodec<NullableDoubleCollect
           isNullableDoubleListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableDoubleSet += readDoubleNoTag()
             }
@@ -7081,7 +7194,7 @@ internal class NullableFloatCollectionsCodec : ProtoCodec<NullableFloatCollectio
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableFloatList += readFloatNoTag()
             }
@@ -7091,7 +7204,7 @@ internal class NullableFloatCollectionsCodec : ProtoCodec<NullableFloatCollectio
           isNullableFloatListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableFloatSet += readFloatNoTag()
             }
@@ -7512,7 +7625,7 @@ internal class NullableIntCollectionsCodec : ProtoCodec<NullableIntCollections> 
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableIntegerList += readInt32NoTag()
             }
@@ -7522,7 +7635,7 @@ internal class NullableIntCollectionsCodec : ProtoCodec<NullableIntCollections> 
           isNullableIntegerListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableIntegerSet += readInt32NoTag()
             }
@@ -7617,7 +7730,7 @@ internal class NullableLongCollectionsCodec : ProtoCodec<NullableLongCollections
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableLongList += readLongNoTag()
             }
@@ -7627,7 +7740,7 @@ internal class NullableLongCollectionsCodec : ProtoCodec<NullableLongCollections
           isNullableLongListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableLongSet += readLongNoTag()
             }
@@ -7722,7 +7835,7 @@ internal class NullableShortCollectionsCodec : ProtoCodec<NullableShortCollectio
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableShortList += readInt32NoTag().toShort()
             }
@@ -7732,7 +7845,7 @@ internal class NullableShortCollectionsCodec : ProtoCodec<NullableShortCollectio
           isNullableShortListNull = ExplicitNullability.entries.getOrElse(readInt32NoTag()) { ExplicitNullability.UNKNOWN }
         }
         3 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               nullableShortSet += readInt32NoTag().toShort()
             }
@@ -7894,14 +8007,14 @@ internal class ShortCollectionsCodec : ProtoCodec<ShortCollections> {
     while (!eof) {
       when (val tag = readTag()) {
         1 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               shortList += readInt32NoTag().toShort()
             }
           }
         }
         2 -> {
-          readMessage() {
+          readMessage {
             while (!eof) {
               shortSet += readInt32NoTag().toShort()
             }

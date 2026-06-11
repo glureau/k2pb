@@ -66,7 +66,7 @@ fun FunSpec.Builder.encodeReferenceType(
         val isInlineEnum = (inlinedType as? ReferenceType)?.isEnum == true
         val isInlinedInt = (inlinedType as? ScalarFieldType)?.protoType == ScalarType.int32
         val condition = mutableListOf<String>()
-        if (isInlineEnum) condition += "$fieldName != ${type.className}(${(inlinedType as? ReferenceType)?.enumFirstEntry})"
+        if (isInlineEnum) condition += "$fieldName != ${type.className}(${inlinedType.enumFirstEntry})"
         if (inlinedType is ScalarFieldType) condition += inlinedType.shouldEncodeDefault(fieldName + "." + type.inlineName)
         val checkNullability = type.isNullable || inlinedType.isNullable
 
@@ -97,11 +97,9 @@ fun FunSpec.Builder.encodeReferenceType(
             beginControlFlow("if ($fieldName != null)")
         }
 
-        if (type.isEnum) {
+        if (type.isEnum && !forceEncodeDefault) {
             addStatement("// Enum should not be encoded if it's the default value")
             beginControlFlow("if ($fieldName != ${type.enumFirstEntry})")
-            //addStatement("if ($fieldName == %T) return", type.enumFirstEntry!!)
-            //addStatement("")
         }
 
         if (!type.isEnum) {
@@ -119,7 +117,7 @@ fun FunSpec.Builder.encodeReferenceType(
 
         if (!type.isEnum) {
             endControlFlow() // writeMessage
-        } else {
+        } else if (!forceEncodeDefault) {
             endControlFlow() // if (enum)
         }
 

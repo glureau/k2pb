@@ -59,7 +59,7 @@ fun FunSpec.Builder.decodeMapTypeVariableDefinition(fieldName: String, type: Map
 }
 
 fun FunSpec.Builder.decodeMapType(fieldName: String, type: MapType) {
-    beginControlFlow("%M()", readMessageExt)
+    beginControlFlow("%M", readMessageExt)
     /// TODO: We may write it differently so that we can swap the key and value... (warning on perf tho)
     addStatement("readTag()") // Should be 1
     addCode("val key = ")
