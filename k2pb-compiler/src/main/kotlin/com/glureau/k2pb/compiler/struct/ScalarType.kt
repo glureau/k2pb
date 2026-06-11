@@ -16,4 +16,9 @@ enum class ScalarType { // https://protobuf.dev/programming-guides/proto3/#scala
     bool,
     string,
     bytes,
+    ;
+
+    companion object {
+        val names = ScalarType.entries.map { it.name }.toSet()
+    }
 }

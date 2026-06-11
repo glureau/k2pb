@@ -14,6 +14,7 @@ import com.glureau.k2pb.compiler.struct.ObjectNode
 import com.glureau.k2pb.compiler.struct.OneOfField
 import com.glureau.k2pb.compiler.struct.ReferenceType
 import com.glureau.k2pb.compiler.struct.ScalarFieldType
+import com.glureau.k2pb.compiler.struct.ScalarType
 import com.glureau.k2pb.compiler.struct.SetType
 import com.glureau.k2pb.compiler.struct.TypedField
 import com.glureau.k2pb.compiler.struct.nullabilityQualifiedName
@@ -111,6 +112,7 @@ fun computeDeprecatedProtobufImports(nodes: List<Node>, importResolver: ImportRe
             }
         }
         .filter { it.publishedInProto }
+        .filter { it.protoType !in ScalarType.names }
         .map { importResolver.resolve(it.protoType) } -
             selfRef.map { importResolver.resolve(it) }.toSet()
 
