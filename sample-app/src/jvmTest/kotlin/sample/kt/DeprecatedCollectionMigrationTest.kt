@@ -2,13 +2,16 @@ package sample.kt
 
 import com.glureau.k2pb.runtime.encodeToByteArray
 import com.glureau.k2pb_sample.DeprecatedCollectionEndProto
+import com.glureau.k2pb_sample.DeprecatedCollectionReservedProto
 import com.glureau.sample.CommonClass
 import com.glureau.sample.DeprecatedCollectionEnd
+import com.glureau.sample.DeprecatedCollectionReserved
 import com.glureau.sample.DeprecatedCollectionStart
 import org.junit.Test
 import sample.kt.tools.BaseEncodingTest
 import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -71,6 +74,63 @@ class DeprecatedCollectionMigrationTest : BaseEncodingTest() {
                 b = "kept",
             ),
             expectedAfter = DeprecatedCollectionEnd(b = "kept"),
+        )
+    }
+
+    @Test
+    fun `unpublished collections are reserved and not emitted as fields`() {
+        val reservedProto = File(
+            "build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DeprecatedCollectionReserved.proto"
+        ).readText()
+
+        assertTrue(
+            reservedProto.contains("reserved \"names\";"),
+            "unpublished 'names' must be reserved by name:\n$reservedProto"
+        )
+        assertTrue(
+            reservedProto.contains("reserved 1;"),
+            "unpublished 'names' must be reserved by number:\n$reservedProto"
+        )
+        assertTrue(
+            reservedProto.contains("reserved \"items\";"),
+            "unpublished 'items' must be reserved by name:\n$reservedProto"
+        )
+        assertTrue(
+            reservedProto.contains("reserved 2;"),
+            "unpublished 'items' must be reserved by number:\n$reservedProto"
+        )
+        assertTrue(
+            !reservedProto.contains("repeated string names") &&
+                !reservedProto.contains("string names = 1;"),
+            "unpublished collections must not be declared as fields:\n$reservedProto"
+        )
+        assertTrue(
+            !reservedProto.contains("repeated CommonClass items") &&
+                !reservedProto.contains("CommonClass items = 2;"),
+            "unpublished message collections must not be declared as fields:\n$reservedProto"
+        )
+        assertTrue(
+            !reservedProto.contains("import \"com/glureau/k2pb_sample/CommonClass.proto\""),
+            "unpublished message collections must not pull an unused import:\n$reservedProto"
+        )
+    }
+
+    @Test
+    fun `protoc has no unpublished collection fields`() {
+        val descriptor = DeprecatedCollectionReservedProto.DeprecatedCollectionReserved.getDescriptor()
+        assertNull(descriptor.findFieldByName("names"), "'names' should be reserved, not a field")
+        assertNull(descriptor.findFieldByName("items"), "'items' should be reserved, not a field")
+    }
+
+    @Test
+    fun `unpublished collections are still skipped by K2PB`() {
+        assertMigration(
+            before = DeprecatedCollectionStart(
+                names = listOf("aaa", "bbb"),
+                items = listOf(CommonClass("ccc")),
+                b = "kept",
+            ),
+            expectedAfter = DeprecatedCollectionReserved(b = "kept"),
         )
     }
 }

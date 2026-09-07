@@ -559,6 +559,60 @@ internal class DeprecatedCollectionEndCodec : ProtoCodec<DeprecatedCollectionEnd
   }
 }
 
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/DeprecatedCollectionReservedCodec.kt
+// Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/DeprecatedCollectionMigration.kt
+package com.glureau.sample
+
+import com.glureau.k2pb.DelegateProtoCodec
+import com.glureau.k2pb.ProtoCodec
+import com.glureau.k2pb.ProtobufReader
+import com.glureau.k2pb.ProtobufWriter
+import kotlin.String
+
+internal class DeprecatedCollectionReservedCodec : ProtoCodec<DeprecatedCollectionReserved> {
+  override fun ProtobufWriter.encode(instance: DeprecatedCollectionReserved?, protoCodec: DelegateProtoCodec) {
+    // If instance is null, nothing to encode
+    if (instance == null) return
+
+    // Encode b
+    if (instance.b != "") {
+      writeString(instance.b, 3)
+    }
+    // else: default value should not be encoded
+
+  }
+
+  override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): DeprecatedCollectionReserved? {
+    var b: String? = null
+
+    while (!eof) {
+      when (val tag = readTag()) {
+        1 -> {
+          // Deprecated field names, need to be consumed but value is ignored.
+          // Any ignored message can be interpreted as a byte array
+          skipElement()
+        }
+        2 -> {
+          // Deprecated field items, need to be consumed but value is ignored.
+          // Any ignored message can be interpreted as a byte array
+          skipElement()
+        }
+        3 -> {
+          b = readString()
+        }
+        else -> {
+          // Ignore unknown tag, basic forward compatibility
+          protoCodec.onUnknownProtoNumber(DeprecatedCollectionReserved::class, tag)
+          skipElement()
+        }
+      }
+    }
+    return DeprecatedCollectionReserved(
+      b = b ?: "",
+    )
+  }
+}
+
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/kotlin/com/glureau/sample/DeprecatedCollectionStartCodec.kt
 // Generated from /Users/greg/Projects/k2pb/sample-app/src/commonMain/kotlin/com/glureau/sample/DeprecatedCollectionMigration.kt
 package com.glureau.sample
@@ -4641,6 +4695,15 @@ public fun K2PBConfig.registerSampleAppCodecs() {
   registerPolymorphicChild(
       parent = Any::class,
       child = DeprecatedCollectionEnd::class,
+  )
+  registerCodec(
+      targetType = DeprecatedCollectionReserved::class,
+      codec = DeprecatedCollectionReservedCodec(),
+      protoMessageName = "DeprecatedCollectionReserved",
+  )
+  registerPolymorphicChild(
+      parent = Any::class,
+      child = DeprecatedCollectionReserved::class,
   )
   registerCodec(
       targetType = NullableNativeTypeEvent::class,
