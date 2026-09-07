@@ -221,6 +221,40 @@ message DataClassFromLib {
   int32 myInt = 1;
 }
 
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DeprecatedCollectionEnd.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "DeprecatedCollectionEndProto";
+
+import "com/glureau/k2pb_sample/CommonClass.proto";
+
+message DeprecatedCollectionEnd {
+  // Deprecated field names 1
+  // Field 'names' has been removed
+  string names = 1;
+  // Deprecated field items 2
+  // Field 'items' has been removed
+  CommonClass items = 2;
+  string b = 3;
+}
+
+File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DeprecatedCollectionStart.proto
+syntax = "proto3";
+
+package com.glureau.k2pb_sample;
+
+option java_outer_classname = "DeprecatedCollectionStartProto";
+
+import "com/glureau/k2pb_sample/CommonClass.proto";
+
+message DeprecatedCollectionStart {
+  repeated string names = 1;
+  repeated CommonClass items = 2;
+  string b = 3;
+}
+
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DoubleCollections.proto
 syntax = "proto3";
 
