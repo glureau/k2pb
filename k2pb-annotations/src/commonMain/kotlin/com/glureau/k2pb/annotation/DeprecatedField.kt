@@ -24,6 +24,11 @@ public annotation class DeprecatedField(
      */
     val protoType: String = "",
     /**
+     * If true, the field is emitted as `repeated` in the proto file.
+     * Use this when the original Kotlin field was a List or Set.
+     */
+    val repeated: Boolean = false,
+    /**
      * Reasons of the deprecation, this will be copied into the proto file documentation.
      */
     val deprecationReason: String = "",

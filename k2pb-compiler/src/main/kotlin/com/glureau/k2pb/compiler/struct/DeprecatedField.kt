@@ -9,6 +9,7 @@ sealed interface IDeprecatedField {
     val protoName: String
     val protoNumber: Int
     val protoType: String
+    val repeated: Boolean
     val deprecationReason: String?
     val publishedInProto: Boolean
 }
@@ -17,6 +18,7 @@ data class DeprecatedField(
     override val protoName: String,
     override val protoNumber: Int,
     override val protoType: String,
+    override val repeated: Boolean = false,
     override val deprecationReason: String?,
     override val publishedInProto: Boolean,
     val migrationDecoder: ClassName?,
@@ -30,4 +32,5 @@ data class DeprecatedNullabilityField(
     override val publishedInProto: Boolean,
 ) : IDeprecatedField {
     override val protoType: String = nullabilityClass
+    override val repeated: Boolean = false
 }

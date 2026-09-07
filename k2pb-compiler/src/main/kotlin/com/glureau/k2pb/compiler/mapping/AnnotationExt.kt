@@ -57,6 +57,7 @@ fun KSAnnotation.mapToDeprecatedField(): DeprecatedField {
         protoName = protoName,
         protoNumber = getArg<Int>(AnnotationDeprecatedField::protoNumber),
         protoType = protoType,
+        repeated = getArg<Boolean?>(AnnotationDeprecatedField::repeated) ?: false,
         deprecationReason = getArg<String?>(AnnotationDeprecatedField::deprecationReason),
         publishedInProto = getArg<Boolean?>(AnnotationDeprecatedField::publishedInProto) ?: true,
         migrationDecoder = migrationDecoderType?.toClassName(),

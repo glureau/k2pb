@@ -38,9 +38,10 @@ fun StringBuilder.appendFields(
                     else -> it
                 }
                 val protoName = deprecatedField.protoName.substringAfterLast(".").decapitalizeUS()
+                val repeatedPrefix = if (deprecatedField.repeated) "repeated " else ""
                 appendLineWithIndent(
                     indentLevel,
-                    "$protoType $protoName = ${deprecatedField.protoNumber};"
+                    "$repeatedPrefix$protoType $protoName = ${deprecatedField.protoNumber};"
                 )
             } else {
                 // Reserved field needs to be defined before the oneof {}
