@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
-    id("com.glureau.k2pb") version "0.9.34"
+    id("com.glureau.k2pb") version "0.9.35"
 }
 
 repositories {
