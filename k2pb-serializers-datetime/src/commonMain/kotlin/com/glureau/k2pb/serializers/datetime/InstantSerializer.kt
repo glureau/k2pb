@@ -1,10 +1,11 @@
 package com.glureau.k2pb.serializers.datetime
 
 import com.glureau.k2pb.NullableStringConverter
-import kotlinx.datetime.Instant
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.parse
+import kotlin.time.Instant
 
 internal class InstantStringConverter(val format: DateTimeFormat<DateTimeComponents>) :
     NullableStringConverter<Instant> {

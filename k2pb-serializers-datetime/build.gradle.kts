@@ -53,11 +53,12 @@ kotlin {
     sourceSets {
         all {
             languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kotlin.time.ExperimentalTime")
         }
         commonMain {
             dependencies {
                 api(project.dependencies.project(":k2pb-annotations"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.0-0.6.x-compat")
             }
         }
     }

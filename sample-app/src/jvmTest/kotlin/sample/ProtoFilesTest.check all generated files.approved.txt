@@ -193,6 +193,7 @@ option java_outer_classname = "CustomNameKtxClassesProto";
 
 message CustomNameKtxClasses {
   string instant = 1;
+  string legacyInstant = 2;
 }
 
 File: /Users/greg/Projects/k2pb/sample-app/build/generated/ksp/jvm/jvmMain/resources/k2pb/com/glureau/k2pb_sample/DataClassCollections.proto
