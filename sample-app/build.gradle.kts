@@ -30,7 +30,7 @@ kotlin {
                 implementation(project.dependencies.project(":k2pb-runtime"))
                 implementation(project.dependencies.project(":k2pb-serializers-datetime"))
                 implementation(project.dependencies.project(":sample-lib"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0-0.6.x-compat")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
             }
         }

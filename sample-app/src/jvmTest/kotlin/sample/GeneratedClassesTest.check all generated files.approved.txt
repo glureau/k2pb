@@ -784,9 +784,7 @@ import com.glureau.k2pb.ProtobufReader
 import com.glureau.k2pb.ProtobufWriter
 import com.glureau.k2pb.runtime.DefaultCodecImpl
 import com.glureau.k2pb.serializers.datetime.InstantIsoDateTimeOffsetConverter
-import com.glureau.k2pb.serializers.datetime.LegacyKotlinxInstantIsoDateTimeOffsetConverter
-import kotlin.time.Instant as TimeInstant
-import kotlinx.datetime.Instant as DatetimeInstant
+import kotlin.time.Instant
 
 internal class KtxClassesCodec : ProtoCodec<KtxClasses> {
   override fun ProtobufWriter.encode(instance: KtxClasses?, protoCodec: DelegateProtoCodec) {
@@ -802,21 +800,10 @@ internal class KtxClassesCodec : ProtoCodec<KtxClasses> {
       // else: default value should not be encoded
     }
 
-
-    // Encode legacyInstant
-    val instance_legacyInstantEncoded = LegacyKotlinxInstantIsoDateTimeOffsetConverter().encode(instance.legacyInstant, DefaultCodecImpl(protoCodec))
-    if (instance_legacyInstantEncoded != null) {
-      if (instance_legacyInstantEncoded != "") {
-        writeString(instance_legacyInstantEncoded, 2)
-      }
-      // else: default value should not be encoded
-    }
-
   }
 
   override fun ProtobufReader.decode(protoCodec: DelegateProtoCodec): KtxClasses? {
-    var instant: TimeInstant? = null
-    var legacyInstant: DatetimeInstant? = null
+    var instant: Instant? = null
 
     while (!eof) {
       when (val tag = readTag()) {
@@ -824,12 +811,6 @@ internal class KtxClassesCodec : ProtoCodec<KtxClasses> {
           val instantDecoded = InstantIsoDateTimeOffsetConverter().decode(readString(), DefaultCodecImpl(protoCodec))
           instantDecoded?.let {
             instant = it
-          }
-        }
-        2 -> {
-          val legacyInstantDecoded = LegacyKotlinxInstantIsoDateTimeOffsetConverter().decode(readString(), DefaultCodecImpl(protoCodec))
-          legacyInstantDecoded?.let {
-            legacyInstant = it
           }
         }
         else -> {
@@ -841,7 +822,6 @@ internal class KtxClassesCodec : ProtoCodec<KtxClasses> {
     }
     return KtxClasses(
       instant = requireNotNull(instant) { "Field 'instant' is declared as not nullable but is null" },
-      legacyInstant = requireNotNull(legacyInstant) { "Field 'legacyInstant' is declared as not nullable but is null" },
     )
   }
 }
